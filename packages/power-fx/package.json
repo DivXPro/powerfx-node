@@ -1,0 +1,49 @@
+{
+  "name": "@toy-box/power-fx",
+  "version": "0.0.1-alpha",
+  "license": "MIT",
+  "main": "lib",
+  "module": "esm",
+  "umd:main": "dist/toybox.powerfx.umd.production.js",
+  "unpkg": "dist/toybox.powerfx.umd.production.js",
+  "jsdelivr": "dist/toybox.powerfx.umd.production.js",
+  "jsnext:main": "esm",
+  "types": "esm/index.d.ts",
+  "engines": {
+    "npm": ">=3.0.0"
+  },
+  "scripts": {
+    "start": "dumi dev",
+    "build": "rimraf -rf lib esm dist && npm run build:cjs && npm run build:esm && npm run build:umd",
+    "build:cjs": "tsc --project tsconfig.build.json",
+    "build:esm": "tsc --project tsconfig.build.json --module es2015 --outDir esm",
+    "build:umd": "rollup --config",
+    "build:docs": "dumi build"
+  },
+  "dependencies": {
+    "@formulajs/formulajs": "^2.6.9",
+    "dayjs": "^1.10.7",
+    "fast-printf": "^1.6.9",
+    "object-hash": "^2.2.0",
+    "web-encoding": "^1.1.5"
+  },
+  "peerDependencies": {
+    "@formily/core": "^2.1.3",
+    "@formily/json-schema": "^2.1.3",
+    "@formily/path": "^2.1.3",
+    "@toy-box/meta-schema": "^3.0.2",
+    "@toy-box/toybox-shared": "^3.0.2"
+  },
+  "devDependencies": {
+    "@formily/core": "^2.1.3",
+    "@formily/json-schema": "^2.1.3",
+    "@formily/path": "^2.1.3",
+    "@toy-box/meta-schema": "^3.0.2",
+    "@toy-box/toybox-shared": "^3.0.2",
+    "@types/object-hash": "^2.2.1",
+    "dumi": "^1.1.0-rc.8"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
