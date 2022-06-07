@@ -33,7 +33,7 @@ export class LeftRightScalarFunction extends BuiltinFunction {
       2,
       2,
       DType.String,
-      DType.Number,
+      DType.Number
     )
   }
 
@@ -70,7 +70,7 @@ export class LeftRightTableScalarFunction extends BuiltinFunction {
       2,
       2,
       DType.EmptyTable,
-      DType.Number,
+      DType.Number
     )
   }
 
@@ -88,8 +88,11 @@ export class LeftRightTableScalarFunction extends BuiltinFunction {
     args: TexlNode[],
     argTypes: DType[],
     errors: IErrorContainer,
-    binding: TexlBinding,
-  ): [boolean, { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }] {
+    binding: TexlBinding
+  ): [
+    boolean,
+    { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }
+  ] {
     // Contracts.AssertValue(args);
     // Contracts.AssertAllValues(args);
     // Contracts.AssertValue(argTypes);
@@ -103,10 +106,15 @@ export class LeftRightTableScalarFunction extends BuiltinFunction {
     let returnType = baseResult[1].returnType
     let nodeToCoercedTypeMap = baseResult[1].nodeToCoercedTypeMap
 
-    // var fValid = CheckInvocation(args, argTypes, errors, out returnType, out nodeToCoercedTypeMap);
+    // let fValid = CheckInvocation(args, argTypes, errors, out returnType, out nodeToCoercedTypeMap);
     // Contracts.Assert(returnType.IsTable);
 
-    let checkNumericColumnType = super.checkStringColumnType(argTypes[0], args[0], errors, nodeToCoercedTypeMap)
+    let checkNumericColumnType = super.checkStringColumnType(
+      argTypes[0],
+      args[0],
+      errors,
+      nodeToCoercedTypeMap
+    )
     nodeToCoercedTypeMap = checkNumericColumnType[1]
     fValid = fValid && checkNumericColumnType[0]
 
@@ -147,7 +155,7 @@ export class LeftRightTableTableFunction extends BuiltinFunction {
       2,
       2,
       DType.EmptyTable,
-      DType.EmptyTable,
+      DType.EmptyTable
     )
   }
 
@@ -165,8 +173,11 @@ export class LeftRightTableTableFunction extends BuiltinFunction {
     args: TexlNode[],
     argTypes: DType[],
     errors: IErrorContainer,
-    binding: TexlBinding,
-  ): [boolean, { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }] {
+    binding: TexlBinding
+  ): [
+    boolean,
+    { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }
+  ] {
     // Contracts.AssertValue(args);
     // Contracts.AssertAllValues(args);
     // Contracts.AssertValue(argTypes);
@@ -180,14 +191,24 @@ export class LeftRightTableTableFunction extends BuiltinFunction {
     let returnType = baseResult[1].returnType
     let nodeToCoercedTypeMap = baseResult[1].nodeToCoercedTypeMap
 
-    // var fValid = CheckInvocation(args, argTypes, errors, out returnType, out nodeToCoercedTypeMap);
+    // let fValid = CheckInvocation(args, argTypes, errors, out returnType, out nodeToCoercedTypeMap);
     // Contracts.Assert(returnType.IsTable);
 
-    let checkStringColumnType = super.checkStringColumnType(argTypes[0], args[0], errors, nodeToCoercedTypeMap)
+    let checkStringColumnType = super.checkStringColumnType(
+      argTypes[0],
+      args[0],
+      errors,
+      nodeToCoercedTypeMap
+    )
     nodeToCoercedTypeMap = checkStringColumnType[1]
     fValid = fValid && checkStringColumnType[0]
 
-    let checkNumericColumnType = super.checkNumericColumnType(argTypes[1], args[1], errors, nodeToCoercedTypeMap)
+    let checkNumericColumnType = super.checkNumericColumnType(
+      argTypes[1],
+      args[1],
+      errors,
+      nodeToCoercedTypeMap
+    )
     fValid = fValid && checkNumericColumnType[0]
 
     returnType = argTypes[0]
@@ -234,7 +255,7 @@ export class LeftRightScalarTableFunction extends BuiltinFunction {
       2,
       2,
       DType.String,
-      DType.EmptyTable,
+      DType.EmptyTable
     )
   }
 
@@ -252,8 +273,11 @@ export class LeftRightScalarTableFunction extends BuiltinFunction {
     args: TexlNode[],
     argTypes: DType[],
     errors: IErrorContainer,
-    binding: TexlBinding,
-  ): [boolean, { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }] {
+    binding: TexlBinding
+  ): [
+    boolean,
+    { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }
+  ] {
     // Contracts.AssertValue(args);
     // Contracts.AssertAllValues(args);
     // Contracts.AssertValue(argTypes);
@@ -267,13 +291,20 @@ export class LeftRightScalarTableFunction extends BuiltinFunction {
     let returnType = baseResult[1].returnType
     let nodeToCoercedTypeMap = baseResult[1].nodeToCoercedTypeMap
 
-    // var fValid = CheckInvocation(args, argTypes, errors, out returnType, out nodeToCoercedTypeMap);
+    // let fValid = CheckInvocation(args, argTypes, errors, out returnType, out nodeToCoercedTypeMap);
     // Contracts.Assert(returnType.IsTable);
 
-    let checkNumericColumnType = super.checkNumericColumnType(argTypes[0], args[0], errors, nodeToCoercedTypeMap)
+    let checkNumericColumnType = super.checkNumericColumnType(
+      argTypes[0],
+      args[0],
+      errors,
+      nodeToCoercedTypeMap
+    )
     nodeToCoercedTypeMap = checkNumericColumnType[1]
     fValid = fValid && checkNumericColumnType[0]
-    returnType = DType.CreateTable(new TypedName(DType.String, BuiltinFunction.OneColumnTableResultName))
+    returnType = DType.CreateTable(
+      new TypedName(DType.String, BuiltinFunction.OneColumnTableResultName)
+    )
 
     return [fValid, { returnType, nodeToCoercedTypeMap }]
 

@@ -28,6 +28,7 @@ import {
   DValue,
   ErrorValue,
   FormulaValue,
+  FormulaValueStatic,
   InMemoryRecordValue,
   InMemoryTableValue,
   NamedValue,
@@ -43,7 +44,12 @@ import { CommonErrors } from './functions/CommonErrors'
 import { CustomTexlFunction } from './ReflectionFunction'
 import { SymbolContext } from './SymbolContext'
 import { LambdaFormulaValue } from './values/LambdaFormulaValue'
-import { ExternalType, ExternalTypeKind, FormulaType, TableType } from '../public/types'
+import {
+  ExternalType,
+  ExternalTypeKind,
+  FormulaType,
+  TableType,
+} from '../public/types'
 import { ScopeAccessSymbol } from '../ir/symbols/ScopeAccessSymbol'
 import { ScopeSymbol } from '../ir/symbols/ScopeSymbol'
 import { RecordScope } from './IScope'
@@ -65,17 +71,25 @@ export class EvalVisitor implements IRNodeVisitor<FormulaValue, SymbolContext> {
   public async evalArgAsync<T extends ValidFormulaValue>(
     arg: FormulaValue,
     context: SymbolContext,
-    irContext: IRContext,
+    irContext: IRContext
   ): Promise<DValue<T>> {
     if (arg instanceof LambdaFormulaValue) {
       const lambda = arg
       const val = await lambda.evalAsync(this, context)
-      if (val instanceof ValidFormulaValue || val instanceof BlankValue || val instanceof ErrorValue) {
+      if (
+        val instanceof ValidFormulaValue ||
+        val instanceof BlankValue ||
+        val instanceof ErrorValue
+      ) {
         return DValue.Of(val)
       }
       return DValue.Of(CommonErrors.RuntimeTypeMismatch(irContext))
     }
-    if (arg instanceof ValidFormulaValue || arg instanceof BlankValue || arg instanceof ErrorValue) {
+    if (
+      arg instanceof ValidFormulaValue ||
+      arg instanceof BlankValue ||
+      arg instanceof ErrorValue
+    ) {
       return DValue.Of(arg)
     }
     return DValue.Of(CommonErrors.RuntimeTypeMismatch(irContext))
@@ -100,7 +114,7 @@ export class EvalVisitor implements IRNodeVisitor<FormulaValue, SymbolContext> {
       | ColorLiteralNode
       | ChainingNode
       | ResolvedObjectNode,
-    context: SymbolContext,
+    context: SymbolContext
   ): Promise<FormulaValue> {
     if (node instanceof TextLiteralNode) {
       return new StringValue(node.IRContext, node.LiteralValue)
@@ -122,7 +136,10 @@ export class EvalVisitor implements IRNodeVisitor<FormulaValue, SymbolContext> {
         args[i] = arg
       }
       // Children are on the stack.
-      const tableValue = new InMemoryTableValue(node.IRContext, Library.StandardTableNodeRecords(node.IRContext, args))
+      const tableValue = new InMemoryTableValue(
+        node.IRContext,
+        Library.StandardTableNodeRecords(node.IRContext, args)
+      )
       return tableValue
     }
     if (node instanceof RecordNode) {
@@ -172,7 +189,10 @@ export class EvalVisitor implements IRNodeVisitor<FormulaValue, SymbolContext> {
           // Contract.Assert(result.IRContext.ResultType == node.IRContext.ResultType || result is ErrorValue || result.IRContext.ResultType is BlankType);
           return result
         }
-        return CommonErrors.NotYetImplementedError(node.IRContext, `Missing func: ${func.name}`)
+        return CommonErrors.NotYetImplementedError(
+          node.IRContext,
+          `Missing func: ${func.name}`
+        )
       }
     }
     if (node instanceof BinaryOpNode) {
@@ -424,10 +444,16 @@ export class EvalVisitor implements IRNodeVisitor<FormulaValue, SymbolContext> {
             values,
           })
         case BinaryOpKind.DynamicGetField:
-          if (arg1 instanceof UntypedObjectValue && arg2 instanceof StringValue) {
+          if (
+            arg1 instanceof UntypedObjectValue &&
+            arg2 instanceof StringValue
+          ) {
             const cov = arg1
             const sv = arg2
-            if (cov.impl.type instanceof ExternalType && cov.impl.type.kind === ExternalTypeKind.Object) {
+            if (
+              cov.impl.type instanceof ExternalType &&
+              cov.impl.type.kind === ExternalTypeKind.Object
+            ) {
               const rst = cov.impl.tryGetProperty(sv.value)
               const res = rst[1]
               if (rst[0]) {
@@ -446,8 +472,8 @@ export class EvalVisitor implements IRNodeVisitor<FormulaValue, SymbolContext> {
                 new ExpressionError(
                   'Accessing a field is not valid on this value',
                   node.IRContext.sourceContext,
-                  ErrorKind.BadLanguageCode,
-                ),
+                  ErrorKind.BadLanguageCode
+                )
               )
             }
           } else {
@@ -463,7 +489,12 @@ export class EvalVisitor implements IRNodeVisitor<FormulaValue, SymbolContext> {
       const result = Library.UnaryOps.tryGetValue(node.Op)
       const unaryOp = result[1]
       if (result[0]) {
-        return unaryOp({ visitor: this, symbolContext: context, irContext: node.IRContext, values: args })
+        return unaryOp({
+          visitor: this,
+          symbolContext: context,
+          irContext: node.IRContext,
+          values: args,
+        })
       }
       return CommonErrors.UnreachableCodeError(node.IRContext)
     }
@@ -485,7 +516,12 @@ export class EvalVisitor implements IRNodeVisitor<FormulaValue, SymbolContext> {
               fields.push(new NamedValue(name.value, newValue))
             }
             resultRows.push(
-              DValue.Of<RecordValue>(new InMemoryRecordValue(IRContext.NotInSource(tableType.toRecord()), fields)),
+              DValue.Of<RecordValue>(
+                new InMemoryRecordValue(
+                  IRContext.NotInSource(tableType.toRecord()),
+                  fields
+                )
+              )
             )
           } else if (row.isBlank) {
             resultRows.push(DValue.Of<RecordValue>(row.blank))
@@ -526,19 +562,29 @@ export class EvalVisitor implements IRNodeVisitor<FormulaValue, SymbolContext> {
       return val
     }
     if (node instanceof SingleColumnTableAccessNode) {
-      return CommonErrors.NotYetImplementedError(node.IRContext, 'Single column table access')
+      return CommonErrors.NotYetImplementedError(
+        node.IRContext,
+        'Single column table access'
+      )
     }
     if (node instanceof ErrorNode) {
       return new ErrorValue(
         node.IRContext,
-        new ExpressionError(node.ErrorHint, node.IRContext.sourceContext, ErrorKind.AnalysisError),
+        new ExpressionError(
+          node.ErrorHint,
+          node.IRContext.sourceContext,
+          ErrorKind.AnalysisError
+        )
       )
     }
     if (node instanceof ColorLiteralNode) {
-      return CommonErrors.NotYetImplementedError(node.IRContext, 'Color literal')
+      return CommonErrors.NotYetImplementedError(
+        node.IRContext,
+        'Color literal'
+      )
     }
     if (node instanceof ChainingNode) {
-      let result: FormulaValue = FormulaValue.New()
+      let result: FormulaValue = FormulaValueStatic.New()
       for (const child of node.Nodes) {
         result = await child.accept(this, context)
       }
@@ -555,7 +601,7 @@ export class EvalVisitor implements IRNodeVisitor<FormulaValue, SymbolContext> {
         return ResolvedObjectHelpers.OptionSet(node.Value, node.IRContext)
       }
       if (node.Value instanceof Control) {
-        console.log('access control node')
+        console.warn('access control node')
         // return ResolvedObjectHelpers.Control(node.Value, node.IRContext)
       }
       if (node.Value instanceof FormulaValue) {

@@ -15,8 +15,11 @@ export enum TimeUnit {
   Days,
 } // Earth Days
 
-export module TimeUnit {
-  export function toMilliseconds(value: number, units: TimeUnit = TimeUnit.Milliseconds): number {
+export namespace TimeUnit {
+  export function toMilliseconds(
+    value: number,
+    units: TimeUnit = TimeUnit.Milliseconds
+  ): number {
     // noinspection FallThroughInSwitchStatementJS
     switch (units) {
       case TimeUnit.Days:
@@ -60,7 +63,12 @@ export module TimeUnit {
   }
 
   export function assertValid(unit: TimeUnit): true | never {
-    if (isNaN(unit) || unit > TimeUnit.Days || unit < TimeUnit.Ticks || Math.floor(unit) !== unit)
+    if (
+      isNaN(unit) ||
+      unit > TimeUnit.Days ||
+      unit < TimeUnit.Ticks ||
+      Math.floor(unit) !== unit
+    )
       throw new Error('Invalid TimeUnit.')
 
     return true

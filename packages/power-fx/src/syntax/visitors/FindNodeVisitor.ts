@@ -76,7 +76,7 @@ export class FindNodeVisitor extends IdentityTexlVisitor {
 
     // Contracts.Assert(node.Children.Length == numTokens + 1 || node.Children.Length == numTokens);
 
-    for (var i = 0; i < numTokens; i++) {
+    for (let i = 0; i < numTokens; i++) {
       const token = node.opTokens[i]
 
       // Cursor position is inside ith child.
@@ -158,7 +158,8 @@ export class FindNodeVisitor extends IdentityTexlVisitor {
       const span = node.getSourceBasedSpan()
 
       if (
-        (node.token.Span.min <= this._cursorPosition && this._cursorPosition <= node.token.Span.lim) ||
+        (node.token.Span.min <= this._cursorPosition &&
+          this._cursorPosition <= node.token.Span.lim) ||
         this._cursorPosition <= span.min ||
         this._cursorPosition >= span.lim
       ) {
@@ -183,7 +184,8 @@ export class FindNodeVisitor extends IdentityTexlVisitor {
 
     if (
       this._cursorPosition <= node.token.Span.min || // Cursor position is before the open paren.
-      (node.parenClose != null && node.parenClose.Span.lim <= this._cursorPosition) || // Cursor is after the closed paren.
+      (node.parenClose != null &&
+        node.parenClose.Span.lim <= this._cursorPosition) || // Cursor is after the closed paren.
       node.args.count == 0
     ) {
       //// Cursor is between the open and closed paren.
@@ -238,7 +240,8 @@ export class FindNodeVisitor extends IdentityTexlVisitor {
     if (
       this._cursorPosition <= node.token.Span.min || // If cursor position is before the open curly return the record node.
       node.count == 0 || // Or if the record node is empty, return the record node.
-      (node.curlyClose != null && node.curlyClose.Span.lim <= this._cursorPosition)
+      (node.curlyClose != null &&
+        node.curlyClose.Span.lim <= this._cursorPosition)
     ) {
       //// Cursor is after the closed curly.
       this._result = node
@@ -258,7 +261,10 @@ export class FindNodeVisitor extends IdentityTexlVisitor {
       }
     }
 
-    if (node.curlyClose == null || this._cursorPosition <= node.curlyClose.Span.min) {
+    if (
+      node.curlyClose == null ||
+      this._cursorPosition <= node.curlyClose.Span.min
+    ) {
       // Cursor is within the last child.
       node.children[node.children.length - 1].accept(this)
       return false
@@ -276,7 +282,8 @@ export class FindNodeVisitor extends IdentityTexlVisitor {
     if (
       this._cursorPosition <= node.token.Span.min || // If cursor position is before the open Bracket return the table node.
       node.count == 0 || // Or if the table node is empty, return the table node.
-      (node.bracketClose != null && node.bracketClose.Span.lim <= this._cursorPosition)
+      (node.bracketClose != null &&
+        node.bracketClose.Span.lim <= this._cursorPosition)
     ) {
       //// Cursor is after the closed bracket.
       this._result = node

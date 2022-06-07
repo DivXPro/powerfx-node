@@ -60,7 +60,10 @@ export class RecalcEngine implements IScope, IPowerFxEngine {
   }
 
   public getAllFunctionNames() {
-    return [...this._powerFxConfig.extraFunctions.keys(), ...Library.FunctionList.map((fn) => fn.name)]
+    return [
+      ...this._powerFxConfig.extraFunctions.keys(),
+      ...Library.FunctionList.map((fn) => fn.name),
+    ]
   }
 
   // This handles lookups in the global scope.
@@ -78,14 +81,24 @@ export class RecalcEngine implements IScope, IPowerFxEngine {
   /// </summary>
   /// <param name="name">variable name. This can be used in other formulas.</param>
   /// <param name="value">constant value.</param>
-  public updateVariable(name: string, value: FormulaValue | number, ignoreTypeCheck = false) {
+  public updateVariable(
+    name: string,
+    value: FormulaValue | number,
+    ignoreTypeCheck = false
+  ) {
     const x =
-      value instanceof FormulaValue ? value : new NumberValue(IRContext.NotInSource(FormulaType.Number), value)
+      value instanceof FormulaValue
+        ? value
+        : new NumberValue(IRContext.NotInSource(FormulaType.Number), value)
     const fi = this.formulas[name]
     if (fi != null) {
       // Type should match?
       if (!ignoreTypeCheck && !fi.type.equals(x.type)) {
-        throw new Error(`Can't change ${name}'s type from ${DKind[fi.type._type.kind]} to ${DKind[x.type._type.kind]}.`)
+        throw new Error(
+          `Can't change ${name}'s type from ${DKind[fi.type._type.kind]} to ${
+            DKind[x.type._type.kind]
+          }.`
+        )
       }
       fi.value = x
       // Be sure to preserve used-by set.
@@ -109,7 +122,11 @@ export class RecalcEngine implements IScope, IPowerFxEngine {
   /// <param name="expressionText"></param>
   /// <param name="parameters"></param>
   /// <returns></returns>
-  public check(expressionText: string, parameterType?: FormulaType, path?: ExpandPath): CheckResult {
+  public check(
+    expressionText: string,
+    parameterType?: FormulaType,
+    path?: ExpandPath
+  ): CheckResult {
     return this.checkInternal(expressionText, parameterType, path, false)
   }
 
@@ -117,7 +134,7 @@ export class RecalcEngine implements IScope, IPowerFxEngine {
     expressionText: string,
     parameterType?: FormulaType,
     path?: ExpandPath,
-    intellisense: boolean = false,
+    intellisense = false
   ) {
     if (parameterType == null) {
       parameterType = new RecordType()
@@ -133,7 +150,7 @@ export class RecalcEngine implements IScope, IPowerFxEngine {
       this._powerFxConfig,
       parameterType as RecordType,
       this._document,
-      path,
+      path
     )
 
     const binding = TexlBinding.Run({
@@ -147,7 +164,9 @@ export class RecalcEngine implements IScope, IPowerFxEngine {
       useThisRecordForRuleScope: false,
     })
 
-    const errors = formula.hasParseErrors ? formula.getParseErrors() : binding.errorContainer.getErrors()
+    const errors = formula.hasParseErrors
+      ? formula.getParseErrors()
+      : binding.errorContainer.getErrors()
 
     const result = new CheckResult()
     result._binding = binding
@@ -157,13 +176,18 @@ export class RecalcEngine implements IScope, IPowerFxEngine {
       result.setErrors(errors)
       result.expression = undefined
     } else {
-      result.topLevelIdentifiers = DependencyFinder.FindDependencies(binding.top, binding)
+      result.topLevelIdentifiers = DependencyFinder.FindDependencies(
+        binding.top,
+        binding
+      )
 
       // TODO: Fix FormulaType.Build to not throw exceptions for Enum types then remove this check
       if (binding.resultType.kind != DKind.Enum) {
         result.returnType = FormulaType.Build(binding.resultType)
       }
-      const { topNode: irnode, ruleScopeSymbol } = IRTranslator.Translate(result._binding)
+      const { topNode: irnode, ruleScopeSymbol } = IRTranslator.Translate(
+        result._binding
+      )
       result.expression = new ParsedExpression(irnode, ruleScopeSymbol)
     }
     return result
@@ -176,12 +200,20 @@ export class RecalcEngine implements IScope, IPowerFxEngine {
   /// <param name="parameters">parameters for formula. The fields in the parameter record can
   /// be acecssed as top-level identifiers in the formula.</param>
   /// <returns>The formula's result.</returns>
-  public eval(expressionText: string, parameters?: RecordValue, path?: ExpandPath): Promise<FormulaValue> {
+  public eval(
+    expressionText: string,
+    parameters?: RecordValue,
+    path?: ExpandPath
+  ): Promise<FormulaValue> {
     if (parameters == null) {
       parameters = RecordValue.Empty()
     }
 
-    const check = this.check(expressionText, parameters.irContext.resultType, path)
+    const check = this.check(
+      expressionText,
+      parameters.irContext.resultType,
+      path
+    )
     check.throwOnErrors()
 
     return check.expression.eval(parameters)
@@ -195,7 +227,10 @@ export class RecalcEngine implements IScope, IPowerFxEngine {
   /// be acecssed as top-level identifiers in the formula. If DisplayNames are used, make sure to have that mapping
   /// as part of the RecordType.
   /// <returns>The formula, with all identifiers converted to invariant form</returns>
-  public getInvariantExpression(expressionText: string, parameters: RecordType): string {
+  public getInvariantExpression(
+    expressionText: string,
+    parameters: RecordType
+  ): string {
     return this.convertExpression(expressionText, parameters, false)
   }
 
@@ -207,15 +242,26 @@ export class RecalcEngine implements IScope, IPowerFxEngine {
   /// be acecssed as top-level identifiers in the formula. If DisplayNames are used, make sure to have that mapping
   /// as part of the RecordType.
   /// <returns>The formula, with all identifiers converted to display form</returns>
-  public getDisplayExpression(expressionText: string, parameters: RecordType): string {
+  public getDisplayExpression(
+    expressionText: string,
+    parameters: RecordType
+  ): string {
     return this.convertExpression(expressionText, parameters, true)
   }
 
-  private convertExpression(expressionText: string, parameters: RecordType, toDisplayNames: boolean): string {
+  private convertExpression(
+    expressionText: string,
+    parameters: RecordType,
+    toDisplayNames: boolean
+  ): string {
     const formula = new Formula(expressionText)
     formula.ensureParsed(TexlParserFlags.None)
 
-    const resolver = new RecalcEngineResolver(this, this._powerFxConfig, parameters)
+    const resolver = new RecalcEngineResolver(
+      this,
+      this._powerFxConfig,
+      parameters
+    )
     const binding = TexlBinding.Run({
       glue: new Glue2DocumentBinderGlue(),
       queryOptionsMap: new DataSourceToQueryOptionsMap(),
@@ -245,12 +291,15 @@ export class RecalcEngine implements IScope, IPowerFxEngine {
     name: string,
     expr: FormulaWithParameters | string,
     onUpdate: (str: string, value: FormulaValue) => void,
-    path?: ExpandPath,
+    path?: ExpandPath
   ) {
     if (this.formulas[name] != null) {
       throw new Error(`Can't change existing formula: ${name}`)
     }
-    const expression = expr instanceof FormulaWithParameters ? expr : new FormulaWithParameters(expr)
+    const expression =
+      expr instanceof FormulaWithParameters
+        ? expr
+        : new FormulaWithParameters(expr)
     const check = this.check(expression._expression, expression._schema, path)
 
     check.throwOnErrors()
@@ -262,7 +311,14 @@ export class RecalcEngine implements IScope, IPowerFxEngine {
     const dependsOn = check.topLevelIdentifiers
 
     const type = FormulaType.Build(binding.resultType)
-    this.formulas[name] = new RecalcFormulaInfo(type, undefined, dependsOn, undefined, onUpdate, binding)
+    this.formulas[name] = new RecalcFormulaInfo(
+      type,
+      undefined,
+      dependsOn,
+      undefined,
+      onUpdate,
+      binding
+    )
 
     for (const x of dependsOn) {
       this.formulas[x].usedBy.add(name)
@@ -273,13 +329,19 @@ export class RecalcEngine implements IScope, IPowerFxEngine {
   /// <summary>
   /// Get intellisense from the formula.
   /// </summary>
-  public Suggest(expression: string, parameterType: FormulaType, cursorPosition: number): IIntellisenseResult {
-    var result = this.checkInternal(expression, parameterType, null, true)
-    var binding = result._binding
-    var formula = result._formula
-    var context = new IntellisenseContext(expression, cursorPosition)
-    var intellisense = IntellisenseProvider.GetIntellisense(this._powerFxConfig.enumStore)
-    var suggestions = intellisense.Suggest(context, binding, formula)
+  public Suggest(
+    expression: string,
+    parameterType: FormulaType,
+    cursorPosition: number
+  ): IIntellisenseResult {
+    const result = this.checkInternal(expression, parameterType, null, true)
+    const binding = result._binding
+    const formula = result._formula
+    const context = new IntellisenseContext(expression, cursorPosition)
+    const intellisense = IntellisenseProvider.GetIntellisense(
+      this._powerFxConfig.enumStore
+    )
+    const suggestions = intellisense.Suggest(context, binding, formula)
     return suggestions
   }
 

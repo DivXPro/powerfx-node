@@ -33,7 +33,13 @@ import { BinaryOp } from '../lexer/BinaryOp'
 import { VariadicOp } from '../lexer/VariadicOp'
 import { StringBuilder } from '../utils/StringBuilder'
 import { Identifier } from './Identifier'
-import { IdentifierSource, NodeSource, SourceList, TokenSource, WhitespaceSource } from './sourceInformation'
+import {
+  IdentifierSource,
+  NodeSource,
+  SourceList,
+  TokenSource,
+  WhitespaceSource,
+} from './sourceInformation'
 import { NodeKind } from './NodeKind'
 import { Dictionary } from '../utils/Dictionary'
 import { CommentToken, Token } from '../lexer/tokens'
@@ -43,7 +49,10 @@ import { LazyList } from '../utilityDataStructures/LazyList'
 // Todo: currently being used by node.ToString().  Need to figure
 // out if it is being used with anything else.  If not, we can delete
 // this entirely
-export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence> {
+export class TexlPretty extends TexlFunctionalVisitor<
+  Array<string>,
+  Precedence
+> {
   constructor() {
     super()
   }
@@ -59,7 +68,10 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
   public visit(node: TexlNode, parentPrecedence: Precedence): Array<string> {
     switch (node.kind) {
       case NodeKind.Replaceable:
-        return this.visitReplaceableNode(node as ReplaceableNode, parentPrecedence)
+        return this.visitReplaceableNode(
+          node as ReplaceableNode,
+          parentPrecedence
+        )
       case NodeKind.Error:
         return this.visitErrorNode(node as ErrorNode, parentPrecedence)
       case NodeKind.Blank:
@@ -77,7 +89,10 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
       case NodeKind.Self:
         return this.visitSelfNode(node as SelfNode, parentPrecedence)
       case NodeKind.DottedName:
-        return this.visitDottedNameNode(node as DottedNameNode, parentPrecedence)
+        return this.visitDottedNameNode(
+          node as DottedNameNode,
+          parentPrecedence
+        )
       case NodeKind.UnaryOp:
         return this.visitUnaryOpNode(node as UnaryOpNode, parentPrecedence)
       case NodeKind.BinaryOp:
@@ -85,7 +100,10 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
       case NodeKind.As:
         return this.visitAsNode(node as AsNode, parentPrecedence)
       case NodeKind.VariadicOp:
-        return this.visitVariadicOpNode(node as VariadicOpNode, parentPrecedence)
+        return this.visitVariadicOpNode(
+          node as VariadicOpNode,
+          parentPrecedence
+        )
       case NodeKind.Call:
         return this.visitCallNode(node as CallNode, parentPrecedence)
       case NodeKind.List:
@@ -101,28 +119,43 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
     }
   }
 
-  public visitReplaceableNode(node: ReplaceableNode, parentPrecedence: Precedence): Array<string> {
+  public visitReplaceableNode(
+    node: ReplaceableNode,
+    parentPrecedence: Precedence
+  ): Array<string> {
     throw new Error('Replaceable nodes are not supported')
   }
 
-  public visitErrorNode(node: ErrorNode, parentPrecedence: Precedence): Array<string> {
+  public visitErrorNode(
+    node: ErrorNode,
+    parentPrecedence: Precedence
+  ): Array<string> {
     // Contracts.AssertValue(node);
     return ['<error>']
   }
 
-  public visitBlankNode(node: BlankNode, parentPrecedence: Precedence): Array<string> {
+  public visitBlankNode(
+    node: BlankNode,
+    parentPrecedence: Precedence
+  ): Array<string> {
     // Contracts.AssertValue(node)
     return []
   }
 
-  public visitBoolLitNode(node: BoolLitNode, parentPrecedence: Precedence): Array<string> {
+  public visitBoolLitNode(
+    node: BoolLitNode,
+    parentPrecedence: Precedence
+  ): Array<string> {
     // Contracts.AssertValue(node);
     return [node.value ? TexlLexer.KeywordTrue : TexlLexer.KeywordFalse]
     // return Array<string>.Of(
     //     node.Value ? TexlLexer.KeywordTrue : TexlLexer.KeywordFalse);
   }
 
-  public visitStrLitNode(node: StrLitNode, parentPrecedence: Precedence): Array<string> {
+  public visitStrLitNode(
+    node: StrLitNode,
+    parentPrecedence: Precedence
+  ): Array<string> {
     // Contracts.AssertValue(node);
     // return Array<string>.Of(
     //     "\"",
@@ -131,7 +164,10 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
     return ['"', CharacterUtils.ExcelEscapeString(node.value), '"']
   }
 
-  public visitNumLitNode(node: NumLitNode, parentPrecedence: Precedence): Array<string> {
+  public visitNumLitNode(
+    node: NumLitNode,
+    parentPrecedence: Precedence
+  ): Array<string> {
     // Contracts.AssertValue(node);
 
     const nlt = node.value
@@ -139,7 +175,10 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
     return [nlt != null ? nlt.toString() : node.numValue.toString()]
   }
 
-  public visitFirstNameNode(node: FirstNameNode, parentPrecedence: Precedence): Array<string> {
+  public visitFirstNameNode(
+    node: FirstNameNode,
+    parentPrecedence: Precedence
+  ): Array<string> {
     // Contracts.AssertValue(node);
     if (node.ident.atToken == null) {
       return [node.ident.token.toString()]
@@ -153,17 +192,26 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
     }
   }
 
-  public visitParentNode(node: ParentNode, parentPrecedence: Precedence): Array<string> {
+  public visitParentNode(
+    node: ParentNode,
+    parentPrecedence: Precedence
+  ): Array<string> {
     // Contracts.AssertValue(node);
     return [TexlLexer.KeywordParent]
   }
 
-  public visitSelfNode(node: SelfNode, parentPrecedence: Precedence): Array<string> {
+  public visitSelfNode(
+    node: SelfNode,
+    parentPrecedence: Precedence
+  ): Array<string> {
     // Contracts.AssertValue(node);
     return [TexlLexer.KeywordSelf]
   }
 
-  public visitDottedNameNode(node: DottedNameNode, parentPrecedence: Precedence): Array<string> {
+  public visitDottedNameNode(
+    node: DottedNameNode,
+    parentPrecedence: Precedence
+  ): Array<string> {
     // Contracts.AssertValue(node);
 
     const separator = TexlParser.GetTokString(node.token.kind)
@@ -174,7 +222,10 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
       values = values.concat(TexlLexer.PunctuatorAt)
     }
 
-    values = CollectionUtils.With(values, this.getRightToken(node.left, node.right))
+    values = CollectionUtils.With(
+      values,
+      this.getRightToken(node.left, node.right)
+    )
     if (node.usesBracket) {
       values = values.concat(TexlLexer.PunctuatorBracketClose)
     }
@@ -182,7 +233,10 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
     return this.applyPrecedence(parentPrecedence, Precedence.Primary, values)
   }
 
-  public visitUnaryOpNode(node: UnaryOpNode, parentPrecedence: Precedence): Array<string> {
+  public visitUnaryOpNode(
+    node: UnaryOpNode,
+    parentPrecedence: Precedence
+  ): Array<string> {
     // Contracts.AssertValue(node);
 
     const child = node.child.acceptResult(this, Precedence.PrefixUnary)
@@ -209,10 +263,17 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
         break
     }
 
-    return this.applyPrecedence(parentPrecedence, Precedence.PrefixUnary, result)
+    return this.applyPrecedence(
+      parentPrecedence,
+      Precedence.PrefixUnary,
+      result
+    )
   }
 
-  public visitBinaryOpNode(node: BinaryOpNode, parentPrecedence: Precedence): Array<string> {
+  public visitBinaryOpNode(
+    node: BinaryOpNode,
+    parentPrecedence: Precedence
+  ): Array<string> {
     // Contracts.AssertValue(node);
 
     switch (node.op) {
@@ -224,7 +285,7 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
             Precedence.Or,
             Precedence.Or + 1,
             node.left,
-            node.right,
+            node.right
           )
         } else {
           return this.prettyBinary(
@@ -233,7 +294,7 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
             Precedence.Or,
             Precedence.Or + 1,
             node.left,
-            node.right,
+            node.right
           )
         }
 
@@ -245,7 +306,7 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
             Precedence.And,
             Precedence.And + 1,
             node.left,
-            node.right,
+            node.right
           )
         } else {
           return this.prettyBinary(
@@ -254,7 +315,7 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
             Precedence.And,
             Precedence.And + 1,
             node.left,
-            node.right,
+            node.right
           )
         }
 
@@ -265,7 +326,7 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
           Precedence.Concat,
           Precedence.Concat + 1,
           node.left,
-          node.right,
+          node.right
         )
       case BinaryOp.Add:
         return this.prettyBinary(
@@ -274,7 +335,7 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
           Precedence.Add,
           Precedence.And + 1,
           node.left,
-          node.right,
+          node.right
         )
       case BinaryOp.Mul:
         return this.prettyBinary(
@@ -283,7 +344,7 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
           Precedence.Mul,
           Precedence.Mul + 1,
           node.left,
-          node.right,
+          node.right
         )
       case BinaryOp.Div:
         return this.prettyBinary(
@@ -292,7 +353,7 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
           Precedence.Mul,
           Precedence.Mul + 1,
           node.left,
-          node.right,
+          node.right
         )
       case BinaryOp.In:
         return this.prettyBinary(
@@ -301,7 +362,7 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
           Precedence.In,
           Precedence.In + 1,
           node.left,
-          node.right,
+          node.right
         )
       case BinaryOp.Exactin:
         return this.prettyBinary(
@@ -310,7 +371,7 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
           Precedence.In,
           Precedence.In + 1,
           node.left,
-          node.right,
+          node.right
         )
 
       case BinaryOp.Power:
@@ -320,7 +381,7 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
           Precedence.Power,
           Precedence.PrefixUnary,
           node.left,
-          node.right,
+          node.right
         )
       case BinaryOp.Error:
         return this.prettyBinary(
@@ -329,7 +390,7 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
           Precedence.Error,
           Precedence.Error + 1,
           node.left,
-          node.right,
+          node.right
         )
 
       case BinaryOp.Equal:
@@ -339,7 +400,7 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
           Precedence.Compare,
           Precedence.Compare + 1,
           node.left,
-          node.right,
+          node.right
         )
       case BinaryOp.NotEqual:
         return this.prettyBinary(
@@ -348,7 +409,7 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
           Precedence.Compare,
           Precedence.Compare + 1,
           node.left,
-          node.right,
+          node.right
         )
       case BinaryOp.Less:
         return this.prettyBinary(
@@ -357,7 +418,7 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
           Precedence.Compare,
           Precedence.Compare + 1,
           node.left,
-          node.right,
+          node.right
         )
       case BinaryOp.LessEqual:
         return this.prettyBinary(
@@ -366,7 +427,7 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
           Precedence.Compare,
           Precedence.Compare + 1,
           node.left,
-          node.right,
+          node.right
         )
       case BinaryOp.Greater:
         return this.prettyBinary(
@@ -375,7 +436,7 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
           Precedence.Compare,
           Precedence.Compare + 1,
           node.left,
-          node.right,
+          node.right
         )
       case BinaryOp.GreaterEqual:
         return this.prettyBinary(
@@ -384,7 +445,7 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
           Precedence.Compare,
           Precedence.Compare + 1,
           node.left,
-          node.right,
+          node.right
         )
 
       default:
@@ -395,39 +456,55 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
           Precedence.Atomic + 1,
           Precedence.Atomic + 2,
           node.left,
-          node.right,
+          node.right
         )
     }
   }
 
-  public visitAsNode(node: AsNode, parentPrecedence: Precedence): Array<string> {
+  public visitAsNode(
+    node: AsNode,
+    parentPrecedence: Precedence
+  ): Array<string> {
     // Contracts.AssertValue(node);
     return this.applyPrecedence(
       parentPrecedence,
       Precedence.As,
       CollectionUtils.With(
-        CollectionUtils.With(node.left.acceptResult(this, Precedence.As), this.spacedOper(TexlLexer.KeywordAs)),
-        node.right.token.toString(),
-      ),
+        CollectionUtils.With(
+          node.left.acceptResult(this, Precedence.As),
+          this.spacedOper(TexlLexer.KeywordAs)
+        ),
+        node.right.token.toString()
+      )
     )
   }
 
-  public visitVariadicOpNode(node: VariadicOpNode, parentPrecedence: Precedence): Array<string> {
+  public visitVariadicOpNode(
+    node: VariadicOpNode,
+    parentPrecedence: Precedence
+  ): Array<string> {
     // Contracts.AssertValue(node);
     // Contracts.AssertNonEmpty(node.Children);
 
     switch (node.op) {
       case VariadicOp.Chain:
-        const op = this.spacedOper(TexlLexer.LocalizedInstance.localizedPunctuatorChainingSeparator)
+        const op = this.spacedOper(
+          TexlLexer.LocalizedInstance.localizedPunctuatorChainingSeparator
+        )
         const count = node.count
         let result: Array<string> = []
 
         for (let i = 0; i < count; i++) {
-          result = CollectionUtils.With(result, ...node.children[i].acceptResult(this, Precedence.None))
+          result = CollectionUtils.With(
+            result,
+            ...node.children[i].acceptResult(this, Precedence.None)
+          )
           if (i != count - 1) {
             result = CollectionUtils.With(
               result,
-              this.spacedOper(TexlLexer.LocalizedInstance.localizedPunctuatorChainingSeparator),
+              this.spacedOper(
+                TexlLexer.LocalizedInstance.localizedPunctuatorChainingSeparator
+              )
             )
           }
         }
@@ -439,17 +516,31 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
     }
   }
 
-  public visitCallNode(node: CallNode, parentPrecedence: Precedence): Array<string> {
+  public visitCallNode(
+    node: CallNode,
+    parentPrecedence: Precedence
+  ): Array<string> {
     // Contracts.AssertValue(node);
 
     let result: Array<string> = []
     const sb = new StringBuilder()
     if (!node.head.namespace.isRoot) {
-      result = CollectionUtils.With(result, node.head.namespace.toDottedSyntax(), TexlLexer.PunctuatorDot)
+      result = CollectionUtils.With(
+        result,
+        node.head.namespace.toDottedSyntax(),
+        TexlLexer.PunctuatorDot
+      )
     }
 
-    result = CollectionUtils.With(result, node.head.token.toString(), TexlLexer.PunctuatorParenOpen)
-    result = CollectionUtils.With(result, ...node.args.acceptResult(this, Precedence.Primary))
+    result = CollectionUtils.With(
+      result,
+      node.head.token.toString(),
+      TexlLexer.PunctuatorParenOpen
+    )
+    result = CollectionUtils.With(
+      result,
+      ...node.args.acceptResult(this, Precedence.Primary)
+    )
     result = CollectionUtils.With(result, TexlLexer.PunctuatorParenClose)
 
     return this.applyPrecedence(parentPrecedence, Precedence.Primary, result)
@@ -469,7 +560,10 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
         const strLit = node.children[i] as StrLitNode
         result = result.with([CharacterUtils.ExcelEscapeString(strLit.value)])
       } else {
-        result = result.with(['{']).with(node.children[i].acceptResult(this, Precedence.None)).with(['}'])
+        result = result
+          .with(['{'])
+          .with(node.children[i].acceptResult(this, Precedence.None))
+          .with(['}'])
       }
     }
 
@@ -477,13 +571,20 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
     return result.values
   }
 
-  public visitListNode(node: ListNode, parentPrecedence: Precedence): Array<string> {
+  public visitListNode(
+    node: ListNode,
+    parentPrecedence: Precedence
+  ): Array<string> {
     // Contracts.AssertValue(node);
 
-    const listSep = TexlLexer.LocalizedInstance.localizedPunctuatorListSeparator + ' '
+    const listSep =
+      TexlLexer.LocalizedInstance.localizedPunctuatorListSeparator + ' '
     let result: Array<string> = []
     for (let i = 0; i < node.children.length; ++i) {
-      result = CollectionUtils.With(result, ...node.children[i].acceptResult(this, Precedence.None))
+      result = CollectionUtils.With(
+        result,
+        ...node.children[i].acceptResult(this, Precedence.None)
+      )
       if (i != node.children.length - 1) {
         result = CollectionUtils.With(result, listSep)
       }
@@ -492,20 +593,34 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
     return result
   }
 
-  public visitRecordNode(node: RecordNode, parentPrecedence: Precedence): Array<string> {
+  public visitRecordNode(
+    node: RecordNode,
+    parentPrecedence: Precedence
+  ): Array<string> {
     // Contracts.AssertValue(node)
 
-    const listSep = TexlLexer.LocalizedInstance.localizedPunctuatorListSeparator + ' '
+    const listSep =
+      TexlLexer.LocalizedInstance.localizedPunctuatorListSeparator + ' '
     let result: Array<string> = []
-    for (var i = 0; i < node.children.length; ++i) {
-      result = CollectionUtils.With(result, node.ids[i].token.toString(), TexlLexer.PunctuatorColon)
-      result = CollectionUtils.With(result, ...node.children[i].acceptResult(this, Precedence.SingleExpr))
+    for (let i = 0; i < node.children.length; ++i) {
+      result = CollectionUtils.With(
+        result,
+        node.ids[i].token.toString(),
+        TexlLexer.PunctuatorColon
+      )
+      result = CollectionUtils.With(
+        result,
+        ...node.children[i].acceptResult(this, Precedence.SingleExpr)
+      )
       if (i != node.children.length - 1) {
         result = CollectionUtils.With(result, listSep)
       }
     }
 
-    result = CollectionUtils.With([TexlLexer.PunctuatorCurlyOpen, ' '], ...result)
+    result = CollectionUtils.With(
+      [TexlLexer.PunctuatorCurlyOpen, ' '],
+      ...result
+    )
     result = CollectionUtils.With(result, ' ', TexlLexer.PunctuatorCurlyClose)
 
     if (node.sourceRestriction != null) {
@@ -515,19 +630,29 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
     return this.applyPrecedence(parentPrecedence, Precedence.SingleExpr, result)
   }
 
-  public visitTableNode(node: TableNode, parentPrecedence: Precedence): Array<string> {
+  public visitTableNode(
+    node: TableNode,
+    parentPrecedence: Precedence
+  ): Array<string> {
     // Contracts.AssertValue(node);
 
-    const listSep = TexlLexer.LocalizedInstance.localizedPunctuatorListSeparator + ' '
+    const listSep =
+      TexlLexer.LocalizedInstance.localizedPunctuatorListSeparator + ' '
     let result: Array<string> = []
     for (let i = 0; i < node.children.length; ++i) {
-      result = CollectionUtils.With(result, ...node.children[i].acceptResult(this, Precedence.SingleExpr))
+      result = CollectionUtils.With(
+        result,
+        ...node.children[i].acceptResult(this, Precedence.SingleExpr)
+      )
       if (i != node.children.length - 1) {
         result = CollectionUtils.With(result, listSep)
       }
     }
 
-    result = CollectionUtils.With([TexlLexer.PunctuatorBracketOpen, ' '], ...result)
+    result = CollectionUtils.With(
+      [TexlLexer.PunctuatorBracketOpen, ' '],
+      ...result
+    )
     result = CollectionUtils.With(result, ' ', TexlLexer.PunctuatorBracketClose)
 
     return this.applyPrecedence(parentPrecedence, Precedence.SingleExpr, result)
@@ -537,7 +662,11 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
     return right.token.toString()
   }
 
-  private applyPrecedence(parentPrecedence: Precedence, precedence: Precedence, strings: Array<string>): Array<string> {
+  private applyPrecedence(
+    parentPrecedence: Precedence,
+    precedence: Precedence,
+    strings: Array<string>
+  ): Array<string> {
     if (parentPrecedence > precedence) {
       let result = [TexlLexer.PunctuatorParenOpen]
       result = CollectionUtils.With(result, ...strings)
@@ -560,7 +689,7 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
     precLeft: Precedence,
     precRight: Precedence,
     left: TexlNode,
-    right: TexlNode,
+    right: TexlNode
   ): Array<string> {
     // Contracts.AssertNonEmpty(strOp);
 
@@ -569,8 +698,8 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
       precLeft,
       CollectionUtils.With(
         CollectionUtils.With(left.acceptResult(this, precLeft), strOp),
-        ...right.acceptResult(this, precRight),
-      ),
+        ...right.acceptResult(this, precRight)
+      )
     )
   }
 
@@ -581,27 +710,31 @@ export class TexlPretty extends TexlFunctionalVisitor<Array<string>, Precedence>
   }
 }
 
-export class PrettyPrintVisitor extends TexlFunctionalVisitor<Array<string>, PrettyPrintVisitorContext> {
+export class PrettyPrintVisitor extends TexlFunctionalVisitor<
+  Array<string>,
+  PrettyPrintVisitorContext
+> {
   private readonly _script: string
 
-  private static readonly BinaryPrecedence: Dictionary<BinaryOp, Precedence> = new Dictionary<BinaryOp, Precedence>([
-    [BinaryOp.Or, Precedence.Or],
-    [BinaryOp.And, Precedence.And],
-    [BinaryOp.Concat, Precedence.Concat],
-    [BinaryOp.Add, Precedence.Add],
-    [BinaryOp.Mul, Precedence.Mul],
-    [BinaryOp.Div, Precedence.Mul],
-    [BinaryOp.In, Precedence.In],
-    [BinaryOp.Exactin, Precedence.In],
-    [BinaryOp.Power, Precedence.Power],
-    [BinaryOp.Error, Precedence.Error],
-    [BinaryOp.Equal, Precedence.Compare],
-    [BinaryOp.NotEqual, Precedence.Compare],
-    [BinaryOp.Greater, Precedence.Compare],
-    [BinaryOp.GreaterEqual, Precedence.Compare],
-    [BinaryOp.Less, Precedence.Compare],
-    [BinaryOp.LessEqual, Precedence.Compare],
-  ])
+  private static readonly BinaryPrecedence: Dictionary<BinaryOp, Precedence> =
+    new Dictionary<BinaryOp, Precedence>([
+      [BinaryOp.Or, Precedence.Or],
+      [BinaryOp.And, Precedence.And],
+      [BinaryOp.Concat, Precedence.Concat],
+      [BinaryOp.Add, Precedence.Add],
+      [BinaryOp.Mul, Precedence.Mul],
+      [BinaryOp.Div, Precedence.Mul],
+      [BinaryOp.In, Precedence.In],
+      [BinaryOp.Exactin, Precedence.In],
+      [BinaryOp.Power, Precedence.Power],
+      [BinaryOp.Error, Precedence.Error],
+      [BinaryOp.Equal, Precedence.Compare],
+      [BinaryOp.NotEqual, Precedence.Compare],
+      [BinaryOp.Greater, Precedence.Compare],
+      [BinaryOp.GreaterEqual, Precedence.Compare],
+      [BinaryOp.Less, Precedence.Compare],
+      [BinaryOp.LessEqual, Precedence.Compare],
+    ])
 
   constructor(script: string) {
     super()
@@ -609,13 +742,18 @@ export class PrettyPrintVisitor extends TexlFunctionalVisitor<Array<string>, Pre
   }
 
   // Public entry point for prettyprinting TEXL parse trees
-  public static Format(node: TexlNode, before: SourceList, after: SourceList, script: string): string {
+  public static Format(
+    node: TexlNode,
+    before: SourceList,
+    after: SourceList,
+    script: string
+  ): string {
     // Contracts.AssertValue(node);
 
     const pretty = new PrettyPrintVisitor(script)
     let arr = CollectionUtils.With(
       pretty.CommentsOf(before),
-      ...node.acceptResult(pretty, new PrettyPrintVisitorContext(0)),
+      ...node.acceptResult(pretty, new PrettyPrintVisitorContext(0))
     )
     arr = CollectionUtils.With(arr, ...pretty.CommentsOf(after))
     const preRegex = arr.join().replace('\n\n', '\n')
@@ -633,7 +771,10 @@ export class PrettyPrintVisitor extends TexlFunctionalVisitor<Array<string>, Pre
       .map((source) => this.GetScriptForToken((source as TokenSource).token))
   }
 
-  private Basic(node: TexlNode, context: PrettyPrintVisitorContext): Array<string> {
+  private Basic(
+    node: TexlNode,
+    context: PrettyPrintVisitorContext
+  ): Array<string> {
     return node.sourceList.sources
       .map((source) => {
         if (source instanceof NodeSource) {
@@ -648,7 +789,9 @@ export class PrettyPrintVisitor extends TexlFunctionalVisitor<Array<string>, Pre
   }
 
   private Single(node: TexlNode): Array<string> {
-    return node.sourceList.tokens.filter((tok) => tok.kind !== TokKind.Whitespace).map(this.GetScriptForToken)
+    return node.sourceList.tokens
+      .filter((tok) => tok.kind !== TokKind.Whitespace)
+      .map(this.GetScriptForToken)
   }
 
   public visit(node: TexlNode, context: PrettyPrintVisitorContext) {
@@ -694,37 +837,58 @@ export class PrettyPrintVisitor extends TexlFunctionalVisitor<Array<string>, Pre
     }
   }
 
-  public visitReplaceableNode(node: ReplaceableNode, context: PrettyPrintVisitorContext): Array<string> {
+  public visitReplaceableNode(
+    node: ReplaceableNode,
+    context: PrettyPrintVisitorContext
+  ): Array<string> {
     throw new Error('Replaceable nodes are not supported')
   }
 
-  public visitErrorNode(node: ErrorNode, context: PrettyPrintVisitorContext): Array<string> {
+  public visitErrorNode(
+    node: ErrorNode,
+    context: PrettyPrintVisitorContext
+  ): Array<string> {
     // Contracts.AssertValue(node);
     return ['<error>']
   }
 
-  public visitBlankNode(node: BlankNode, context: PrettyPrintVisitorContext): Array<string> {
+  public visitBlankNode(
+    node: BlankNode,
+    context: PrettyPrintVisitorContext
+  ): Array<string> {
     // Contracts.AssertValue(node);
     return []
   }
 
-  public visitBoolLitNode(node: BoolLitNode, context: PrettyPrintVisitorContext): Array<string> {
+  public visitBoolLitNode(
+    node: BoolLitNode,
+    context: PrettyPrintVisitorContext
+  ): Array<string> {
     // Contracts.AssertValue(node);
     return [node.value ? TexlLexer.KeywordTrue : TexlLexer.KeywordFalse]
   }
 
-  public visitStrLitNode(node: StrLitNode, context: PrettyPrintVisitorContext): Array<string> {
+  public visitStrLitNode(
+    node: StrLitNode,
+    context: PrettyPrintVisitorContext
+  ): Array<string> {
     // Contracts.AssertValue(node);
     return ['"', CharacterUtils.ExcelEscapeString(node.value), '"']
   }
 
-  public visitNumLitNode(node: NumLitNode, context: PrettyPrintVisitorContext): Array<string> {
+  public visitNumLitNode(
+    node: NumLitNode,
+    context: PrettyPrintVisitorContext
+  ): Array<string> {
     // Contracts.AssertValue(node)
 
     return this.Single(node)
   }
 
-  public visitFirstNameNode(node: FirstNameNode, context: PrettyPrintVisitorContext): Array<string> {
+  public visitFirstNameNode(
+    node: FirstNameNode,
+    context: PrettyPrintVisitorContext
+  ): Array<string> {
     // Contracts.AssertValue(node);
 
     if (node.ident.atToken == null) {
@@ -751,19 +915,28 @@ export class PrettyPrintVisitor extends TexlFunctionalVisitor<Array<string>, Pre
     return [TexlLexer.KeywordSelf]
   }
 
-  public visitDottedNameNode(node: DottedNameNode, context: PrettyPrintVisitorContext) {
+  public visitDottedNameNode(
+    node: DottedNameNode,
+    context: PrettyPrintVisitorContext
+  ) {
     // Contracts.AssertValue(node)
 
     return this.Basic(node, context)
   }
 
-  public visitUnaryOpNode(node: UnaryOpNode, context: PrettyPrintVisitorContext) {
+  public visitUnaryOpNode(
+    node: UnaryOpNode,
+    context: PrettyPrintVisitorContext
+  ) {
     // Contracts.AssertValue(node)
 
     return this.Basic(node, context)
   }
 
-  public visitBinaryOpNode(node: BinaryOpNode, context: PrettyPrintVisitorContext) {
+  public visitBinaryOpNode(
+    node: BinaryOpNode,
+    context: PrettyPrintVisitorContext
+  ) {
     // Contracts.AssertValue(node);
 
     if (node.token.kind == TokKind.PercentSign) {
@@ -778,15 +951,20 @@ export class PrettyPrintVisitor extends TexlFunctionalVisitor<Array<string>, Pre
 
     let builder: Array<string> = []
     let firstNode = true
-    for (const source of node.sourceList.sources.filter((source) => !(source instanceof WhitespaceSource))) {
+    for (const source of node.sourceList.sources.filter(
+      (source) => !(source instanceof WhitespaceSource)
+    )) {
       if (source instanceof NodeSource) {
         if (firstNode) {
           builder = CollectionUtils.With(
             builder,
             ...source.node.acceptResult(
-              this as TexlFunctionalVisitor<Array<string>, PrettyPrintVisitorContext>,
-              context,
-            ),
+              this as TexlFunctionalVisitor<
+                Array<string>,
+                PrettyPrintVisitorContext
+              >,
+              context
+            )
           )
           builder = CollectionUtils.With(builder, ' ')
           firstNode = false
@@ -795,41 +973,61 @@ export class PrettyPrintVisitor extends TexlFunctionalVisitor<Array<string>, Pre
           builder = CollectionUtils.With(
             builder,
             ...source.node.acceptResult(
-              this as TexlFunctionalVisitor<Array<string>, PrettyPrintVisitorContext>,
-              context,
-            ),
+              this as TexlFunctionalVisitor<
+                Array<string>,
+                PrettyPrintVisitorContext
+              >,
+              context
+            )
           )
         }
       } else {
-        builder = CollectionUtils.With(builder, ...source.tokens.map(this.GetScriptForToken))
+        builder = CollectionUtils.With(
+          builder,
+          ...source.tokens.map(this.GetScriptForToken)
+        )
       }
     }
 
     return builder
   }
 
-  public visitVariadicOpNode(node: VariadicOpNode, context: PrettyPrintVisitorContext) {
+  public visitVariadicOpNode(
+    node: VariadicOpNode,
+    context: PrettyPrintVisitorContext
+  ) {
     // Contracts.AssertValue(node);
     // Contracts.AssertNonEmpty(node.Children);
 
     if (node.op == VariadicOp.Chain) {
       let result: string[] = []
-      for (const source of node.sourceList.sources.filter((source) => !(source instanceof WhitespaceSource))) {
+      for (const source of node.sourceList.sources.filter(
+        (source) => !(source instanceof WhitespaceSource)
+      )) {
         if (source instanceof NodeSource) {
           result = CollectionUtils.With(
             result,
             ...source.node.acceptResult(
-              this as TexlFunctionalVisitor<Array<string>, PrettyPrintVisitorContext>,
-              context,
-            ),
+              this as TexlFunctionalVisitor<
+                Array<string>,
+                PrettyPrintVisitorContext
+              >,
+              context
+            )
           )
-        } else if (source instanceof TokenSource && source.token.kind == TokKind.Semicolon) {
+        } else if (
+          source instanceof TokenSource &&
+          source.token.kind == TokKind.Semicolon
+        ) {
           result = CollectionUtils.With(
             CollectionUtils.With(result, this.GetScriptForToken(source.token)),
-            this.GetNewLine(context.indentDepth + 1),
+            this.GetNewLine(context.indentDepth + 1)
           )
         } else {
-          result = CollectionUtils.With(result, ...source.tokens.map(this.GetScriptForToken))
+          result = CollectionUtils.With(
+            result,
+            ...source.tokens.map(this.GetScriptForToken)
+          )
         }
       }
 
@@ -864,23 +1062,36 @@ export class PrettyPrintVisitor extends TexlFunctionalVisitor<Array<string>, Pre
 
       const nodeSource = source as NodeSource
       if (nodeSource != null && useNewlines) {
-        result = CollectionUtils.With(result, this.GetNewLine(context.indentDepth + 1))
+        result = CollectionUtils.With(
+          result,
+          this.GetNewLine(context.indentDepth + 1)
+        )
         result = CollectionUtils.With(result, ...generatedNodes.get(nodeSource))
       } else if (nodeSource != null) {
         result = CollectionUtils.With(
           result,
           ...nodeSource.node.acceptResult(
-            this as TexlFunctionalVisitor<Array<string>, PrettyPrintVisitorContext>,
-            context,
-          ),
+            this as TexlFunctionalVisitor<
+              Array<string>,
+              PrettyPrintVisitorContext
+            >,
+            context
+          )
         )
-      } else if (source instanceof TokenSource && source.token.kind == TokKind.ParenClose && useNewlines) {
+      } else if (
+        source instanceof TokenSource &&
+        source.token.kind == TokKind.ParenClose &&
+        useNewlines
+      ) {
         result = CollectionUtils.With(
           CollectionUtils.With(result, this.GetNewLine(context.indentDepth)),
-          this.GetScriptForToken(source.token),
+          this.GetScriptForToken(source.token)
         )
       } else {
-        result = CollectionUtils.With(result, ...source.tokens.map(this.GetScriptForToken))
+        result = CollectionUtils.With(
+          result,
+          ...source.tokens.map(this.GetScriptForToken)
+        )
       }
     }
 
@@ -907,39 +1118,82 @@ export class PrettyPrintVisitor extends TexlFunctionalVisitor<Array<string>, Pre
       const commentToken = tokenSource?.token as CommentToken
       if (source instanceof NodeSource) {
         result = CollectionUtils.With(result, ...generatedNodes.get(source))
-      } else if (tokenSource != null && tokenSource.token.kind == TokKind.Colon) {
-        result = CollectionUtils.With(result, this.GetScriptForToken(tokenSource.token))
-        result = CollectionUtils.With(result, ' ')
-      } else if (source instanceof IdentifierSource) {
-        result = CollectionUtils.With(result, ...source.tokens.map(this.GetScriptForToken))
-      } else if (tokenSource != null && tokenSource.token.kind == TokKind.CurlyClose && useNewlines) {
-        result = CollectionUtils.With(result, ...this.GetNewLine(context.indentDepth))
-        result = CollectionUtils.With(result, ...this.GetScriptForToken(tokenSource.token))
       } else if (
         tokenSource != null &&
-        (tokenSource.token.Kind == TokKind.CurlyOpen || tokenSource.token.Kind == TokKind.Comma) &&
+        tokenSource.token.kind == TokKind.Colon
+      ) {
+        result = CollectionUtils.With(
+          result,
+          this.GetScriptForToken(tokenSource.token)
+        )
+        result = CollectionUtils.With(result, ' ')
+      } else if (source instanceof IdentifierSource) {
+        result = CollectionUtils.With(
+          result,
+          ...source.tokens.map(this.GetScriptForToken)
+        )
+      } else if (
+        tokenSource != null &&
+        tokenSource.token.kind == TokKind.CurlyClose &&
         useNewlines
       ) {
-        result = CollectionUtils.With(result, this.GetScriptForToken(tokenSource.token))
-        result = CollectionUtils.With(result, this.GetNewLine(context.indentDepth + 1))
+        result = CollectionUtils.With(
+          result,
+          ...this.GetNewLine(context.indentDepth)
+        )
+        result = CollectionUtils.With(
+          result,
+          ...this.GetScriptForToken(tokenSource.token)
+        )
+      } else if (
+        tokenSource != null &&
+        (tokenSource.token.Kind == TokKind.CurlyOpen ||
+          tokenSource.token.Kind == TokKind.Comma) &&
+        useNewlines
+      ) {
+        result = CollectionUtils.With(
+          result,
+          this.GetScriptForToken(tokenSource.token)
+        )
+        result = CollectionUtils.With(
+          result,
+          this.GetNewLine(context.indentDepth + 1)
+        )
       } else if (
         commentToken != null &&
-        (previousToken?.kind == TokKind.CurlyOpen || previousToken?.kind == TokKind.Comma) &&
+        (previousToken?.kind == TokKind.CurlyOpen ||
+          previousToken?.kind == TokKind.Comma) &&
         !commentToken.value.startsWith('//') &&
         !commentToken.value.startsWith('\n')
       ) {
-        result = CollectionUtils.With(result, this.GetScriptForToken(tokenSource.token))
-        result = CollectionUtils.With(result, this.GetNewLine(context.indentDepth + 1))
+        result = CollectionUtils.With(
+          result,
+          this.GetScriptForToken(tokenSource.token)
+        )
+        result = CollectionUtils.With(
+          result,
+          this.GetNewLine(context.indentDepth + 1)
+        )
       } else if (
         commentToken != null &&
-        (previousToken?.kind == TokKind.CurlyOpen || previousToken?.kind == TokKind.Comma) &&
+        (previousToken?.kind == TokKind.CurlyOpen ||
+          previousToken?.kind == TokKind.Comma) &&
         !commentToken.value.startsWith('//') &&
         commentToken.value.startsWith('\n')
       ) {
-        result = CollectionUtils.With(result, this.GetScriptForToken(tokenSource.token).trimStart())
-        result = CollectionUtils.With(result, this.GetNewLine(context.indentDepth + 1))
+        result = CollectionUtils.With(
+          result,
+          this.GetScriptForToken(tokenSource.token).trimStart()
+        )
+        result = CollectionUtils.With(
+          result,
+          this.GetNewLine(context.indentDepth + 1)
+        )
       } else {
-        result = CollectionUtils.With(result, ...source.tokens.map(this.GetScriptForToken))
+        result = CollectionUtils.With(
+          result,
+          ...source.tokens.map(this.GetScriptForToken)
+        )
       }
 
       previousToken = tokenSource?.token
@@ -956,30 +1210,67 @@ export class PrettyPrintVisitor extends TexlFunctionalVisitor<Array<string>, Pre
     const generatedNodes = preResult[0]
     const hasNewline = preResult[1]
 
-    // var generatedNodes = PreGenerateNodes(context, node.SourceList, out var hasNewline);
+    // let generatedNodes = PreGenerateNodes(context, node.SourceList, out let hasNewline);
     const useNewlines = node.count > 1 || hasNewline
 
     let result: Array<string> = []
-    for (const source of node.sourceList.sources.filter((source) => !(source instanceof WhitespaceSource))) {
+    for (const source of node.sourceList.sources.filter(
+      (source) => !(source instanceof WhitespaceSource)
+    )) {
       const tokenSource = source as TokenSource
       if (source instanceof NodeSource) {
         result = CollectionUtils.With(result, ...generatedNodes.get(source))
-      } else if (tokenSource != null && tokenSource.token.kind == TokKind.Comma) {
+      } else if (
+        tokenSource != null &&
+        tokenSource.token.kind == TokKind.Comma
+      ) {
         if (useNewlines) {
-          result = CollectionUtils.With(result, this.GetScriptForToken(tokenSource.token))
-          result = CollectionUtils.With(result, this.GetNewLine(context.indentDepth + 1))
+          result = CollectionUtils.With(
+            result,
+            this.GetScriptForToken(tokenSource.token)
+          )
+          result = CollectionUtils.With(
+            result,
+            this.GetNewLine(context.indentDepth + 1)
+          )
         } else {
-          result = CollectionUtils.With(result, this.GetScriptForToken(tokenSource.token))
+          result = CollectionUtils.With(
+            result,
+            this.GetScriptForToken(tokenSource.token)
+          )
           result = CollectionUtils.With(result, ' ')
         }
-      } else if (tokenSource != null && tokenSource.token.kind == TokKind.BracketOpen && useNewlines) {
-        result = CollectionUtils.With(result, this.GetScriptForToken(tokenSource.token))
-        result = CollectionUtils.With(result, this.GetNewLine(context.indentDepth + 1))
-      } else if (tokenSource != null && tokenSource.token.kind == TokKind.BracketClose && useNewlines) {
-        result = CollectionUtils.With(result, this.GetNewLine(context.indentDepth))
-        result = CollectionUtils.With(result, this.GetScriptForToken(tokenSource.token))
+      } else if (
+        tokenSource != null &&
+        tokenSource.token.kind == TokKind.BracketOpen &&
+        useNewlines
+      ) {
+        result = CollectionUtils.With(
+          result,
+          this.GetScriptForToken(tokenSource.token)
+        )
+        result = CollectionUtils.With(
+          result,
+          this.GetNewLine(context.indentDepth + 1)
+        )
+      } else if (
+        tokenSource != null &&
+        tokenSource.token.kind == TokKind.BracketClose &&
+        useNewlines
+      ) {
+        result = CollectionUtils.With(
+          result,
+          this.GetNewLine(context.indentDepth)
+        )
+        result = CollectionUtils.With(
+          result,
+          this.GetScriptForToken(tokenSource.token)
+        )
       } else {
-        result = CollectionUtils.With(result, ...source.tokens.map(this.GetScriptForToken))
+        result = CollectionUtils.With(
+          result,
+          ...source.tokens.map(this.GetScriptForToken)
+        )
       }
     }
 
@@ -994,7 +1285,7 @@ export class PrettyPrintVisitor extends TexlFunctionalVisitor<Array<string>, Pre
 
   private PreGenerateNodes(
     context: PrettyPrintVisitorContext,
-    sourceList: SourceList,
+    sourceList: SourceList
   ): [Dictionary<NodeSource, Array<string>>, boolean] {
     const generatedNodes = new Dictionary<NodeSource, Array<string>>()
     for (const source of sourceList.sources) {

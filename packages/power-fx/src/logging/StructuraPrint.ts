@@ -23,7 +23,10 @@ import { LeafNodeType, NonLeafNodeType } from '../syntax/visitors/types'
 import { LazyList } from '../utilityDataStructures/LazyList'
 
 // A visitor that provides PII-free unformatted prints of powerapps formulas.
-export class StructuralPrint extends TexlFunctionalVisitor<LazyList<string>, Precedence> {
+export class StructuralPrint extends TexlFunctionalVisitor<
+  LazyList<string>,
+  Precedence
+> {
   private readonly _binding: TexlBinding
 
   constructor(binding?: TexlBinding) {
@@ -39,7 +42,10 @@ export class StructuralPrint extends TexlFunctionalVisitor<LazyList<string>, Pre
     return node.acceptResult(pretty, Precedence.None).values.join()
   }
 
-  public visit(node: LeafNodeType | NonLeafNodeType, parentPrecedence: Precedence): LazyList<string> {
+  public visit(
+    node: LeafNodeType | NonLeafNodeType,
+    parentPrecedence: Precedence
+  ): LazyList<string> {
     // Contracts.AssertValue(node);
     switch (node.kind) {
       case NodeKind.Replaceable:
@@ -71,17 +77,25 @@ export class StructuralPrint extends TexlFunctionalVisitor<LazyList<string>, Pre
         return LazyList.Of<string>(TexlLexer.KeywordSelf)
       case NodeKind.DottedName: {
         const dottedNameNode = node as DottedNameNode
-        const separator: string = TexlParser.GetTokString(dottedNameNode.token.kind)
+        const separator: string = TexlParser.GetTokString(
+          dottedNameNode.token.kind
+        )
         let values = dottedNameNode.left.acceptResult(this, Precedence.Primary)
         values = values.with([separator])
         if (dottedNameNode.right.atToken != null || dottedNameNode.usesBracket)
           values = values.with(['#$disambiguation$#'])
         else
           values = values.with(
-            (dottedNameNode.rightNode?.acceptResult(this, parentPrecedence) ?? LazyList.Of<string>('#$righthandid$#'))
-              .values,
+            (
+              dottedNameNode.rightNode?.acceptResult(this, parentPrecedence) ??
+              LazyList.Of<string>('#$righthandid$#')
+            ).values
           )
-        return this.applyPrecedence(parentPrecedence, Precedence.Primary, values)
+        return this.applyPrecedence(
+          parentPrecedence,
+          Precedence.Primary,
+          values
+        )
       }
       case NodeKind.As:
         return this.applyPrecedence(
@@ -90,7 +104,7 @@ export class StructuralPrint extends TexlFunctionalVisitor<LazyList<string>, Pre
           (node as AsNode).left
             .acceptResult(this, Precedence.As)
             .with([this.spacedOper(TexlLexer.KeywordAs)])
-            .with(['#$righthandid$#']),
+            .with(['#$righthandid$#'])
         )
       case NodeKind.UnaryOp: {
         const unaryNode = node as UnaryOpNode
@@ -99,21 +113,34 @@ export class StructuralPrint extends TexlFunctionalVisitor<LazyList<string>, Pre
         switch (unaryNode.op) {
           case UnaryOp.Not:
             if (node.token.kind == TokKind.KeyNot)
-              result = LazyList.Of<string>(TexlLexer.KeywordNot, ' ').with(child.values)
-            else result = LazyList.Of<string>(TexlLexer.PunctuatorBang).with(child.values)
+              result = LazyList.Of<string>(TexlLexer.KeywordNot, ' ').with(
+                child.values
+              )
+            else
+              result = LazyList.Of<string>(TexlLexer.PunctuatorBang).with(
+                child.values
+              )
             break
           case UnaryOp.Minus:
-            result = LazyList.Of<string>(TexlLexer.PunctuatorSub).with(child.values)
+            result = LazyList.Of<string>(TexlLexer.PunctuatorSub).with(
+              child.values
+            )
             break
           case UnaryOp.Percent:
-            result = LazyList.Of<string>(...child.values).with([TexlLexer.PunctuatorPercent])
+            result = LazyList.Of<string>(...child.values).with([
+              TexlLexer.PunctuatorPercent,
+            ])
             break
           default:
             // Contracts.Assert(false)
             result = LazyList.Of<string>('#$error$#').with(child.values)
             break
         }
-        return this.applyPrecedence(parentPrecedence, Precedence.PrefixUnary, result)
+        return this.applyPrecedence(
+          parentPrecedence,
+          Precedence.PrefixUnary,
+          result
+        )
       }
       case NodeKind.BinaryOp: {
         const binaryNode = node as BinaryOpNode
@@ -283,10 +310,16 @@ export class StructuralPrint extends TexlFunctionalVisitor<LazyList<string>, Pre
             const count = variadicNode.count
             let result: LazyList<string> = LazyList.Empty
             for (let i = 0; i < count; i++) {
-              result = result.with(variadicNode.children[i].acceptResult(this, Precedence.None).values)
+              result = result.with(
+                variadicNode.children[i].acceptResult(this, Precedence.None)
+                  .values
+              )
               if (i != count - 1)
                 result = result.with([
-                  this.spacedOper(TexlLexer.LocalizedInstance.localizedPunctuatorChainingSeparator),
+                  this.spacedOper(
+                    TexlLexer.LocalizedInstance
+                      .localizedPunctuatorChainingSeparator
+                  ),
                 ])
             }
             return result
@@ -302,11 +335,18 @@ export class StructuralPrint extends TexlFunctionalVisitor<LazyList<string>, Pre
           result = result.with(['#$servicefunction#$', TexlLexer.PunctuatorDot])
         } else {
           result = result
-            .with([callNode.head.token.toString(), TexlLexer.PunctuatorParenOpen])
+            .with([
+              callNode.head.token.toString(),
+              TexlLexer.PunctuatorParenOpen,
+            ])
             .with(callNode.args.acceptResult(this, Precedence.Primary).values)
             .with([TexlLexer.PunctuatorParenClose])
         }
-        return this.applyPrecedence(parentPrecedence, Precedence.Primary, result)
+        return this.applyPrecedence(
+          parentPrecedence,
+          Precedence.Primary,
+          result
+        )
       }
       case NodeKind.StrInterp: {
         // Contracts.AssertValue(node);
@@ -317,11 +357,17 @@ export class StructuralPrint extends TexlFunctionalVisitor<LazyList<string>, Pre
 
         for (let i = 0; i < count; i++) {
           if (strIntepNode.children[i].kind === NodeKind.StrLit) {
-            result = result.with(strIntepNode.children[i].acceptResult(this, parentPrecedence).values)
+            result = result.with(
+              strIntepNode.children[i].acceptResult(this, parentPrecedence)
+                .values
+            )
           } else {
             result = result
               .with(['{'])
-              .with(strIntepNode.children[i].acceptResult(this, parentPrecedence).values)
+              .with(
+                strIntepNode.children[i].acceptResult(this, parentPrecedence)
+                  .values
+              )
               .with(['}'])
           }
         }
@@ -330,44 +376,67 @@ export class StructuralPrint extends TexlFunctionalVisitor<LazyList<string>, Pre
       }
       case NodeKind.List: {
         const listNode = node as ListNode
-        const listSep = TexlLexer.LocalizedInstance.localizedPunctuatorListSeparator + ' '
+        const listSep =
+          TexlLexer.LocalizedInstance.localizedPunctuatorListSeparator + ' '
         let result: LazyList<string> = LazyList.Empty
         for (let i = 0; i < listNode.children.length; ++i) {
-          result = result.with(listNode.children[i].acceptResult(this, Precedence.None).values)
+          result = result.with(
+            listNode.children[i].acceptResult(this, Precedence.None).values
+          )
           if (i != listNode.children.length - 1) result = result.with([listSep])
         }
         return result
       }
       case NodeKind.Record: {
         const recodeNode = node as RecordNode
-        let listSep = TexlLexer.LocalizedInstance.localizedPunctuatorListSeparator + ' '
+        let listSep =
+          TexlLexer.LocalizedInstance.localizedPunctuatorListSeparator + ' '
         let result: LazyList<string> = LazyList.Empty
         for (let i = 0; i < recodeNode.children.length; ++i) {
           result = result
             .with(['#$fieldname$#', TexlLexer.PunctuatorColon])
-            .with(recodeNode.children[i].acceptResult(this, Precedence.SingleExpr).values)
-          if (i != recodeNode.children.length - 1) result = result.with([listSep])
+            .with(
+              recodeNode.children[i].acceptResult(this, Precedence.SingleExpr)
+                .values
+            )
+          if (i != recodeNode.children.length - 1)
+            result = result.with([listSep])
         }
         result = LazyList.Of<string>(TexlLexer.PunctuatorCurlyOpen, ' ')
           .with(result.values)
           .with([' ', TexlLexer.PunctuatorCurlyClose])
         if (recodeNode.sourceRestriction != null) {
-          result = LazyList.Of<string>(TexlLexer.PunctuatorAt).with(result.values)
+          result = LazyList.Of<string>(TexlLexer.PunctuatorAt).with(
+            result.values
+          )
         }
-        return this.applyPrecedence(parentPrecedence, Precedence.SingleExpr, result)
+        return this.applyPrecedence(
+          parentPrecedence,
+          Precedence.SingleExpr,
+          result
+        )
       }
       case NodeKind.Table: {
         const tableNode = node as TableNode
-        let listSep = TexlLexer.LocalizedInstance.localizedPunctuatorListSeparator + ' '
+        let listSep =
+          TexlLexer.LocalizedInstance.localizedPunctuatorListSeparator + ' '
         let result: LazyList<string> = LazyList.Empty
         for (let i = 0; i < tableNode.children.length; ++i) {
-          result = result.with(tableNode.children[i].acceptResult(this, Precedence.SingleExpr).values)
-          if (i != tableNode.children.length - 1) result = result.with([listSep])
+          result = result.with(
+            tableNode.children[i].acceptResult(this, Precedence.SingleExpr)
+              .values
+          )
+          if (i != tableNode.children.length - 1)
+            result = result.with([listSep])
         }
         result = LazyList.Of<string>(TexlLexer.PunctuatorBracketOpen, ' ')
           .with(result.values)
           .with([' ', TexlLexer.PunctuatorBracketClose])
-        return this.applyPrecedence(parentPrecedence, Precedence.SingleExpr, result)
+        return this.applyPrecedence(
+          parentPrecedence,
+          Precedence.SingleExpr,
+          result
+        )
       }
     }
   }
@@ -375,10 +444,10 @@ export class StructuralPrint extends TexlFunctionalVisitor<LazyList<string>, Pre
   private applyPrecedence(
     parentPrecedence: Precedence,
     precedence: Precedence,
-    strings: LazyList<string>,
+    strings: LazyList<string>
   ): LazyList<string> {
     if (parentPrecedence > precedence) {
-      var result = LazyList.Of<string>(TexlLexer.PunctuatorParenOpen)
+      let result = LazyList.Of<string>(TexlLexer.PunctuatorParenOpen)
       result = result.with(strings.values)
       result = result.with([TexlLexer.PunctuatorParenClose])
       return result
@@ -401,11 +470,21 @@ export class StructuralPrint extends TexlFunctionalVisitor<LazyList<string>, Pre
     right: TexlNode
   }): LazyList<string> {
     //   Contracts.AssertNonEmpty(strOp);
-    const { strOp, parentPrecedence, precLeft, precRight = precLeft + 1, left, right } = props
+    const {
+      strOp,
+      parentPrecedence,
+      precLeft,
+      precRight = precLeft + 1,
+      left,
+      right,
+    } = props
     return this.applyPrecedence(
       parentPrecedence,
       precLeft,
-      left.acceptResult(this, precLeft).with([strOp]).with(right.acceptResult(this, precRight).values),
+      left
+        .acceptResult(this, precLeft)
+        .with([strOp])
+        .with(right.acceptResult(this, precRight).values)
     )
   }
 

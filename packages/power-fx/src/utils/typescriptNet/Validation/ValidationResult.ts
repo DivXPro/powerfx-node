@@ -6,11 +6,17 @@ let VALID: ValidationResult | null = null
 /**
  * A class for generating responses to validation.
  */
-export default class ValidationResult implements IValidationResult, IEquatable<IValidationResult> {
+export default class ValidationResult
+  implements IValidationResult, IEquatable<IValidationResult>
+{
   /**
    * Allows for rare cases that ValidationResult.valid and ValidationResult.invalid() don't cover.
    */
-  constructor(readonly isValid: boolean = false, readonly message?: string, readonly data: any = null) {
+  constructor(
+    readonly isValid: boolean = false,
+    readonly message?: string,
+    readonly data: any = null
+  ) {
     this.isValid = isValid
     this.message = message
     this.data = data
@@ -23,8 +29,11 @@ export default class ValidationResult implements IValidationResult, IEquatable<I
    * Allows for comparing another IValidationResult to see if they are equal.
    */
   equals(other: IValidationResult): boolean {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const _ = this
-    return _.isValid === other.isValid && _.message == _.message && _.data == _.data
+    return (
+      _.isValid === other.isValid && _.message == _.message && _.data == _.data
+    )
   }
 
   /**

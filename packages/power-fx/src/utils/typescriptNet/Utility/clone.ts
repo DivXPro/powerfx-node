@@ -3,7 +3,10 @@ import Primitive from '../Primitive'
 import { JsonArray, JsonMap } from '../JSON'
 import copy from '../Collections/Array/copy'
 
-export default function clone(source: Primitive | JsonMap | JsonArray, depth: number = 0): any {
+export default function clone(
+  source: Primitive | JsonMap | JsonArray,
+  depth = 0
+): any {
   if (depth < 0) return source
 
   // return primitives as is.

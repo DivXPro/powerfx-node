@@ -20,8 +20,12 @@ export class IteratorResult<T> implements IIteratorResult<T> {
   }
 }
 
-export module IteratorResult {
-  export const Done: IteratorResult<any> = new IteratorResult<any>(VOID0, VOID0, true)
+export namespace IteratorResult {
+  export const Done: IteratorResult<any> = new IteratorResult<any>(
+    VOID0,
+    VOID0,
+    true
+  )
 
   export function GetDone(): IteratorResult<any> {
     return Done

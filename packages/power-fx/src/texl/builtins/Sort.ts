@@ -1,11 +1,21 @@
 import { IErrorContainer } from '../../app/errorContainers'
 import { TexlBinding } from '../../binding'
-import { DelegationCapability, IDelegationMetadata } from '../../functions/delegation'
+import {
+  DelegationCapability,
+  IDelegationMetadata,
+} from '../../functions/delegation'
 import { SortOpMetadata } from '../../functions/delegation/delegationMetadata'
-import { ArgValidators, SortOrderValidator } from '../../functions/functionArgValidators'
+import {
+  ArgValidators,
+  SortOrderValidator,
+} from '../../functions/functionArgValidators'
 import { FunctionScopeInfo } from '../../functions/FunctionScopeInfo'
 import { TexlStrings } from '../../localization'
-import { DelegationStatus, DelegationTelemetryInfo, TrackingProvider } from '../../logging/trackers'
+import {
+  DelegationStatus,
+  DelegationTelemetryInfo,
+  TrackingProvider,
+} from '../../logging/trackers'
 import { CallNode, TexlNode } from '../../syntax'
 import { NodeKind } from '../../syntax/NodeKind'
 import { DKind, DType } from '../../types'
@@ -39,7 +49,7 @@ export class SortFunction extends FunctionWithTableInput {
       0x02,
       2,
       3,
-      DType.EmptyTable,
+      DType.EmptyTable
     )
 
     this.scopeInfo = new FunctionScopeInfo(this)
@@ -59,8 +69,11 @@ export class SortFunction extends FunctionWithTableInput {
     args: TexlNode[],
     argTypes: DType[],
     errors: IErrorContainer,
-    binding?: TexlBinding,
-  ): [boolean, { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }] {
+    binding?: TexlBinding
+  ): [
+    boolean,
+    { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }
+  ] {
     // Contracts.AssertValue(args);
     // Contracts.AssertAllValues(args);
     // Contracts.AssertValue(argTypes);
@@ -73,12 +86,12 @@ export class SortFunction extends FunctionWithTableInput {
     let returnType = baseResult[1].returnType
     let nodeToCoercedTypeMap = baseResult[1].nodeToCoercedTypeMap
 
-    // var fValid = CheckInvocation(args, argTypes, errors, out returnType, out nodeToCoercedTypeMap);
+    // let fValid = CheckInvocation(args, argTypes, errors, out returnType, out nodeToCoercedTypeMap);
     // Contracts.Assert(returnType.IsTable);
 
     const newLocal = (returnType = argTypes[0])
 
-    var exprType = argTypes[1]
+    let exprType = argTypes[1]
     if (!exprType.isPrimitive || exprType.isOptionSet) {
       fValid = false
       errors.ensureError(args[1], TexlStrings.ErrSortWrongType)
@@ -99,20 +112,29 @@ export class SortFunction extends FunctionWithTableInput {
     return argumentIndex == 0 || argumentIndex == 2
   }
 
-  private IsValidSortOrderNode(node: TexlNode, metadata: SortOpMetadata, binding: TexlBinding, columnPath: DPath) {
+  private IsValidSortOrderNode(
+    node: TexlNode,
+    metadata: SortOpMetadata,
+    binding: TexlBinding,
+    columnPath: DPath
+  ) {
     // Contracts.AssertValue(node);
     // Contracts.AssertValue(metadata);
     // Contracts.AssertValue(binding);
     // Contracts.AssertValid(columnPath);
 
     if (binding.isAsync(node)) {
-      super.addSuggestionMessageToTelemetry('Async sortorder node.', node, binding)
+      super.addSuggestionMessageToTelemetry(
+        'Async sortorder node.',
+        node,
+        binding
+      )
       TrackingProvider.Instance.setDelegationTrackerStatus(
         DelegationStatus.AsyncSortOrder,
         node,
         binding,
         this,
-        DelegationTelemetryInfo.CreateEmptyDelegationTelemetryInfo(),
+        DelegationTelemetryInfo.CreateEmptyDelegationTelemetryInfo()
       )
       return false
     }
@@ -121,14 +143,38 @@ export class SortFunction extends FunctionWithTableInput {
     switch (node.kind) {
       case NodeKind.FirstName:
       case NodeKind.StrLit:
-        let TryGetValue = this._sortOrderValidator.tryGetValidValue(node, binding)
+        let TryGetValue = this._sortOrderValidator.tryGetValidValue(
+          node,
+          binding
+        )
         sortOrder = TryGetValue[1]
-        return TryGetValue[0] && this.IsSortOrderSuppportedByColumn(node, binding, sortOrder, metadata, columnPath)
+        return (
+          TryGetValue[0] &&
+          this.IsSortOrderSuppportedByColumn(
+            node,
+            binding,
+            sortOrder,
+            metadata,
+            columnPath
+          )
+        )
       case NodeKind.DottedName:
       case NodeKind.Call:
-        let TryGetValue2 = this._sortOrderValidator.tryGetValidValue(node, binding)
+        let TryGetValue2 = this._sortOrderValidator.tryGetValidValue(
+          node,
+          binding
+        )
         sortOrder = TryGetValue2[1]
-        if (TryGetValue2[0] && this.IsSortOrderSuppportedByColumn(node, binding, sortOrder, metadata, columnPath)) {
+        if (
+          TryGetValue2[0] &&
+          this.IsSortOrderSuppportedByColumn(
+            node,
+            binding,
+            sortOrder,
+            metadata,
+            columnPath
+          )
+        ) {
           return true
         }
 
@@ -139,18 +185,22 @@ export class SortFunction extends FunctionWithTableInput {
             binding,
             LanguageConstants.DescendingSortOrderString,
             metadata,
-            columnPath,
+            columnPath
           ) &&
           this.IsSortOrderSuppportedByColumn(
             node,
             binding,
             LanguageConstants.AscendingSortOrderString,
             metadata,
-            columnPath,
+            columnPath
           )
         )
       default:
-        super.addSuggestionMessageToTelemetry('Unsupported sortorder node kind.', node, binding)
+        super.addSuggestionMessageToTelemetry(
+          'Unsupported sortorder node kind.',
+          node,
+          binding
+        )
         return false
     }
   }
@@ -167,13 +217,15 @@ export class SortFunction extends FunctionWithTableInput {
     let TryGetEntityMetadata = super.tryGetDelegationMetadata(callNode, binding)
     let delegationMetadata: IDelegationMetadata = TryGetEntityMetadata[1]
     if (TryGetEntityMetadata[0]) {
-      let TryGetValidDataSourceForDelegation = super.tryGetValidDataSourceForDelegation(
-        callNode,
-        binding,
-        new DelegationCapability(DelegationCapability.ArrayLookup),
-      )
+      let TryGetValidDataSourceForDelegation =
+        super.tryGetValidDataSourceForDelegation(
+          callNode,
+          binding,
+          new DelegationCapability(DelegationCapability.ArrayLookup)
+        )
       if (
-        !binding.document.properties.enabledFeatures.isEnhancedDelegationEnabled ||
+        !binding.document.properties.enabledFeatures
+          .isEnhancedDelegationEnabled ||
         !TryGetValidDataSourceForDelegation[0]
       ) {
         super.suggestDelegationHint(callNode, binding)
@@ -182,11 +234,12 @@ export class SortFunction extends FunctionWithTableInput {
 
       metadata = delegationMetadata.sortDelegationMetadata //.VerifyValue();
     } else {
-      let TryGetValidDataSourceForDelegation = super.tryGetValidDataSourceForDelegation(
-        callNode,
-        binding,
-        new DelegationCapability(DelegationCapability.Sort),
-      )
+      let TryGetValidDataSourceForDelegation =
+        super.tryGetValidDataSourceForDelegation(
+          callNode,
+          binding,
+          new DelegationCapability(DelegationCapability.Sort)
+        )
       let dataSource = TryGetValidDataSourceForDelegation[1]
       if (!TryGetValidDataSourceForDelegation[0]) {
         return false
@@ -203,13 +256,17 @@ export class SortFunction extends FunctionWithTableInput {
     let firstName = arg1.asFirstName()
     if (firstName == null) {
       super.suggestDelegationHint(arg1, binding)
-      super.addSuggestionMessageToTelemetry('Arg1 is not a FirstName node.', arg1, binding)
+      super.addSuggestionMessageToTelemetry(
+        'Arg1 is not a FirstName node.',
+        arg1,
+        binding
+      )
       TrackingProvider.Instance.setDelegationTrackerStatus(
         DelegationStatus.UnSupportedSortArg,
         arg1,
         binding,
         this,
-        DelegationTelemetryInfo.CreateEmptyDelegationTelemetryInfo(),
+        DelegationTelemetryInfo.CreateEmptyDelegationTelemetryInfo()
       )
 
       return false
@@ -221,29 +278,45 @@ export class SortFunction extends FunctionWithTableInput {
     }
 
     const columnName = DPath.Root.append(firstNameInfo.name)
-    if (!metadata.isDelegationSupportedByColumn(columnName, new DelegationCapability(DelegationCapability.Sort))) {
+    if (
+      !metadata.isDelegationSupportedByColumn(
+        columnName,
+        new DelegationCapability(DelegationCapability.Sort)
+      )
+    ) {
       super.suggestDelegationHint(firstName, binding)
       TrackingProvider.Instance.setDelegationTrackerStatus(
         DelegationStatus.NoDelSupportByColumn,
         firstName,
         binding,
         this,
-        DelegationTelemetryInfo.CreateNoDelSupportByColumnTelemetryInfo(firstNameInfo),
+        DelegationTelemetryInfo.CreateNoDelSupportByColumnTelemetryInfo(
+          firstNameInfo
+        )
       )
       return false
     }
 
     const defaultSortOrder = LanguageConstants.AscendingSortOrderString
-    var cargs = args.length
+    let cargs = args.length
 
     // Verify that the third argument (If present) is an Enum or string literal.
-    if (cargs < 3 && this.IsSortOrderSuppportedByColumn(callNode, binding, defaultSortOrder, metadata, columnName)) {
+    if (
+      cargs < 3 &&
+      this.IsSortOrderSuppportedByColumn(
+        callNode,
+        binding,
+        defaultSortOrder,
+        metadata,
+        columnName
+      )
+    ) {
       return true
     }
 
     // TASK: 6237100 - Binder: Propagate errors in subtree of the callnode to the call node itself
     // Only FirstName, DottedName and StrLit non-async nodes are supported for arg2.
-    var arg2 = args[2] //.VerifyValue();
+    let arg2 = args[2] //.VerifyValue();
     if (!this.IsValidSortOrderNode(arg2, metadata, binding, columnName)) {
       super.suggestDelegationHint(arg2, binding)
       return false
@@ -292,7 +365,7 @@ export class SortFunction extends FunctionWithTableInput {
           '{0}"{1}":{2}',
           separator,
           CharacterUtils.EscapeString(column.name.value)[0],
-          SortFunction.GetSortComparatorIdForType(column.type),
+          SortFunction.GetSortComparatorIdForType(column.type)
         )
         separator = ','
       }
@@ -308,7 +381,7 @@ export class SortFunction extends FunctionWithTableInput {
     binding: TexlBinding,
     order: string,
     metadata: SortOpMetadata,
-    columnPath: DPath,
+    columnPath: DPath
   ) {
     // Contracts.AssertValue(node);
     // Contracts.AssertValue(binding);
@@ -316,21 +389,29 @@ export class SortFunction extends FunctionWithTableInput {
     // Contracts.AssertValue(metadata);
     // Contracts.AssertValid(columnPath);
 
-    const result = this.IsSortOrderSuppportedByColumnNext(order, metadata, columnPath)
+    const result = this.IsSortOrderSuppportedByColumnNext(
+      order,
+      metadata,
+      columnPath
+    )
     if (!result) {
       TrackingProvider.Instance.setDelegationTrackerStatus(
         DelegationStatus.SortOrderNotSupportedByColumn,
         node,
         binding,
         this,
-        DelegationTelemetryInfo.CreateEmptyDelegationTelemetryInfo(),
+        DelegationTelemetryInfo.CreateEmptyDelegationTelemetryInfo()
       )
     }
 
     return result
   }
 
-  private IsSortOrderSuppportedByColumnNext(order: string, metadata: SortOpMetadata, columnPath: DPath) {
+  private IsSortOrderSuppportedByColumnNext(
+    order: string,
+    metadata: SortOpMetadata,
+    columnPath: DPath
+  ) {
     // Contracts.AssertValue(order);
     // Contracts.AssertValue(metadata);
     // Contracts.AssertValid(columnPath);
@@ -338,6 +419,9 @@ export class SortFunction extends FunctionWithTableInput {
     order = order.toLowerCase()
 
     // If column is marked as ascending only then return false if order requested is descending.
-    return order != LanguageConstants.DescendingSortOrderString || !metadata.isColumnAscendingOnly(columnPath)
+    return (
+      order != LanguageConstants.DescendingSortOrderString ||
+      !metadata.isColumnAscendingOnly(columnPath)
+    )
   }
 }

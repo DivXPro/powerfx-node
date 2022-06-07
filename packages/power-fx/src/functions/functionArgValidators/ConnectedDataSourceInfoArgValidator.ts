@@ -6,8 +6,13 @@ import { CallNode, DottedNameNode, FirstNameNode, TexlNode } from '../../syntax'
 import { NodeKind } from '../../syntax/NodeKind'
 import { IArgValidator } from './IArgValidator'
 
-export class DelegatableDataSourceInfoValidator implements IArgValidator<IExternalDataSource> {
-  public tryGetValidValue(argNode: TexlNode, binding: TexlBinding): [boolean, IExternalDataSource] {
+export class DelegatableDataSourceInfoValidator
+  implements IArgValidator<IExternalDataSource>
+{
+  public tryGetValidValue(
+    argNode: TexlNode,
+    binding: TexlBinding
+  ): [boolean, IExternalDataSource] {
     // Contracts.AssertValue(argNode);
     // Contracts.AssertValue(binding);
 
@@ -26,12 +31,19 @@ export class DelegatableDataSourceInfoValidator implements IArgValidator<IExtern
     return [false, dsInfo]
   }
 
-  private tryGetDsInfoForCall(callNode: CallNode, binding: TexlBinding): [boolean, IExternalDataSource] {
+  private tryGetDsInfoForCall(
+    callNode: CallNode,
+    binding: TexlBinding
+  ): [boolean, IExternalDataSource] {
     // Contracts.AssertValueOrNull(callNode);
     // Contracts.AssertValue(binding);
 
     let dsInfo: IExternalDataSource
-    if (callNode == null || !binding.isDelegatable(callNode) || !binding.getType(callNode).isTable) {
+    if (
+      callNode == null ||
+      !binding.isDelegatable(callNode) ||
+      !binding.getType(callNode).isTable
+    ) {
       return [false, dsInfo]
     }
 
@@ -50,7 +62,10 @@ export class DelegatableDataSourceInfoValidator implements IArgValidator<IExtern
     return success
   }
 
-  private tryGetDsInfoForFirstName(firstName: FirstNameNode, binding: TexlBinding): [boolean, IExternalDataSource] {
+  private tryGetDsInfoForFirstName(
+    firstName: FirstNameNode,
+    binding: TexlBinding
+  ): [boolean, IExternalDataSource] {
     // Contracts.AssertValueOrNull(firstName);
     // Contracts.AssertValue(binding);
 
@@ -59,17 +74,20 @@ export class DelegatableDataSourceInfoValidator implements IArgValidator<IExtern
       return [false, dsInfo]
     }
 
-    var firstNameInfo = binding.getInfo(firstName)
+    let firstNameInfo = binding.getInfo(firstName)
     if (firstNameInfo == null || firstNameInfo.kind != BindKind.Data) {
       return [false, dsInfo]
     }
 
-    return binding.entityScope != null && binding.entityScope.tryGetEntity<IExternalDataSource>(firstNameInfo.name)
+    return (
+      binding.entityScope != null &&
+      binding.entityScope.tryGetEntity<IExternalDataSource>(firstNameInfo.name)
+    )
   }
 
   private tryGetDsInfoForDottedName(
     dottedNameNode: DottedNameNode,
-    binding: TexlBinding,
+    binding: TexlBinding
   ): [boolean, IExternalDataSource] {
     // Contracts.AssertValueOrNull(dottedNameNode);
     // Contracts.AssertValue(binding);

@@ -20,7 +20,10 @@ import { IExternalViewInfo } from '../entities/external/IExternalViewInfo'
 import { StringBuilder } from '../utils/StringBuilder'
 import { isNullOrEmpty } from '../utils/CharacterUtils'
 import TexlLexer from '../lexer/TexlLexer'
-import { IExternalControlType, IsIExternalControlType } from './IExternalControlType'
+import {
+  IExternalControlType,
+  IsIExternalControlType,
+} from './IExternalControlType'
 import { FieldNameKind } from './FieldNameKind'
 import { TexlNode } from '../syntax'
 import { DocumentErrorSeverity } from '../errors'
@@ -55,7 +58,8 @@ export interface IDTypeProps {
 export class DType {
   public areFieldsOptional: boolean
   public static readonly EnumPrefix: string = '%'
-  public static readonly MetaFieldName: string = 'meta-6de62757-ecb6-4be6-bb85-349b3c7938a9'
+  public static readonly MetaFieldName: string =
+    'meta-6de62757-ecb6-4be6-bb85-349b3c7938a9'
 
   public static Unknown = new DType(DKind.Unknown)
 
@@ -174,7 +178,7 @@ export class DType {
         [DKind.NamedValue, DKind.Error],
         [DKind.Flow, DKind.Error],
         [DKind.UntypedObject, DKind.Error],
-      ]),
+      ])
   )
 
   public static get KindToSuperkindMapping() {
@@ -262,13 +266,20 @@ export class DType {
   // REVIEW ragru: investigate how we can compute this on construction.
   public get maxDepth(): number {
     return this.isAggregate
-      ? 1 + (this.childCount === 0 ? 0 : Math.max(...this.getNames(DPath.Root).map((tn) => tn.type.maxDepth)))
+      ? 1 +
+          (this.childCount === 0
+            ? 0
+            : Math.max(
+                ...this.getNames(DPath.Root).map((tn) => tn.type.maxDepth)
+              ))
       : 0
   }
 
   public get hasErrors(): boolean {
     return this.isAggregate
-      ? this.getNames(DPath.Root).some((tn) => tn.type.isError || tn.type.hasErrors)
+      ? this.getNames(DPath.Root).some(
+          (tn) => tn.type.isError || tn.type.hasErrors
+        )
       : this.isError
   }
 
@@ -322,10 +333,17 @@ export class DType {
     return this.kind == DKind.View || this.kind == DKind.ViewValue
   }
   public get isAggregate() {
-    return this.kind === DKind.Table || this.kind === DKind.Record || this.kind === DKind.ObjNull
+    return (
+      this.kind === DKind.Table ||
+      this.kind === DKind.Record ||
+      this.kind === DKind.ObjNull
+    )
   }
   public get isPrimitive() {
-    return (DKind._MinPrimitive <= this.kind && this.kind < DKind._LimPrimitive) || this.kind == DKind.ObjNull
+    return (
+      (DKind._MinPrimitive <= this.kind && this.kind < DKind._LimPrimitive) ||
+      this.kind == DKind.ObjNull
+    )
   }
   public get isForm() {
     return this.kind == DKind.Form
@@ -348,7 +366,8 @@ export class DType {
     this.expandInfo = props?.expandInfo
     this.polymorphicInfo = props?.polymorphicInfo
     this.metadata = props?.metadata
-    this.associatedDataSources = props?.associatedDataSources || new Set<IExternalTabularDataSource>()
+    this.associatedDataSources =
+      props?.associatedDataSources || new Set<IExternalTabularDataSource>()
     this.optionSetInfo = props?.optionSetInfo
     this.namedValueKind = props?.namedValueKind
     this.displayNameProvider = props?.displayNameProvider
@@ -359,7 +378,12 @@ export class DType {
   }
 
   // Constructor for aggregate types (record, table)
-  public static MakeDTypeForAggregate(kind: DKind, tree: TypeTree, isFile = false, isLargeImage = false) {
+  public static MakeDTypeForAggregate(
+    kind: DKind,
+    tree: TypeTree,
+    isFile = false,
+    isLargeImage = false
+  ) {
     // Contracts.Assert(DKind._Min <= kind && kind < DKind._Lim);
     // tree.AssertValid();
     // Contracts.Assert(tree.IsEmpty || kind == DKind.Table || kind == DKind.Record);
@@ -424,7 +448,7 @@ export class DType {
     kind: DKind,
     info: IExpandInfo,
     outputTypeTree: TypeTree,
-    associatedDataSources?: Set<IExternalTabularDataSource>,
+    associatedDataSources?: Set<IExternalTabularDataSource>
   ) {
     //   Contracts.AssertValue(info);
     //   outputTypeTree.AssertValid();
@@ -436,7 +460,8 @@ export class DType {
       polymorphicInfo: undefined,
       metadata: undefined,
       attachmentType: undefined,
-      associatedDataSources: associatedDataSources || new Set<IExternalTabularDataSource>(),
+      associatedDataSources:
+        associatedDataSources || new Set<IExternalTabularDataSource>(),
       optionSetInfo: undefined,
       viewInfo: undefined,
     }
@@ -475,7 +500,7 @@ export class DType {
     kind: DKind,
     info: IPolymorphicInfo,
     outputTypeTree: TypeTree,
-    associatedDataSources?: Set<IExternalTabularDataSource>,
+    associatedDataSources?: Set<IExternalTabularDataSource>
   ) {
     //   Contracts.AssertValue(info);
     //   outputTypeTree.AssertValid();
@@ -487,7 +512,8 @@ export class DType {
       polymorphicInfo: info,
       metadata: undefined,
       attachmentType: undefined,
-      associatedDataSources: associatedDataSources || new Set<IExternalTabularDataSource>(),
+      associatedDataSources:
+        associatedDataSources || new Set<IExternalTabularDataSource>(),
       optionSetInfo: undefined,
       viewInfo: undefined,
       namedValueKind: undefined,
@@ -496,7 +522,11 @@ export class DType {
   }
 
   // Constructor for Metadata type
-  private static MakeDTypeForMetadata(kind: DKind, metadata: IDataColumnMetadata, outputTypeTree: TypeTree) {
+  private static MakeDTypeForMetadata(
+    kind: DKind,
+    metadata: IDataColumnMetadata,
+    outputTypeTree: TypeTree
+  ) {
     //   Contracts.Assert(kind == DKind.Metadata);
     //   Contracts.AssertValue(metadata);
     //   outputTypeTree.AssertValid();
@@ -505,7 +535,9 @@ export class DType {
       typeTree: outputTypeTree,
       enumSuperKind: DKind.Invalid as unknown as DKind,
       valueTree: null,
-      expandInfo: metadata.isExpandEntity ? metadata.type.expandInfo : undefined,
+      expandInfo: metadata.isExpandEntity
+        ? metadata.type.expandInfo
+        : undefined,
       polymorphicInfo: undefined,
       metadata,
       attachmentType: undefined,
@@ -541,7 +573,11 @@ export class DType {
   }
 
   // Constructor for OptionSet type
-  private static MakeDTypeForOptionSet(kind: DKind, outputTypeTree: TypeTree, info: IExternalOptionSet) {
+  private static MakeDTypeForOptionSet(
+    kind: DKind,
+    outputTypeTree: TypeTree,
+    info: IExternalOptionSet
+  ) {
     //   Contracts.Assert(kind == DKind.OptionSet);
     //   Contracts.AssertValue(info);
     //   outputTypeTree.AssertValid();
@@ -563,7 +599,10 @@ export class DType {
   }
 
   // Constructor for OptionSetValue type
-  private static MakeDTypeForOptionSetValue(kind: DKind, info: IExternalOptionSet) {
+  private static MakeDTypeForOptionSetValue(
+    kind: DKind,
+    info: IExternalOptionSet
+  ) {
     // Contracts.Assert(kind == DKind.OptionSetValue);
     // Contracts.AssertValue(info);
 
@@ -585,7 +624,11 @@ export class DType {
   }
 
   // Constructor for View type
-  private static MakeDTypeForView(kind: DKind, outputTypeTree: TypeTree, info: IExternalViewInfo) {
+  private static MakeDTypeForView(
+    kind: DKind,
+    outputTypeTree: TypeTree,
+    info: IExternalViewInfo
+  ) {
     //   Contracts.Assert(kind == DKind.View);
     //   Contracts.AssertValue(info);
     //   outputTypeTree.AssertValid();
@@ -657,7 +700,9 @@ export class DType {
       attachmentType: this.attachmentType,
       isFile: this.isFile,
       isLargeImage: this.isLargeImage,
-      associatedDataSources: new Set<IExternalTabularDataSource>(this.associatedDataSources),
+      associatedDataSources: new Set<IExternalTabularDataSource>(
+        this.associatedDataSources
+      ),
       optionSetInfo: this.optionSetInfo,
       viewInfo: this.viewInfo,
       namedValueKind: this.namedValueKind,
@@ -676,7 +721,7 @@ export class DType {
   public static AttachDataSourceInfo(
     type: DType,
     dsInfo: IExternalTabularDataSource,
-    attachToNestedType = true,
+    attachToNestedType = true
   ): DType {
     // type.AssertValid();
     // Contracts.AssertValue(dsInfo);
@@ -692,7 +737,7 @@ export class DType {
         fError,
         DPath.Root.append(typedName.name),
         DType.AttachDataSourceInfo(typedName.type, dsInfo, false),
-        true,
+        true
       )
       returnType = result[0]
       fError = result[1]
@@ -703,7 +748,10 @@ export class DType {
   /// <summary>
   /// This should only be used when constructing DTypes from the public surface to replace an existing display name provider.
   /// </summary>
-  public static ReplaceDisplayNameProvider(type: DType, displayNames: DisplayNameProvider): DType {
+  public static ReplaceDisplayNameProvider(
+    type: DType,
+    displayNames: DisplayNameProvider
+  ): DType {
     // type.AssertValid();
     // Contracts.AssertValue(displayNames);
 
@@ -716,7 +764,10 @@ export class DType {
   /// This should be used by internal operations to update the set of display name providers associated with a type, i.e. during Union operations.
   /// Display name providers are disabled if there's a conflict with an existing provider.
   /// </summary>
-  public static AttachOrDisableDisplayNameProvider(type: DType, displayNames: DisplayNameProvider): DType {
+  public static AttachOrDisableDisplayNameProvider(
+    type: DType,
+    displayNames: DisplayNameProvider
+  ): DType {
     // type.AssertValid()
     // Contracts.AssertValue(displayNames)
 
@@ -729,7 +780,10 @@ export class DType {
     return returnType
   }
 
-  public expandEntityType(expandedType: DType, associatedDatasources: Set<IExternalTabularDataSource>) {
+  public expandEntityType(
+    expandedType: DType,
+    associatedDatasources: Set<IExternalTabularDataSource>
+  ) {
     // Contracts.AssertValid(expandedType);
     // Contracts.Assert(HasExpandInfo);
 
@@ -743,7 +797,7 @@ export class DType {
       expandedType.kind,
       this.expandInfo.clone(),
       expandedType.typeTree,
-      associatedDatasources,
+      associatedDatasources
     )
   }
 
@@ -761,7 +815,7 @@ export class DType {
       expandedType.kind,
       expandInfo,
       expandedType.typeTree,
-      expandedType.associatedDataSources,
+      expandedType.associatedDataSources
     )
   }
 
@@ -771,7 +825,12 @@ export class DType {
     //   Contracts.AssertValid(from);
     //   Contracts.Assert(from.HasExpandInfo);
 
-    return DType.MakeDTypeForEntity(to.kind, from.expandInfo.clone(), to.typeTree, to.associatedDataSources)
+    return DType.MakeDTypeForEntity(
+      to.kind,
+      from.expandInfo.clone(),
+      to.typeTree,
+      to.associatedDataSources
+    )
   }
 
   public static CreateRecord(...typedNames: TypedName[]) {
@@ -800,7 +859,12 @@ export class DType {
     return DType.CreateRecordOrTable(DKind.Record, typedNames, false, true)
   }
 
-  private static CreateRecordOrTable(kind: DKind, typedNames: Array<TypedName>, isFile = false, isLargeImage = false) {
+  private static CreateRecordOrTable(
+    kind: DKind,
+    typedNames: Array<TypedName>,
+    isFile = false,
+    isLargeImage = false
+  ) {
     //   Contracts.Assert(kind == DKind.Record || kind == DKind.Table);
     //   Contracts.AssertValue(typedNames);
 
@@ -808,26 +872,38 @@ export class DType {
       kind,
       TypeTree.Create(typedNames.map(DType.TypedNameToKVP)),
       isFile,
-      isLargeImage,
+      isLargeImage
     )
   }
 
   public static CreateExpandType(info: IExpandInfo) {
     //   Contracts.AssertValue(info);
 
-    return DType.MakeDTypeForEntity(DKind.DataEntity, info, DType.Unknown.typeTree)
+    return DType.MakeDTypeForEntity(
+      DKind.DataEntity,
+      info,
+      DType.Unknown.typeTree
+    )
   }
 
   public static CreatePolymorphicType(info: IPolymorphicInfo) {
     //   Contracts.AssertValue(info);
 
-    return DType.MakeDTypeForPolymorphic(DKind.Polymorphic, info, DType.Unknown.typeTree)
+    return DType.MakeDTypeForPolymorphic(
+      DKind.Polymorphic,
+      info,
+      DType.Unknown.typeTree
+    )
   }
 
   public static CreateMetadataType(metadata: IDataColumnMetadata) {
     //   Contracts.AssertValue(metadata);
 
-    return DType.MakeDTypeForMetadata(DKind.Metadata, metadata, DType.Unknown.typeTree)
+    return DType.MakeDTypeForMetadata(
+      DKind.Metadata,
+      metadata,
+      DType.Unknown.typeTree
+    )
   }
 
   public static CreateAttachmentType(attachmentType: DType) {
@@ -856,7 +932,11 @@ export class DType {
       const type = new DType(DKind.OptionSetValue, info)
       typedNames.push(new TypedName(type, name))
     }
-    return DType.MakeDTypeForOptionSet(DKind.OptionSet, TypeTree.Create(typedNames.map(DType.TypedNameToKVP)), info)
+    return DType.MakeDTypeForOptionSet(
+      DKind.OptionSet,
+      TypeTree.Create(typedNames.map(DType.TypedNameToKVP)),
+      info
+    )
   }
 
   public static CreateViewType(info: IExternalViewInfo) {
@@ -867,7 +947,11 @@ export class DType {
       const type = new DType(DKind.OptionSetValue, { viewInfo: info })
       typedNames.push(new TypedName(type, new DName(key.toString())))
     })
-    return DType.MakeDTypeForView(DKind.View, TypeTree.Create(typedNames.map(DType.TypedNameToKVP)), info)
+    return DType.MakeDTypeForView(
+      DKind.View,
+      TypeTree.Create(typedNames.map(DType.TypedNameToKVP)),
+      info
+    )
   }
 
   public static CreateNamedValueType(namedValueKind: string) {
@@ -879,7 +963,10 @@ export class DType {
   public static CreateMinimalLargeImageType() {
     const minTypeTree: KeyValuePair<string, DType>[] = []
     minTypeTree.push({ key: 'Value', value: DType.Image })
-    return DType.MakeDTypeForAggregate(DKind.Record, TypeTree.Create(minTypeTree))
+    return DType.MakeDTypeForAggregate(
+      DKind.Record,
+      TypeTree.Create(minTypeTree)
+    )
   }
 
   public static CreateOptionSetValueType(info: IExternalOptionSet) {
@@ -890,21 +977,30 @@ export class DType {
     return DType.MakeDTypeForViewValue(DKind.ViewValue, info)
   }
 
-  private static TypedNameToKVP(typedName: TypedName): KeyValuePair<string, DType> {
+  private static TypedNameToKVP(
+    typedName: TypedName
+  ): KeyValuePair<string, DType> {
     //   Contracts.Assert(typedName.IsValid);
     return { key: typedName.name.toString(), value: typedName.type }
   }
 
-  public static CreateEnum(supertype: DType, data: ValueTree | KeyValuePair<DName, object>[]) {
+  public static CreateEnum(
+    supertype: DType,
+    data: ValueTree | KeyValuePair<DName, object>[]
+  ) {
     //   Contracts.Assert(supertype.IsValid);
     //   Contracts.AssertValue(pairs);
     if (data instanceof ValueTree) {
       return DType.MakeDTypeForEnum(supertype.kind, data)
     }
-    return new DType(supertype.kind, { valueTree: ValueTree.Create(data.map(DType.NamedObjectToKVP)) })
+    return new DType(supertype.kind, {
+      valueTree: ValueTree.Create(data.map(DType.NamedObjectToKVP)),
+    })
   }
 
-  private static NamedObjectToKVP(pair: KeyValuePair<DName, any>): KeyValuePair<string, EquatableObject> {
+  private static NamedObjectToKVP(
+    pair: KeyValuePair<DName, any>
+  ): KeyValuePair<string, EquatableObject> {
     //   Contracts.Assert(pair.Key.IsValid);
     //   Contracts.AssertValue(pair.Value);
 
@@ -937,7 +1033,10 @@ export class DType {
       case DKind.Control:
       case DKind.DataEntity:
         if (this.expandInfo != undefined)
-          return new DType(DKind.Record, { expandInfo: this.expandInfo, typeTree: this.typeTree })
+          return new DType(DKind.Record, {
+            expandInfo: this.expandInfo,
+            typeTree: this.typeTree,
+          })
         else
           return new DType(DKind.Record, {
             typeTree: this.typeTree,
@@ -977,7 +1076,7 @@ export class DType {
         const rst = result.setType(
           fError,
           DPath.Root.append(typedName.name),
-          typedName.type.controlsToRecordsRecursive(),
+          typedName.type.controlsToRecordsRecursive()
         )
         result = rst[0]
         fError = rst[1]
@@ -995,7 +1094,10 @@ export class DType {
       if (typedName.type.isExpandEntity) {
         // expands.Add(typedName.Type.ExpandInfo.VerifyValue());
         expands.push(typedName.type.expandInfo)
-      } else if (typedName.type.isPolymorphic && typedName.type.hasPolymorphicInfo) {
+      } else if (
+        typedName.type.isPolymorphic &&
+        typedName.type.hasPolymorphicInfo
+      ) {
         typedName.type.polymorphicInfo.expands.forEach((expand) => {
           expands.push(expand)
         })
@@ -1014,10 +1116,19 @@ export class DType {
       case DKind.DataEntity:
       case DKind.Control:
         if (this.expandInfo != undefined)
-          return [new DType(DKind.Record, { expandInfo: this.expandInfo, typeTree: this.typeTree }), false]
+          return [
+            new DType(DKind.Record, {
+              expandInfo: this.expandInfo,
+              typeTree: this.typeTree,
+            }),
+            false,
+          ]
         else
           return [
-            new DType(DKind.Record, { typeTree: this.typeTree, associatedDataSources: this.associatedDataSources }),
+            new DType(DKind.Record, {
+              typeTree: this.typeTree,
+              associatedDataSources: this.associatedDataSources,
+            }),
             false,
           ]
       case DKind.ObjNull:
@@ -1037,7 +1148,10 @@ export class DType {
       case DKind.DataEntity:
       case DKind.Control:
         if (this.expandInfo != undefined)
-          return new DType(DKind.Table, { expandInfo: this.expandInfo, typeTree: this.typeTree })
+          return new DType(DKind.Table, {
+            expandInfo: this.expandInfo,
+            typeTree: this.typeTree,
+          })
         else
           return new DType(DKind.Table, {
             typeTree: this.typeTree,
@@ -1096,7 +1210,10 @@ export class DType {
     return new DType(this.enumSuperKind)
   }
 
-  public tryGetEntityDelegationMetadata(): [boolean, IDelegationMetadata | undefined] {
+  public tryGetEntityDelegationMetadata(): [
+    boolean,
+    IDelegationMetadata | undefined
+  ] {
     if (!this.hasExpandInfo) {
       //   metadata = undefined;
       return [false, undefined]
@@ -1105,8 +1222,11 @@ export class DType {
     //   Contracts.CheckValue(ExpandInfo.ParentDataSource, nameof(ExpandInfo.ParentDataSource));
     //   Contracts.CheckValue(ExpandInfo.ParentDataSource.DataEntityMetadataProvider, nameof(ExpandInfo.ParentDataSource.DataEntityMetadataProvider));
 
-    const metadataProvider = this.expandInfo.parentDataSource.dataEntityMetadataProvider
-    const result = metadataProvider.tryGetEntityMetadata(this.expandInfo.identity)
+    const metadataProvider =
+      this.expandInfo.parentDataSource.dataEntityMetadataProvider
+    const result = metadataProvider.tryGetEntityMetadata(
+      this.expandInfo.identity
+    )
     if (!result[0]) {
       //   metadata = undefined;
       return [false, undefined]
@@ -1202,7 +1322,12 @@ export class DType {
   }
 
   // Return a new type based on this, with the member field (path) of a specified type.
-  public setType(fError: boolean, path: DPath, type: DType, skipCompare = false): [DType, boolean] {
+  public setType(
+    fError: boolean,
+    path: DPath,
+    type: DType,
+    skipCompare = false
+  ): [DType, boolean] {
     //   AssertValid();
     //   type.AssertValid();
     for (; path.length > 0; path = path.parent) {
@@ -1214,7 +1339,11 @@ export class DType {
         fError = true
         return [this, fError]
       }
-      let tree = typeCur.typeTree.setItem(path.name.toString(), type, skipCompare)
+      let tree = typeCur.typeTree.setItem(
+        path.name.toString(),
+        type,
+        skipCompare
+      )
       type = new DType(typeCur.kind, {
         typeTree: tree,
         associatedDataSources: typeCur.associatedDataSources,
@@ -1234,7 +1363,12 @@ export class DType {
   }
 
   // Return a new type based on this, with an additional named member field of a specified type.
-  public tryAdd(fError: boolean, path: DPath, name: DName, type: DType): [DType, boolean] {
+  public tryAdd(
+    fError: boolean,
+    path: DPath,
+    name: DName,
+    type: DType
+  ): [DType, boolean] {
     //   AssertValid();
     //   Contracts.Assert(name.IsValid);
     //   type.AssertValid();
@@ -1302,7 +1436,11 @@ export class DType {
   }
 
   // Return a new type based on this, with additional named member fields of a specified type.
-  public addMulti(fError: boolean, path: DPath, typedNames: TypedName[]): [DType, boolean] {
+  public addMulti(
+    fError: boolean,
+    path: DPath,
+    typedNames: TypedName[]
+  ): [DType, boolean] {
     //   AssertValid();
     //   Contracts.AssertValue(typedNames);
     let typeOuter: DType
@@ -1360,12 +1498,16 @@ export class DType {
         typeTree: tree,
         associatedDataSources: this.associatedDataSources,
         displayNameProvider: this.displayNameProvider,
-      }),
+      })
     )
   }
 
   // Drop fields of specified kind.
-  public dropAllOfKind(fError: boolean, path: DPath, kind: DKind): [DType, boolean] {
+  public dropAllOfKind(
+    fError: boolean,
+    path: DPath,
+    kind: DKind
+  ): [DType, boolean] {
     //   AssertValid();
     //   Contracts.Assert(DKind._Min <= kind && kind < DKind._Lim);
 
@@ -1399,11 +1541,14 @@ export class DType {
         typeTree: tree,
         associatedDataSources: this.associatedDataSources,
         displayNameProvider: this.displayNameProvider,
-      }),
+      })
     )
   }
 
-  public dropAllOfTableRelationships(fError: boolean, path: DPath): [DType, boolean] {
+  public dropAllOfTableRelationships(
+    fError: boolean,
+    path: DPath
+  ): [DType, boolean] {
     //   AssertValid();
 
     let typeOuter: DType
@@ -1418,12 +1563,18 @@ export class DType {
 
     let tree = typeOuter.typeTree
     this.getNames(path).forEach((typedName) => {
-      if (typedName.type.kind === DKind.DataEntity && (typedName.type.expandInfo?.isTable || false)) {
+      if (
+        typedName.type.kind === DKind.DataEntity &&
+        (typedName.type.expandInfo?.isTable || false)
+      ) {
         const rst = tree.removeItem(fError, typedName.name.toString())
         tree = rst[0]
         fError = rst[1]
       } else if (typedName.type.isAggregate) {
-        const rst = typedName.type.dropAllOfTableRelationships(fError, DPath.Root)
+        const rst = typedName.type.dropAllOfTableRelationships(
+          fError,
+          DPath.Root
+        )
         const typeInner = rst[0]
         fError = rst[1]
         if (fError) {
@@ -1442,12 +1593,16 @@ export class DType {
         typeTree: tree,
         associatedDataSources: this.associatedDataSources,
         displayNameProvider: this.displayNameProvider,
-      }),
+      })
     )
   }
 
   // Drop fields of specified kind from all nested types
-  public dropAllOfKindNested(fError: boolean, path: DPath, kind: DKind): [DType, boolean] {
+  public dropAllOfKindNested(
+    fError: boolean,
+    path: DPath,
+    kind: DKind
+  ): [DType, boolean] {
     //   AssertValid();
     //   Contracts.Assert(DKind._Min <= kind && kind < DKind._Lim);
     let typeOuter: DType
@@ -1485,14 +1640,18 @@ export class DType {
         typeTree: tree,
         associatedDataSources: this.associatedDataSources,
         displayNameProvider: this.displayNameProvider,
-      }),
+      })
     )
   }
 
   // Drop the specified names/fields from path's type, and return the resulting type.
   // Note that if some of the names/fields were missing, we are returning a new type with
   // as many fields removed as possible (and fError == true).
-  public dropMulti(fError: boolean, path: DPath, ...rgname: DName[]): [DType, boolean] {
+  public dropMulti(
+    fError: boolean,
+    path: DPath,
+    ...rgname: DName[]
+  ): [DType, boolean] {
     //   AssertValid();
     //   Contracts.AssertNonEmpty(rgname);
     //   Contracts.AssertAllValid(rgname);
@@ -1520,14 +1679,18 @@ export class DType {
         typeTree: tree,
         associatedDataSources: this.associatedDataSources,
         displayNameProvider: this.displayNameProvider,
-      }),
+      })
     )
   }
 
   // Drop everything but the specified names/fields from path's type, and return the resulting type.
   // If a name/field (that was specified to be kept) is missing, we are returning a new type
   // with the type for the missing field as Error and fError will be true.
-  public keepMulti(fError: boolean, path: DPath, ...rgname: DName[]): [DType, boolean] {
+  public keepMulti(
+    fError: boolean,
+    path: DPath,
+    ...rgname: DName[]
+  ): [DType, boolean] {
     //   AssertValid();
     //   Contracts.AssertNonEmpty(rgname);
     //   Contracts.AssertAllValid(rgname);
@@ -1563,7 +1726,7 @@ export class DType {
         typeTree: tree,
         associatedDataSources: this.associatedDataSources,
         displayNameProvider: this.displayNameProvider,
-      }),
+      })
     )
   }
 
@@ -1625,7 +1788,9 @@ export class DType {
   }
 
   public getNames(path: DPath) {
-    return this.getAllNames(path).filter((kvp) => kvp.name.toString() != DType.MetaFieldName)
+    return this.getAllNames(path).filter(
+      (kvp) => kvp.name.toString() != DType.MetaFieldName
+    )
   }
 
   /// <summary>
@@ -1636,7 +1801,9 @@ export class DType {
     //   Contracts.AssertValid(path);
 
     return this.getNames(path).some(
-      (n) => n.type.isExpandEntity || (n.type.isAggregate && n.type.containsDataEntityType(DPath.Root)),
+      (n) =>
+        n.type.isExpandEntity ||
+        (n.type.isAggregate && n.type.containsDataEntityType(DPath.Root))
     )
   }
 
@@ -1648,7 +1815,9 @@ export class DType {
     //   Contracts.AssertValid(path);
 
     return this.getNames(path).some(
-      (n) => n.type.isAttachment || (n.type.isAggregate && n.type.containsAttachmentType(DPath.Root)),
+      (n) =>
+        n.type.isAttachment ||
+        (n.type.isAggregate && n.type.containsAttachmentType(DPath.Root))
     )
   }
 
@@ -1664,7 +1833,10 @@ export class DType {
   }
 
   // Get the fields/names at the specified path.
-  private getAllNamesWithError(fError: boolean, path: DPath): [boolean, TypedName[]] {
+  private getAllNamesWithError(
+    fError: boolean,
+    path: DPath
+  ): [boolean, TypedName[]] {
     //   AssertValid();
 
     let type: DType
@@ -1682,13 +1854,20 @@ export class DType {
       case DKind.View:
       case DKind.File:
       case DKind.LargeImage: {
-        return [fError, type.typeTree?.getPairsArray().map((kvp) => new TypedName(kvp.value, new DName(kvp.key))) || []]
+        return [
+          fError,
+          type.typeTree
+            ?.getPairsArray()
+            .map((kvp) => new TypedName(kvp.value, new DName(kvp.key))) || [],
+        ]
       }
       case DKind.Enum:
         const supertype = new DType(type.enumSuperKind)
         return [
           fError,
-          type.valueTree?.getPairsArray().map((kvp) => new TypedName(supertype, new DName(kvp.key))) || [],
+          type.valueTree
+            ?.getPairsArray()
+            .map((kvp) => new TypedName(supertype, new DName(kvp.key))) || [],
         ]
       default:
         return [fError, []]
@@ -1701,7 +1880,13 @@ export class DType {
     if (!result[0]) {
       return [false, DType.Unknown]
     }
-    return [true, this.expandEntityType(metadata.schema, metadata.schema.associatedDataSources)]
+    return [
+      true,
+      this.expandEntityType(
+        metadata.schema,
+        metadata.schema.associatedDataSources
+      ),
+    ]
   }
 
   // For patching entities, we expand the type and drop entities and attachments for the purpose of comparison.
@@ -1750,7 +1935,10 @@ export class DType {
         return type.expandInfo.identity === this.expandInfo.identity
       case DKind.Table:
       case DKind.Record:
-        if (type.expandInfo != null && type.expandInfo.identity !== this.expandInfo.identity) {
+        if (
+          type.expandInfo != null &&
+          type.expandInfo.identity !== this.expandInfo.identity
+        ) {
           return false
         }
         const result = this.tryGetExpandedEntityType()
@@ -1799,7 +1987,11 @@ export class DType {
   /// <returns>
   /// True if <see cref="this"/> accepts <see cref="type"/>, false otherwise.
   /// </returns>
-  public accepts(type: DType, exact = true, useLegacyDateTimeAccepts = false): boolean {
+  public accepts(
+    type: DType,
+    exact = true,
+    useLegacyDateTimeAccepts = false
+  ): boolean {
     return this.acceptsOut(type, exact, useLegacyDateTimeAccepts)[0]
   }
 
@@ -1833,8 +2025,14 @@ export class DType {
   public acceptsOut(
     type: DType,
     exact = true,
-    useLegacyDateTimeAccepts = false,
-  ): [boolean, { schemaDifference: KeyValuePair<string, DType>; schemaDifferenceType: DType }] {
+    useLegacyDateTimeAccepts = false
+  ): [
+    boolean,
+    {
+      schemaDifference: KeyValuePair<string, DType>
+      schemaDifferenceType: DType
+    }
+  ] {
     //   AssertValid();
     //   type.AssertValid();
 
@@ -1842,12 +2040,14 @@ export class DType {
     let schemaDifferenceType = DType.Invalid
 
     // We accept ObjNull as any DType (but subtypes can override).
-    if (type.kind == DKind.ObjNull) return [true, { schemaDifference, schemaDifferenceType }]
+    if (type.kind == DKind.ObjNull)
+      return [true, { schemaDifference, schemaDifferenceType }]
 
     const defaultReturnValue = (targetType: DType) =>
       targetType.kind == this.kind ||
       targetType.kind == DKind.Unknown ||
-      (targetType.kind == DKind.Enum && this.accepts(targetType.getEnumSupertype()))
+      (targetType.kind == DKind.Enum &&
+        this.accepts(targetType.getEnumSupertype()))
 
     let accepts: boolean
     switch (this.kind) {
@@ -1855,13 +2055,22 @@ export class DType {
         accepts = true
         break
       case DKind.Polymorphic:
-        accepts = type.kind === DKind.Polymorphic || type.kind === DKind.Record || type.kind === DKind.Unknown
+        accepts =
+          type.kind === DKind.Polymorphic ||
+          type.kind === DKind.Record ||
+          type.kind === DKind.Unknown
         break
       case DKind.Record:
       case DKind.File:
       case DKind.LargeImage:
         if (this.kind === type.kind) {
-          const accResult = DType.TreeAccepts(this, this.typeTree, type.typeTree, exact, useLegacyDateTimeAccepts)
+          const accResult = DType.TreeAccepts(
+            this,
+            this.typeTree,
+            type.typeTree,
+            exact,
+            useLegacyDateTimeAccepts
+          )
           schemaDifference = accResult[1].schemaDifference
           schemaDifferenceType = accResult[1].treeSrcSchemaDifferenceType
           return [accResult[0], { schemaDifference, schemaDifferenceType }]
@@ -1870,7 +2079,13 @@ export class DType {
         break
       case DKind.Table:
         if (this.kind == type.kind || type.isExpandEntity) {
-          const accResult = DType.TreeAccepts(this, this.typeTree, type.typeTree, exact, useLegacyDateTimeAccepts)
+          const accResult = DType.TreeAccepts(
+            this,
+            this.typeTree,
+            type.typeTree,
+            exact,
+            useLegacyDateTimeAccepts
+          )
           schemaDifference = accResult[1].schemaDifference
           schemaDifferenceType = accResult[1].treeSrcSchemaDifferenceType
           return [accResult[0], { schemaDifference, schemaDifferenceType }]
@@ -1880,7 +2095,8 @@ export class DType {
       case DKind.Enum:
         accepts =
           (this.kind != type.kind && type.kind === DKind.Unknown) ||
-          (this.enumSuperKind == type.enumSuperKind && DType.EnumTreeAccepts(this.valueTree, type.valueTree, exact))
+          (this.enumSuperKind == type.enumSuperKind &&
+            DType.EnumTreeAccepts(this.valueTree, type.valueTree, exact))
         break
       case DKind.Unknown:
         accepts = type.kind == DKind.Unknown
@@ -1934,20 +2150,26 @@ export class DType {
         accepts =
           type.kind == DKind.PenImage ||
           type.kind == DKind.Blob ||
-          (!exact && (type.kind == DKind.String || type.kind == DKind.Hyperlink)) ||
+          (!exact &&
+            (type.kind == DKind.String || type.kind == DKind.Hyperlink)) ||
           defaultReturnValue(type)
         break
       case DKind.Media:
         accepts =
           type.kind == DKind.Blob ||
-          (!exact && (type.kind == DKind.String || type.kind == DKind.Hyperlink)) ||
+          (!exact &&
+            (type.kind == DKind.String || type.kind == DKind.Hyperlink)) ||
           defaultReturnValue(type)
         break
       case DKind.Blob:
-        accepts = (!exact && (type.kind == DKind.String || type.kind == DKind.Hyperlink)) || defaultReturnValue(type)
+        accepts =
+          (!exact &&
+            (type.kind == DKind.String || type.kind == DKind.Hyperlink)) ||
+          defaultReturnValue(type)
         break
       case DKind.Currency:
-        accepts = (!exact && type.kind == DKind.Number) || defaultReturnValue(type)
+        accepts =
+          (!exact && type.kind == DKind.Number) || defaultReturnValue(type)
         break
       case DKind.DateTime:
         accepts =
@@ -1987,26 +2209,34 @@ export class DType {
           (type.kind === this.kind &&
             type.metadata.name === this.metadata.name &&
             type.metadata.type === this.metadata.type &&
-            type.metadata.parentTableMetadata.name === this.metadata.parentTableMetadata.name) ||
+            type.metadata.parentTableMetadata.name ===
+              this.metadata.parentTableMetadata.name) ||
           type.kind === DKind.Unknown
         break
       case DKind.OptionSet:
       case DKind.OptionSetValue:
         accepts =
           (type.kind === this.kind &&
-            (this.optionSetInfo == null || type.optionSetInfo == null || type.optionSetInfo === this.optionSetInfo)) ||
+            (this.optionSetInfo == null ||
+              type.optionSetInfo == null ||
+              type.optionSetInfo === this.optionSetInfo)) ||
           type.kind == DKind.Unknown
         break
       case DKind.View:
       case DKind.ViewValue:
         accepts =
           (type.kind == this.kind &&
-            (this.viewInfo == null || type.viewInfo == null || type.viewInfo === this.viewInfo)) ||
+            (this.viewInfo == null ||
+              type.viewInfo == null ||
+              type.viewInfo === this.viewInfo)) ||
           type.kind === DKind.Unknown
         break
 
       case DKind.NamedValue:
-        accepts = (type.kind === this.kind && this.namedValueKind == type.namedValueKind) || type.kind == DKind.Unknown
+        accepts =
+          (type.kind === this.kind &&
+            this.namedValueKind == type.namedValueKind) ||
+          type.kind == DKind.Unknown
         break
       case DKind.UntypedObject:
         accepts = type.kind == DKind.UntypedObject || type.kind == DKind.Unknown
@@ -2032,8 +2262,14 @@ export class DType {
     treeDst: TypeTree,
     treeSrc: TypeTree,
     exact = true,
-    useLegacyDateTimeAccepts = false,
-  ): [boolean, { schemaDifference: KeyValuePair<string, DType>; treeSrcSchemaDifferenceType: DType }] {
+    useLegacyDateTimeAccepts = false
+  ): [
+    boolean,
+    {
+      schemaDifference: KeyValuePair<string, DType>
+      treeSrcSchemaDifferenceType: DType
+    }
+  ] {
     //   treeDst.AssertValid();
     //   treeSrc.AssertValid();
 
@@ -2042,7 +2278,8 @@ export class DType {
     let schemaDifference = { key: undefined as string, value: DType.Invalid }
     let treeSrcSchemaDifferenceType = DType.Invalid
 
-    if (treeDst == treeSrc) return [true, { schemaDifference, treeSrcSchemaDifferenceType }]
+    if (treeDst == treeSrc)
+      return [true, { schemaDifference, treeSrcSchemaDifferenceType }]
 
     for (const pairDst of treeDst.getPairsArray()) {
       // Contracts.Assert(pairDst.Value.IsValid);
@@ -2072,7 +2309,11 @@ export class DType {
 
       let recursiveSchemaDifference: { key: string; value: DType }
       let recursiveSchemaDifferenceType: DType
-      const result2 = pairDst.value.acceptsOut(type, exact, useLegacyDateTimeAccepts)
+      const result2 = pairDst.value.acceptsOut(
+        type,
+        exact,
+        useLegacyDateTimeAccepts
+      )
       recursiveSchemaDifference = result2[1].schemaDifference
       recursiveSchemaDifferenceType = result2[1].schemaDifferenceType
       if (result2[0]) {
@@ -2084,7 +2325,8 @@ export class DType {
         }
         if (!isNullOrEmpty(recursiveSchemaDifference.key)) {
           schemaDifference = {
-            key: colName + TexlLexer.PunctuatorDot + recursiveSchemaDifference.key,
+            key:
+              colName + TexlLexer.PunctuatorDot + recursiveSchemaDifference.key,
             value: recursiveSchemaDifference.value,
           }
           treeSrcSchemaDifferenceType = recursiveSchemaDifferenceType
@@ -2100,7 +2342,11 @@ export class DType {
   }
 
   // Implements Accepts for Enum types.
-  private static EnumTreeAccepts(treeDst: ValueTree, treeSrc: ValueTree, exact = true): boolean {
+  private static EnumTreeAccepts(
+    treeDst: ValueTree,
+    treeSrc: ValueTree,
+    exact = true
+  ): boolean {
     //   treeDst.AssertValid();
     //   treeSrc.AssertValid();
 
@@ -2163,7 +2409,12 @@ export class DType {
     switch (destType.kind) {
       case DKind.String:
       case DKind.Hyperlink:
-        if (this.kind === DKind.Blob || this.kind === DKind.Image || this.kind === DKind.Media) return true
+        if (
+          this.kind === DKind.Blob ||
+          this.kind === DKind.Image ||
+          this.kind === DKind.Media
+        )
+          return true
         break
       default:
         break
@@ -2173,33 +2424,54 @@ export class DType {
   }
 
   // Produces the least common supertype of the two specified types.
-  public static Supertype(type1: DType, type2: DType, useLegacyDateTimeAccepts = false): DType {
+  public static Supertype(
+    type1: DType,
+    type2: DType,
+    useLegacyDateTimeAccepts = false
+  ): DType {
     //   type1.AssertValid();
     //   type2.AssertValid();
 
     if (type1.isAggregate && type2.isAggregate) {
       if (type1.kind != type2.kind) return DType.Error
 
-      return DType.SupertypeAggregateCore(type1, type2, useLegacyDateTimeAccepts)
+      return DType.SupertypeAggregateCore(
+        type1,
+        type2,
+        useLegacyDateTimeAccepts
+      )
     }
 
     return DType.SupertypeCore(type1, type2, useLegacyDateTimeAccepts)
   }
 
-  private static SupertypeCore(type1: DType, type2: DType, useLegacyDateTimeAccepts: boolean): DType {
+  private static SupertypeCore(
+    type1: DType,
+    type2: DType,
+    useLegacyDateTimeAccepts: boolean
+  ): DType {
     //   type1.AssertValid();
     //   type2.AssertValid();
 
     if (type1.accepts(type2, undefined, useLegacyDateTimeAccepts))
-      return DType.CreateDTypeWithConnectedDataSourceInfoMetadata(type1, type2.associatedDataSources)
+      return DType.CreateDTypeWithConnectedDataSourceInfoMetadata(
+        type1,
+        type2.associatedDataSources
+      )
 
     if (type2.accepts(type1, undefined, useLegacyDateTimeAccepts))
-      return DType.CreateDTypeWithConnectedDataSourceInfoMetadata(type2, type1.associatedDataSources)
+      return DType.CreateDTypeWithConnectedDataSourceInfoMetadata(
+        type2,
+        type1.associatedDataSources
+      )
 
     let type1Superkind: DKind
 
     type1Superkind = DType.KindToSuperkindMapping.get(type1.kind)
-    if (!DType.KindToSuperkindMapping.get(type1.kind) || type1Superkind === DKind.Error) {
+    if (
+      !DType.KindToSuperkindMapping.get(type1.kind) ||
+      type1Superkind === DKind.Error
+    ) {
       return DType.Error
     }
 
@@ -2219,7 +2491,11 @@ export class DType {
     return type
   }
 
-  private static SupertypeAggregateCore(type1: DType, type2: DType, useLegacyDateTimeAccepts: boolean): DType {
+  private static SupertypeAggregateCore(
+    type1: DType,
+    type2: DType,
+    useLegacyDateTimeAccepts: boolean
+  ): DType {
     //   type1.AssertValid();
     //   type2.AssertValid();
     //   Contracts.Assert(type1.IsAggregate);
@@ -2246,7 +2522,11 @@ export class DType {
       if (fAtor1 != null && fAtor2 != null) {
         const cmp = RedBlackNode.Compare(fAtor1.key, fAtor2.key)
         if (cmp === 0) {
-          const innerType = DType.Supertype(fAtor1.value, fAtor2.value, useLegacyDateTimeAccepts)
+          const innerType = DType.Supertype(
+            fAtor1.value,
+            fAtor2.value,
+            useLegacyDateTimeAccepts
+          )
           if (innerType.isError) {
             const rst = treeRes.removeItem(fError, fAtor1.key)
             treeRes = rst[0]
@@ -2283,9 +2563,18 @@ export class DType {
   // Produces the union of the two given types.
   // For primitive types, this is the same as the least common supertype.
   // For aggregates, the union is a common subtype that includes fields from both types, assuming no errors.
-  public static Union(type1: DType, type2: DType, useLegacyDateTimeAccepts = false): DType {
+  public static Union(
+    type1: DType,
+    type2: DType,
+    useLegacyDateTimeAccepts = false
+  ): DType {
     let fError = false
-    const result = DType.UnionWithError(fError, type1, type2, useLegacyDateTimeAccepts)
+    const result = DType.UnionWithError(
+      fError,
+      type1,
+      type2,
+      useLegacyDateTimeAccepts
+    )
     return result[0]
   }
 
@@ -2294,16 +2583,27 @@ export class DType {
     //   type.AssertValid();
 
     let fError = false
-    const result = DType.UnionWithError(fError, this, type, useLegacyDateTimeAccepts)
+    const result = DType.UnionWithError(
+      fError,
+      this,
+      type,
+      useLegacyDateTimeAccepts
+    )
     fError = result[1]
     return !fError
   }
 
-  private static UnionDataSourceInfoMetadata(type1: DType, type2: DType): Set<IExternalTabularDataSource> {
+  private static UnionDataSourceInfoMetadata(
+    type1: DType,
+    type2: DType
+  ): Set<IExternalTabularDataSource> {
     //   type1.AssertValid();
     //   type2.AssertValid();
 
-    if (type2.associatedDataSources == null && type1.associatedDataSources == null)
+    if (
+      type2.associatedDataSources == null &&
+      type1.associatedDataSources == null
+    )
       return new Set<IExternalTabularDataSource>()
 
     if (type2.associatedDataSources == null) return type1.associatedDataSources
@@ -2314,7 +2614,9 @@ export class DType {
     return new Set(set)
   }
 
-  private static TryGetEntityMetadataForDisplayNames(type: DType): [boolean, IDataEntityMetadata] {
+  private static TryGetEntityMetadataForDisplayNames(
+    type: DType
+  ): [boolean, IDataEntityMetadata] {
     if (!type.hasExpandInfo) {
       return [false, undefined]
     }
@@ -2322,8 +2624,11 @@ export class DType {
     //   Contracts.AssertValue(type.ExpandInfo.ParentDataSource);
     //   Contracts.AssertValue(type.ExpandInfo.ParentDataSource.DataEntityMetadataProvider);
 
-    const metadataProvider = type.expandInfo.parentDataSource.dataEntityMetadataProvider
-    const result = metadataProvider.tryGetEntityMetadata(type.expandInfo.identity)
+    const metadataProvider =
+      type.expandInfo.parentDataSource.dataEntityMetadataProvider
+    const result = metadataProvider.tryGetEntityMetadata(
+      type.expandInfo.identity
+    )
     const metadata = result[1]
     if (!result[0]) {
       return [false, undefined]
@@ -2333,12 +2638,16 @@ export class DType {
 
   static CreateDTypeWithConnectedDataSourceInfoMetadata(
     type: DType,
-    connectedDataSourceInfoSet: Set<IExternalTabularDataSource>,
+    connectedDataSourceInfoSet: Set<IExternalTabularDataSource>
   ): DType {
     //   type.AssertValid();
     //   Contracts.AssertValueOrundefined(connectedDataSourceInfoSet);
 
-    if (connectedDataSourceInfoSet == null || connectedDataSourceInfoSet.size == 0) return type
+    if (
+      connectedDataSourceInfoSet == null ||
+      connectedDataSourceInfoSet.size == 0
+    )
+      return type
 
     let returnType: DType = type
     connectedDataSourceInfoSet.forEach((cds) => {
@@ -2347,7 +2656,10 @@ export class DType {
     return returnType
   }
 
-  static TryGetDisplayNameForColumn(type: DType, logicalName: string): [boolean, string] {
+  static TryGetDisplayNameForColumn(
+    type: DType,
+    logicalName: string
+  ): [boolean, string] {
     let displayName: string
     // If the type is an option set, the option set info has the mapping
     // if (type != null && type.isOptionSet && type.optionSetInfo != null) {
@@ -2393,11 +2705,16 @@ export class DType {
 
     // If there are multiple data sources associated with the type, we may have name conflicts
     // In that case, we block the use of display names from the type
-    if (type != null && type.associatedDataSources != null && type.associatedDataSources.size == 1) {
+    if (
+      type != null &&
+      type.associatedDataSources != null &&
+      type.associatedDataSources.size == 1
+    ) {
       const values = type.associatedDataSources.values()
       const dataSourceInfo = values.next().value as IExternalTabularDataSource
       if (dataSourceInfo != null) {
-        const rst = dataSourceInfo.displayNameMapping.tryGetFromSecond(logicalName)
+        const rst =
+          dataSourceInfo.displayNameMapping.tryGetFromSecond(logicalName)
         displayName = rst[1]
         if (rst[0]) {
           return [true, displayName]
@@ -2408,7 +2725,11 @@ export class DType {
     return [false, displayName]
   }
 
-  static TryGetLogicalNameForColumn(type: DType, displayName: string, isThisItem = false): [boolean, string] {
+  static TryGetLogicalNameForColumn(
+    type: DType,
+    displayName: string,
+    isThisItem = false
+  ): [boolean, string] {
     let logicalName: string
     // If the type is an option set, the option set info has the mapping
     // if (type != null && type.isOptionSet && !isThisItem && type.optionSetInfo != null) {
@@ -2425,7 +2746,8 @@ export class DType {
     // If the type is a view, the view info has the mapping
     if (type != null && type.isView && !isThisItem && type.viewInfo != null) {
       let value: string
-      const result = type.viewInfo.displayNameMapping.tryGetFromSecond(displayName)
+      const result =
+        type.viewInfo.displayNameMapping.tryGetFromSecond(displayName)
       value = result[1]
       logicalName = value.toString()
       if (result[0]) {
@@ -2438,7 +2760,8 @@ export class DType {
     const result = DType.TryGetEntityMetadataForDisplayNames(type)
     const entityMetadata = result[1]
     if (result[0]) {
-      const rst = entityMetadata.displayNameMapping.tryGetFromSecond(displayName)
+      const rst =
+        entityMetadata.displayNameMapping.tryGetFromSecond(displayName)
       logicalName = rst[1]
       if (rst[0]) {
         return [true, logicalName]
@@ -2448,11 +2771,16 @@ export class DType {
 
     // If there are multiple data sources associated with the type, we may have name conflicts
     // In that case, we block the use of display names from the type
-    if (type != null && type.associatedDataSources != null && type.associatedDataSources.size == 1) {
+    if (
+      type != null &&
+      type.associatedDataSources != null &&
+      type.associatedDataSources.size == 1
+    ) {
       const values = type.associatedDataSources.values()
       const dataSourceInfo = values.next().value as IExternalTabularDataSource
       if (dataSourceInfo != null) {
-        const rst = dataSourceInfo.displayNameMapping.tryGetFromSecond(displayName)
+        const rst =
+          dataSourceInfo.displayNameMapping.tryGetFromSecond(displayName)
         logicalName = rst[1]
         if (rst[0]) {
           return [true, logicalName]
@@ -2462,7 +2790,9 @@ export class DType {
 
     // Use the DisplayNameProvider here
     if (type != null && type.displayNameProvider != null && !isThisItem) {
-      const result = type.displayNameProvider.tryGetLogicalName(new DName(displayName))
+      const result = type.displayNameProvider.tryGetLogicalName(
+        new DName(displayName)
+      )
       const logicalDName = result[1]
       if (result[0]) {
         logicalName = logicalDName.value
@@ -2499,7 +2829,7 @@ export class DType {
   /// </returns>
   static TryGetConvertedDisplayNameAndLogicalNameForColumn(
     type: DType,
-    displayName: string,
+    displayName: string
   ): [boolean, { logicalName: string; newDisplayName: string }] {
     let logicalName: string
     let newDisplayName: string
@@ -2507,8 +2837,12 @@ export class DType {
     // If the type is a view, the info has the mapping
     if (type != null && type.isView && type.viewInfo != null) {
       let value: string
-      if (type.viewInfo.isConvertingDisplayNameMapping && type.viewInfo.previousDisplayNameMapping != null) {
-        const result = type.viewInfo.previousDisplayNameMapping.tryGetFromSecond(displayName)
+      if (
+        type.viewInfo.isConvertingDisplayNameMapping &&
+        type.viewInfo.previousDisplayNameMapping != null
+      ) {
+        const result =
+          type.viewInfo.previousDisplayNameMapping.tryGetFromSecond(displayName)
         value = result[1]
         if (result[0]) {
           logicalName = value.toString()
@@ -2529,11 +2863,18 @@ export class DType {
     const result = DType.TryGetEntityMetadataForDisplayNames(type)
     const entityMetadata = result[1]
     if (result[0]) {
-      if (entityMetadata.isConvertingDisplayNameMapping && entityMetadata.previousDisplayNameMapping != null) {
-        const rst = entityMetadata.previousDisplayNameMapping.tryGetFromSecond(displayName)
+      if (
+        entityMetadata.isConvertingDisplayNameMapping &&
+        entityMetadata.previousDisplayNameMapping != null
+      ) {
+        const rst =
+          entityMetadata.previousDisplayNameMapping.tryGetFromSecond(
+            displayName
+          )
         logicalName = rst[1]
         if (rst[0]) {
-          const rst2 = entityMetadata.displayNameMapping.tryGetFromFirst(logicalName)
+          const rst2 =
+            entityMetadata.displayNameMapping.tryGetFromFirst(logicalName)
           newDisplayName = rst2[1]
           if (rst2[0]) {
             return [true, { logicalName, newDisplayName }]
@@ -2549,7 +2890,11 @@ export class DType {
 
     // If there are multiple data sources associated with the type, we may have name conflicts
     // In that case, we block the use of display names from the type
-    if (type != null && type.associatedDataSources != null && type.associatedDataSources.size === 1) {
+    if (
+      type != null &&
+      type.associatedDataSources != null &&
+      type.associatedDataSources.size === 1
+    ) {
       const values = type.associatedDataSources.values()
       const dataSourceInfo = values.next().value as IExternalTabularDataSource
       if (
@@ -2557,10 +2902,14 @@ export class DType {
         dataSourceInfo.isConvertingDisplayNameMapping &&
         dataSourceInfo.previousDisplayNameMapping != null
       ) {
-        const result = dataSourceInfo.previousDisplayNameMapping.tryGetFromSecond(displayName)
+        const result =
+          dataSourceInfo.previousDisplayNameMapping.tryGetFromSecond(
+            displayName
+          )
         logicalName = result[1]
         if (result[0]) {
-          const rst = dataSourceInfo.displayNameMapping.tryGetFromFirst(logicalName)
+          const rst =
+            dataSourceInfo.displayNameMapping.tryGetFromFirst(logicalName)
           newDisplayName = rst[1]
           if (rst[0]) {
             return [true, { logicalName, newDisplayName }]
@@ -2573,8 +2922,11 @@ export class DType {
     }
 
     if (type != null && type.displayNameProvider != null) {
-      const result = type.displayNameProvider.tryRemapLogicalAndDisplayNames(new DName(displayName))
-      const { logicalName: logicalDName, newDisplayName: newDisplayDName } = result[1]
+      const result = type.displayNameProvider.tryRemapLogicalAndDisplayNames(
+        new DName(displayName)
+      )
+      const { logicalName: logicalDName, newDisplayName: newDisplayDName } =
+        result[1]
       if (result[0]) {
         logicalName = logicalDName.value
         newDisplayName = newDisplayDName.value
@@ -2591,33 +2943,68 @@ export class DType {
     fError: boolean,
     type1: DType,
     type2: DType,
-    useLegacyDateTimeAccepts = false,
+    useLegacyDateTimeAccepts = false
   ): [DType, boolean] {
     //   type1.AssertValid();
     //   type2.AssertValid();
     if (type1.isAggregate && type2.isAggregate) {
       if (type1.equals(DType.ObjNull))
-        return [DType.CreateDTypeWithConnectedDataSourceInfoMetadata(type2, type1.associatedDataSources), fError]
+        return [
+          DType.CreateDTypeWithConnectedDataSourceInfoMetadata(
+            type2,
+            type1.associatedDataSources
+          ),
+          fError,
+        ]
       if (type2.equals(DType.ObjNull))
-        return [DType.CreateDTypeWithConnectedDataSourceInfoMetadata(type1, type2.associatedDataSources), fError]
+        return [
+          DType.CreateDTypeWithConnectedDataSourceInfoMetadata(
+            type1,
+            type2.associatedDataSources
+          ),
+          fError,
+        ]
 
       if (type1.kind != type2.kind) {
         fError = true
         return [DType.Error, fError]
       }
-      const unionResult = DType.UnionCore(fError, type1, type2, useLegacyDateTimeAccepts)
+      const unionResult = DType.UnionCore(
+        fError,
+        type1,
+        type2,
+        useLegacyDateTimeAccepts
+      )
       fError = unionResult[1]
-      return [DType.CreateDTypeWithConnectedDataSourceInfoMetadata(unionResult[0], type2.associatedDataSources), fError]
+      return [
+        DType.CreateDTypeWithConnectedDataSourceInfoMetadata(
+          unionResult[0],
+          type2.associatedDataSources
+        ),
+        fError,
+      ]
     }
 
     if (type1.accepts(type2, undefined, useLegacyDateTimeAccepts)) {
       fError ||= type1.isError
-      return [DType.CreateDTypeWithConnectedDataSourceInfoMetadata(type1, type2.associatedDataSources), fError]
+      return [
+        DType.CreateDTypeWithConnectedDataSourceInfoMetadata(
+          type1,
+          type2.associatedDataSources
+        ),
+        fError,
+      ]
     }
 
     if (type2.accepts(type1, undefined, useLegacyDateTimeAccepts)) {
       fError ||= type2.isError
-      return [DType.CreateDTypeWithConnectedDataSourceInfoMetadata(type2, type1.associatedDataSources), fError]
+      return [
+        DType.CreateDTypeWithConnectedDataSourceInfoMetadata(
+          type2,
+          type1.associatedDataSources
+        ),
+        fError,
+      ]
     }
 
     const result = DType.Supertype(type1, type2, useLegacyDateTimeAccepts)
@@ -2629,7 +3016,7 @@ export class DType {
     fError: boolean,
     type1: DType,
     type2: DType,
-    useLegacyDateTimeAccepts = false,
+    useLegacyDateTimeAccepts = false
   ): [DType, boolean] {
     //   type1.AssertValid();
     //   Contracts.Assert(type1.IsAggregate);
@@ -2653,20 +3040,34 @@ export class DType {
       }
 
       let fieldType: DType
-      if (field1Type.equals(DType.ObjNull) || field2Type.equals(DType.ObjNull)) {
+      if (
+        field1Type.equals(DType.ObjNull) ||
+        field2Type.equals(DType.ObjNull)
+      ) {
         fieldType = field1Type.equals(DType.ObjNull) ? field2Type : field1Type
       } else if (field1Type.isAggregate && field2Type.isAggregate) {
-        const rst = DType.UnionWithError(fError, field1Type, field2Type, useLegacyDateTimeAccepts)
+        const rst = DType.UnionWithError(
+          fError,
+          field1Type,
+          field2Type,
+          useLegacyDateTimeAccepts
+        )
         fieldType = rst[0]
         fError = rst[1]
       } else if (field1Type.isAggregate || field2Type.isAggregate) {
         let isMatchingExpandType = false
         let expandType = DType.Unknown
         if (field1Type.hasExpandInfo && field2Type.isAggregate) {
-          isMatchingExpandType = DType.IsMatchingExpandType(field1Type, field2Type)
+          isMatchingExpandType = DType.IsMatchingExpandType(
+            field1Type,
+            field2Type
+          )
           expandType = field1Type
         } else if (field2Type.hasExpandInfo && field1Type.isAggregate) {
-          isMatchingExpandType = DType.IsMatchingExpandType(field1Type, field2Type)
+          isMatchingExpandType = DType.IsMatchingExpandType(
+            field1Type,
+            field2Type
+          )
           expandType = field2Type
         }
 
@@ -2677,12 +3078,21 @@ export class DType {
           fieldType = expandType
         }
       } else {
-        const rst = DType.UnionWithError(fError, field1Type, field2Type, useLegacyDateTimeAccepts)
+        const rst = DType.UnionWithError(
+          fError,
+          field1Type,
+          field2Type,
+          useLegacyDateTimeAccepts
+        )
         fieldType = rst[0]
         fError = rst[1]
       }
 
-      const rst2 = result.setType(fError, DPath.Root.append(field2Name), fieldType)
+      const rst2 = result.setType(
+        fError,
+        DPath.Root.append(field2Name),
+        fieldType
+      )
       result = rst2[0]
       fError = rst2[1]
     }
@@ -2700,17 +3110,24 @@ export class DType {
   /// <param name="expectedColumnType">expected type in collection definition for 'Primary Contact' column is entity of expand type</param>
   /// <param name="actualColumnType">actual column provide in data collection rule is record of entity matching expand type</param>
   /// <returns>true if actual column type is Entity type matching Expand entity, false O.W.</returns>
-  static IsMatchingExpandType(expectedColumnType: DType, actualColumnType: DType): boolean {
+  static IsMatchingExpandType(
+    expectedColumnType: DType,
+    actualColumnType: DType
+  ): boolean {
     //   expectedColumnType.AssertValid();
     //   actualColumnType.AssertValid();
     let isExpectedType = false
     for (const actualTypeAssociatedDS of actualColumnType.associatedDataSources) {
       let metadata: IDataEntityMetadata
-      const rst = expectedColumnType.expandInfo.parentDataSource.dataEntityMetadataProvider.tryGetEntityMetadata(
-        expectedColumnType.expandInfo.identity,
-      )
+      const rst =
+        expectedColumnType.expandInfo.parentDataSource.dataEntityMetadataProvider.tryGetEntityMetadata(
+          expectedColumnType.expandInfo.identity
+        )
       metadata = rst[1]
-      if (rst[0] && metadata.entityName === actualTypeAssociatedDS.entityName.toString()) {
+      if (
+        rst[0] &&
+        metadata.entityName === actualTypeAssociatedDS.entityName.toString()
+      ) {
         isExpectedType = true
         break
       }
@@ -2730,7 +3147,11 @@ export class DType {
   //     return Intersection(false, type1, type2);
   //   }
 
-  public static Intersection(fError: boolean, type1: DType, type2: DType): [DType, boolean] {
+  public static Intersection(
+    fError: boolean,
+    type1: DType,
+    type2: DType
+  ): [DType, boolean] {
     //   type1.AssertValid();
     //   type2.AssertValid();
 
@@ -2749,7 +3170,11 @@ export class DType {
     return [DType.Error, fError]
   }
 
-  private static IntersectionCore(fError: boolean, type1: DType, type2: DType): [DType, boolean] {
+  private static IntersectionCore(
+    fError: boolean,
+    type1: DType,
+    type2: DType
+  ): [DType, boolean] {
     //   type1.AssertValid();
     //   Contracts.Assert(type1.IsAggregate);
     //   type2.AssertValid();
@@ -2785,7 +3210,8 @@ export class DType {
   public intersects(other: DType): boolean {
     //   other.AssertValid();
 
-    if (!this.isAggregate || !other.isAggregate || this.kind != other.kind) return false
+    if (!this.isAggregate || !other.isAggregate || this.kind != other.kind)
+      return false
 
     this.getNames(DPath.Root).forEach((pair) => {
       let f2Type: DType
@@ -2824,7 +3250,7 @@ export class DType {
       Hashing.HashInt(this.kind),
       Hashing.HashInt(this.enumSuperKind),
       this.typeTree.getHashCode(),
-      this.valueTree.getHashCode(),
+      this.valueTree.getHashCode()
     )
   }
 
@@ -2868,13 +3294,18 @@ export class DType {
   ///     c?: HashTable<IJsonFunctionDataDefinition>; // optional children
   /// }
   /// </remarks>
-  toJsTypeInner(shouldBeIncluded?: (name: DName, type: DType) => boolean): string {
-    var sb = new StringBuilder()
+  toJsTypeInner(
+    shouldBeIncluded?: (name: DName, type: DType) => boolean
+  ): string {
+    let sb = new StringBuilder()
     this.toJsType(sb, shouldBeIncluded)
     return sb.toString()
   }
 
-  public toJsType(builder: StringBuilder, shouldBeIncluded?: (name: DName, type: DType) => boolean) {
+  public toJsType(
+    builder: StringBuilder,
+    shouldBeIncluded?: (name: DName, type: DType) => boolean
+  ) {
     if (shouldBeIncluded == undefined) {
       shouldBeIncluded = (n: DName, t: DType) => true
     }
@@ -2957,7 +3388,9 @@ export class DType {
     //   Contracts.AssertValid(path);
 
     return this.getNames(path).some(
-      (n) => n.type.isControl || (n.type.isAggregate && n.type.containsControlType(DPath.Root)),
+      (n) =>
+        n.type.isControl ||
+        (n.type.isAggregate && n.type.containsControlType(DPath.Root))
     )
   }
 
@@ -2974,7 +3407,7 @@ export class DType {
   // out bool isSafe, out DType coercionType, out KeyValuePair<string, DType> schemaDifference, out DType schemaDifferenceType,
   public aggregateCoercesTo(
     typeDest: DType,
-    aggregateCoercion = true,
+    aggregateCoercion = true
   ): [
     boolean,
     {
@@ -2982,7 +3415,7 @@ export class DType {
       coercionType: DType
       schemaDifference: { key: string; value: DType }
       schemaDifferenceType: DType
-    },
+    }
   ] {
     //   Contracts.Assert(IsAggregate);
 
@@ -2997,17 +3430,27 @@ export class DType {
     ) {
       isSafe = true
       coercionType = typeDest
-      return [true, { isSafe, coercionType, schemaDifference, schemaDifferenceType }]
+      return [
+        true,
+        { isSafe, coercionType, schemaDifference, schemaDifferenceType },
+      ]
     }
 
     // Can't coerce scalar->aggregate, or viceversa.
     if (!typeDest.isAggregate) {
       isSafe = false
       coercionType = this
-      return [false, { isSafe, coercionType, schemaDifference, schemaDifferenceType }]
+      return [
+        false,
+        { isSafe, coercionType, schemaDifference, schemaDifferenceType },
+      ]
     }
 
-    if (this.kind != typeDest.kind && this.kind == DKind.Record && aggregateCoercion) {
+    if (
+      this.kind != typeDest.kind &&
+      this.kind == DKind.Record &&
+      aggregateCoercion
+    ) {
       const result = this.toTable().coercesTo(typeDest)
       const data = result[1]
       schemaDifference = data.schemaDifference
@@ -3015,13 +3458,19 @@ export class DType {
       isSafe = data.isSafe
       coercionType = data.coercionType
 
-      return [result[0], { isSafe, coercionType, schemaDifference, schemaDifferenceType }]
+      return [
+        result[0],
+        { isSafe, coercionType, schemaDifference, schemaDifferenceType },
+      ]
     }
 
     if (this.kind != typeDest.kind) {
       isSafe = false
       coercionType = this
-      return [false, { isSafe, coercionType, schemaDifference, schemaDifferenceType }]
+      return [
+        false,
+        { isSafe, coercionType, schemaDifference, schemaDifferenceType },
+      ]
     }
 
     let fieldIsSafe = true
@@ -3055,7 +3504,10 @@ export class DType {
           const fieldName = isNullOrEmpty(fieldSchemaDifference.key)
             ? typedName.name.toString()
             : fieldSchemaDifference.key
-          schemaDifference = { key: fieldName, value: fieldSchemaDifference.value }
+          schemaDifference = {
+            key: fieldName,
+            value: fieldSchemaDifference.value,
+          }
           schemaDifferenceType = fieldSchemaDifferenceType
         }
 
@@ -3063,7 +3515,10 @@ export class DType {
       }
     })
 
-    return [isValid, { isSafe, coercionType, schemaDifference, schemaDifferenceType }]
+    return [
+      isValid,
+      { isSafe, coercionType, schemaDifference, schemaDifferenceType },
+    ]
   }
 
   // Returns true if values of this type may be coerced to the specified type.
@@ -3073,7 +3528,7 @@ export class DType {
   public coercesTo(
     typeDest: DType,
     aggregateCoercion = true,
-    isTopLevelCoercion = false,
+    isTopLevelCoercion = false
   ): [
     boolean,
     {
@@ -3081,7 +3536,7 @@ export class DType {
       coercionType: DType
       schemaDifference: { key: string; value: DType }
       schemaDifferenceType: DType
-    },
+    }
   ] {
     //   AssertValid();
     //   Contracts.Assert(typeDest.IsValid);
@@ -3095,13 +3550,19 @@ export class DType {
 
     if (typeDest.accepts(this)) {
       coercionType = typeDest
-      return [true, { isSafe, coercionType, schemaDifference, schemaDifferenceType }]
+      return [
+        true,
+        { isSafe, coercionType, schemaDifference, schemaDifferenceType },
+      ]
     }
 
     if (this.kind === DKind.Error) {
       isSafe = false
       coercionType = this
-      return [false, { isSafe, coercionType, schemaDifference, schemaDifferenceType }]
+      return [
+        false,
+        { isSafe, coercionType, schemaDifference, schemaDifferenceType },
+      ]
     }
 
     if (this.isAggregate) {
@@ -3110,10 +3571,18 @@ export class DType {
       isSafe = rst[1].isSafe
       schemaDifference = rst[1].schemaDifference
       schemaDifferenceType = rst[1].schemaDifferenceType
-      return [rst[0], { isSafe, coercionType, schemaDifference, schemaDifferenceType }]
+      return [
+        rst[0],
+        { isSafe, coercionType, schemaDifference, schemaDifferenceType },
+      ]
     }
 
-    const result = this.subtypeCoercesTo(typeDest, isSafe, schemaDifference, schemaDifferenceType)
+    const result = this.subtypeCoercesTo(
+      typeDest,
+      isSafe,
+      schemaDifference,
+      schemaDifferenceType
+    )
     const subtypeCoerces = result[0]
     coercionType = result[1].coercionType
     isSafe = result[1].isSafe
@@ -3121,13 +3590,19 @@ export class DType {
     schemaDifferenceType = result[1].schemaDifferenceType
 
     if (subtypeCoerces != null) {
-      return [subtypeCoerces, { isSafe, coercionType, schemaDifference, schemaDifferenceType }]
+      return [
+        subtypeCoerces,
+        { isSafe, coercionType, schemaDifference, schemaDifferenceType },
+      ]
     }
 
     // For now, named values are never valid as a coerce target or source
     if (typeDest.kind === DKind.NamedValue || this.kind == DKind.NamedValue) {
       coercionType = this
-      return [false, { isSafe, coercionType, schemaDifference, schemaDifferenceType }]
+      return [
+        false,
+        { isSafe, coercionType, schemaDifference, schemaDifferenceType },
+      ]
     }
 
     if (this.kind === DKind.Enum) {
@@ -3140,16 +3615,25 @@ export class DType {
         typeDest.accepts(this.getEnumSupertype())
       ) {
         coercionType = typeDest
-        return [true, { isSafe, coercionType, schemaDifference, schemaDifferenceType }]
+        return [
+          true,
+          { isSafe, coercionType, schemaDifference, schemaDifferenceType },
+        ]
       } else {
         coercionType = this
-        return [false, { isSafe, coercionType, schemaDifference, schemaDifferenceType }]
+        return [
+          false,
+          { isSafe, coercionType, schemaDifference, schemaDifferenceType },
+        ]
       }
     }
 
     if (typeDest.isLargeImage && this.kind === DKind.Image) {
       coercionType = typeDest
-      return [true, { isSafe, coercionType, schemaDifference, schemaDifferenceType }]
+      return [
+        true,
+        { isSafe, coercionType, schemaDifference, schemaDifferenceType },
+      ]
     }
 
     let doesCoerce = false
@@ -3159,7 +3643,9 @@ export class DType {
         doesCoerce =
           this.kind === DKind.String ||
           DType.Number.accepts(this) ||
-          (this.kind === DKind.OptionSetValue && this.optionSetInfo != null && this.optionSetInfo.isBooleanValued)
+          (this.kind === DKind.OptionSetValue &&
+            this.optionSetInfo != null &&
+            this.optionSetInfo.isBooleanValued)
         break
       case DKind.DateTime:
       case DKind.Date:
@@ -3169,7 +3655,10 @@ export class DType {
         // (eg "Robert" -> false), unless it is "true" or "false" exactly.
         // String to DateTime isn't safe for ill-formatted strings.
         isSafe = this.kind != DKind.String
-        doesCoerce = this.kind == DKind.String || DType.Number.accepts(this) || DType.DateTime.accepts(this)
+        doesCoerce =
+          this.kind == DKind.String ||
+          DType.Number.accepts(this) ||
+          DType.DateTime.accepts(this)
         break
       case DKind.Number:
         // Ill-formatted strings coerce to undefined; unsafe.
@@ -3183,7 +3672,10 @@ export class DType {
       case DKind.Currency:
         // Ill-formatted strings coerce to undefined; unsafe.
         isSafe = this.kind != DKind.String
-        doesCoerce = this.kind == DKind.String || this.kind == DKind.Number || DType.Boolean.accepts(this)
+        doesCoerce =
+          this.kind == DKind.String ||
+          this.kind == DKind.Number ||
+          DType.Boolean.accepts(this)
         break
       case DKind.String:
         doesCoerce =
@@ -3201,7 +3693,10 @@ export class DType {
         break
       case DKind.Image:
         doesCoerce =
-          this.kind != DKind.Media && this.kind != DKind.Blob && this.kind != DKind.Guid && DType.String.accepts(this)
+          this.kind != DKind.Media &&
+          this.kind != DKind.Blob &&
+          this.kind != DKind.Guid &&
+          DType.String.accepts(this)
         break
       case DKind.Media:
         doesCoerce =
@@ -3220,24 +3715,32 @@ export class DType {
         isSafe = rst[1].isSafe
         schemaDifference = rst[1].schemaDifference
         schemaDifferenceType = rst[1].schemaDifferenceType
-        return [rst[0], { isSafe, coercionType, schemaDifference, schemaDifferenceType }]
+        return [
+          rst[0],
+          { isSafe, coercionType, schemaDifference, schemaDifferenceType },
+        ]
       case DKind.OptionSetValue:
         doesCoerce =
-          (typeDest.optionSetInfo?.isBooleanValued ?? false) && this.kind === DKind.Boolean && !isTopLevelCoercion
+          (typeDest.optionSetInfo?.isBooleanValued ?? false) &&
+          this.kind === DKind.Boolean &&
+          !isTopLevelCoercion
         break
     }
 
     if (doesCoerce) coercionType = typeDest
     else coercionType = this
 
-    return [doesCoerce, { isSafe, coercionType, schemaDifference, schemaDifferenceType }]
+    return [
+      doesCoerce,
+      { isSafe, coercionType, schemaDifference, schemaDifferenceType },
+    ]
   }
 
   protected subtypeCoercesTo(
     typeDest: DType,
     isSafe: boolean,
     schemaDifference: KeyValuePair<string, DType>,
-    schemaDifferenceType: DType,
+    schemaDifferenceType: DType
   ): [
     boolean | undefined,
     {
@@ -3245,10 +3748,13 @@ export class DType {
       coercionType?: DType
       schemaDifference: KeyValuePair<string, DType>
       schemaDifferenceType: DType
-    },
+    }
   ] {
     const coercionType: DType | undefined = undefined
-    return [undefined, { isSafe, coercionType, schemaDifference, schemaDifferenceType }]
+    return [
+      undefined,
+      { isSafe, coercionType, schemaDifference, schemaDifferenceType },
+    ]
   }
 
   // Gets the subtype of aggregate type expectedType that this type can coerce to.
@@ -3257,7 +3763,7 @@ export class DType {
   public TryGetCoercionSubType(
     expectedType: DType,
     safeCoercionRequired = false,
-    aggregateCoercion = true,
+    aggregateCoercion = true
   ): [boolean, { coercionType: DType; coercionNeeded: boolean }] {
     //   Contracts.Assert(expectedType.IsValid);
     let coercionType: DType
@@ -3269,7 +3775,8 @@ export class DType {
       if (!coercionNeeded) return [true, { coercionType, coercionNeeded }]
 
       let expandedType: DType
-      const result = expectedType.tryGetExpandedEntityTypeWithoutDataSourceSpecificColumns()
+      const result =
+        expectedType.tryGetExpandedEntityTypeWithoutDataSourceSpecificColumns()
       expandedType = result[1]
       if (result[0] && expandedType.accepts(this)) {
         coercionNeeded = false
@@ -3279,7 +3786,10 @@ export class DType {
       let coercionIsSafe: boolean
       const result2 = this.coercesTo(expectedType, aggregateCoercion)
       coercionIsSafe = result2[1].isSafe
-      return [result2[0] && (!safeCoercionRequired || coercionIsSafe), { coercionType, coercionNeeded }]
+      return [
+        result2[0] && (!safeCoercionRequired || coercionIsSafe),
+        { coercionType, coercionNeeded },
+      ]
     }
 
     coercionType = this.isRecord ? DType.EmptyRecord : DType.EmptyTable
@@ -3287,7 +3797,8 @@ export class DType {
 
     if (!this.isAggregate) return [false, { coercionType, coercionNeeded }]
 
-    if (this.isTable != expectedType.isTable && !aggregateCoercion) return [false, { coercionType, coercionNeeded }]
+    if (this.isTable != expectedType.isTable && !aggregateCoercion)
+      return [false, { coercionType, coercionNeeded }]
 
     expectedType.getNames(DPath.Root).forEach((typedName) => {
       let thisFieldType: DType
@@ -3296,11 +3807,21 @@ export class DType {
       if (typeRst[0]) {
         let thisFieldCoercionType: DType
         let thisFieldCoercionNeeded: boolean
-        const rst = thisFieldType.TryGetCoercionSubType(typedName.type, safeCoercionRequired, aggregateCoercion)
+        const rst = thisFieldType.TryGetCoercionSubType(
+          typedName.type,
+          safeCoercionRequired,
+          aggregateCoercion
+        )
         thisFieldType = rst[1].coercionType
         thisFieldCoercionNeeded = rst[1].coercionNeeded
         if (!rst[0]) {
-          return [false, { coercionType: thisFieldCoercionType, coercionNeeded: thisFieldCoercionNeeded }]
+          return [
+            false,
+            {
+              coercionType: thisFieldCoercionType,
+              coercionNeeded: thisFieldCoercionNeeded,
+            },
+          ]
         }
         coercionNeeded ||= thisFieldCoercionNeeded
         coercionType = coercionType.add(typedName.name, thisFieldCoercionType)
@@ -3390,7 +3911,9 @@ export class DType {
 
       case DKind.String:
         if (typeof value === 'boolean') {
-          newValue = (value ? TexlLexer.KeywordTrue : TexlLexer.KeywordFalse).toString()
+          newValue = (
+            value ? TexlLexer.KeywordTrue : TexlLexer.KeywordFalse
+          ).toString()
           return [true, newValue]
         }
         if (typeof value === 'number') {
@@ -3416,7 +3939,7 @@ export class DType {
       case DKind.Blob:
       case DKind.Hyperlink:
         // If value is string we can flag it as hyperlink/image
-        var value1 = value as string
+        let value1 = value as string
         if (typeof value1 === 'string' && value1 != undefined) {
           newValue = value1
           return [true, newValue]
@@ -3431,7 +3954,10 @@ export class DType {
     }
   }
 
-  private static TryConvertDateTimeValue(value: any, typeDest: DType): [boolean, any] {
+  private static TryConvertDateTimeValue(
+    value: any,
+    typeDest: DType
+  ): [boolean, any] {
     //   Contracts.AssertValueOrundefined(value);
     //   Contracts.Assert(typeDest.Kind == DKind.Date || typeDest.Kind == DKind.Time || typeDest.Kind == DKind.DateTime);
 
@@ -3496,7 +4022,7 @@ export class DType {
           // newValue = success ? result.ToLocalTime().Date.ToUniversalTime() : result
           newValue = result
           return [success, newValue]
-          //   var success = DateTimeExtensions.TryFromOADate(0.0, out result);
+          //   let success = DateTimeExtensions.TryFromOADate(0.0, out result);
           //   newValue = result;
           //   return success;
         }
@@ -3547,7 +4073,7 @@ export class DType {
           newValue = result
           return [success, newValue]
           //   DateTime result;
-          //   var success = DateTimeExtensions.TryFromOADate(boolean ? 1 : 0, out result);
+          //   let success = DateTimeExtensions.TryFromOADate(boolean ? 1 : 0, out result);
           //   newValue = result;
           //   return success;
         }
@@ -3561,7 +4087,7 @@ export class DType {
           newValue = result
           return [success, newValue]
           //   DateTime result;
-          //   var success = DateTimeExtensions.TryFromOADate(@double, out result);
+          //   let success = DateTimeExtensions.TryFromOADate(@double, out result);
           //   newValue = result;
           //   return success;
         }
@@ -3608,7 +4134,10 @@ export class DType {
     //   return (DateTimeExtensions.OleAutomationEpoch + (value - DateValue)).ToUniversalTime();
   }
 
-  public static IsAcceptableTypeConversionForTables(sourceType: DType, destinationType: DType): boolean {
+  public static IsAcceptableTypeConversionForTables(
+    sourceType: DType,
+    destinationType: DType
+  ): boolean {
     //   Contracts.Assert(sourceType.IsValid);
     //   Contracts.Assert(destinationType.IsValid);
 
@@ -3769,7 +4298,11 @@ export class DType {
     sb.append('}')
   }
 
-  private static AppendEnumType(sb: StringBuilder, tree: ValueTree, enumSuperkind: DKind) {
+  private static AppendEnumType(
+    sb: StringBuilder,
+    tree: ValueTree,
+    enumSuperkind: DKind
+  ) {
     //   Contracts.AssertValue(sb);
 
     sb.append(DType.MapKindToStr(enumSuperkind))
@@ -3827,18 +4360,32 @@ export class DType {
     errors: IErrorContainer,
     name: DName,
     location: TexlNode,
-    severity: DocumentErrorSeverity = DocumentErrorSeverity.Severe,
+    severity: DocumentErrorSeverity = DocumentErrorSeverity.Severe
   ) {
     const result = this.tryGetSimilarName(name, fieldNameKind)
     const similar = result[1]
     if (result[0]) {
-      errors.ensureErrorWithSeverity(severity, location, TexlStrings.ErrColumnDoesNotExist_Name_Similar, name, similar)
+      errors.ensureErrorWithSeverity(
+        severity,
+        location,
+        TexlStrings.ErrColumnDoesNotExist_Name_Similar,
+        name,
+        similar
+      )
     } else {
-      errors.ensureErrorWithSeverity(severity, location, TexlStrings.ErrColDNE_Name, name)
+      errors.ensureErrorWithSeverity(
+        severity,
+        location,
+        TexlStrings.ErrColDNE_Name,
+        name
+      )
     }
   }
 
-  public tryGetSimilarName(name: DName, fieldNameKind: FieldNameKind): [boolean, string] {
+  public tryGetSimilarName(
+    name: DName,
+    fieldNameKind: FieldNameKind
+  ): [boolean, string] {
     const maxLength = 2000
     let similar: string = undefined
     if (name.getValue().length > maxLength) return [false, similar]
@@ -3861,6 +4408,10 @@ export class DType {
 
     // We also want to have a heuristic maximum distance so that we don't give ridiculous
     // suggestions.
-    return [similar != null && comparer.distance(similar) < name.getValue().length / 3 + 3, similar]
+    return [
+      similar != null &&
+        comparer.distance(similar) < name.getValue().length / 3 + 3,
+      similar,
+    ]
   }
 }

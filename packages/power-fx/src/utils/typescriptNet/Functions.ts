@@ -39,7 +39,7 @@ const rootFunctions: Functions = new Functions()
 
 // Expose static versions.
 
-export module Functions {
+export namespace Functions {
   /**
    * A typed method for use with simple selection of the parameter.
    * @returns {boolean}

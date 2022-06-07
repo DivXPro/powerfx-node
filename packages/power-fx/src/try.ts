@@ -1,6 +1,6 @@
 import { createForm } from '@formily/core'
 import { CustomTexlFunction } from './interpreter'
-import { FormulaValue } from './public/values'
+import { FormulaValue, FormulaValueStatic } from './public/values'
 import { PowerFxConfig } from './public/config/PowerFxConfig'
 import { DType } from './types'
 import { DName } from './utils'
@@ -56,7 +56,11 @@ const form = createForm({
   validateFirst: true,
 })
 
-const scope = new MetaEntityScope({ form, entities: [dataView], metaSchema: undefined })
+const scope = new MetaEntityScope({
+  form,
+  entities: [dataView],
+  metaSchema: undefined,
+})
 
 const flowMetadataProvider = new MetaFlowMetadataProvider([
   new MetaFlowMetadata({
@@ -131,12 +135,16 @@ const dataEntityMetadataProvider = new MetaDataEntityMetadataProvider([
     },
   }),
 ])
-const document = new MetaEngineDocument(scope, dataEntityMetadataProvider, flowMetadataProvider)
+const document = new MetaEngineDocument(
+  scope,
+  dataEntityMetadataProvider,
+  flowMetadataProvider
+)
 
 const config = new PowerFxConfig()
 const submitFn: SubmitFn = (data: any) => {
   return new Promise((resolve) => {
-    resolve(FormulaValue.NewBlank())
+    resolve(FormulaValueStatic.NewBlank())
   })
 }
 
@@ -147,5 +155,5 @@ const engine = new MetaRecalcEngine(form, undefined, config, document)
 // engine.updateVariable('Shop', shop)
 
 engine.eval(`Submit("123")`).then((result) => {
-  console.log('result:', result.toObject())
+  console.warn('result:', result.toObject())
 })

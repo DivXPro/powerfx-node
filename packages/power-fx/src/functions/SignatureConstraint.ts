@@ -11,7 +11,12 @@ export class SignatureConstraint {
   public readonly endNonRepeatCount: number
   public readonly repeatTopLength: number
 
-  constructor(omitStartIndex: number, repeatSpan: number, endNonRepeatCount: number, repeatTopLength: number) {
+  constructor(
+    omitStartIndex: number,
+    repeatSpan: number,
+    endNonRepeatCount: number,
+    repeatTopLength: number
+  ) {
     this.omitStartIndex = omitStartIndex
     this.repeatSpan = repeatSpan
     this.endNonRepeatCount = endNonRepeatCount
@@ -29,9 +34,12 @@ export class SignatureConstraint {
     argCount: number,
     argIndex: number,
     signatureCount: number,
-    signatureIndex: number,
+    signatureIndex: number
   ): boolean {
-    if (argCount <= this.repeatTopLength || signatureIndex <= this.omitStartIndex) {
+    if (
+      argCount <= this.repeatTopLength ||
+      signatureIndex <= this.omitStartIndex
+    ) {
       return signatureIndex == argIndex
     }
 
@@ -44,20 +52,28 @@ export class SignatureConstraint {
 
     if (this.endNonRepeatCount > 0) {
       // FuncName(arg1,arg2,arg2,...,arg2,...,arg3,...)
-      const tailArgRange = [argCount - this.endNonRepeatCount - this.repeatSpan, argCount - this.endNonRepeatCount]
+      const tailArgRange = [
+        argCount - this.endNonRepeatCount - this.repeatSpan,
+        argCount - this.endNonRepeatCount,
+      ]
       const tailSignatureRange = [
         signatureCount - this.endNonRepeatCount - this.repeatSpan,
         signatureCount - this.endNonRepeatCount,
       ]
       if (this.isIndexInRange(argIndex, tailArgRange[0], tailArgRange[1])) {
-        return this.isIndexInRange(signatureIndex, tailSignatureRange[0], tailSignatureRange[1])
+        return this.isIndexInRange(
+          signatureIndex,
+          tailSignatureRange[0],
+          tailSignatureRange[1]
+        )
       }
     }
 
     return (
       argIndex >= signatureIndex &&
       argIndex > this.omitStartIndex &&
-      (signatureIndex - this.omitStartIndex) % this.repeatSpan == (argIndex - this.omitStartIndex) % this.repeatSpan
+      (signatureIndex - this.omitStartIndex) % this.repeatSpan ==
+        (argIndex - this.omitStartIndex) % this.repeatSpan
     )
   }
 
@@ -68,7 +84,12 @@ export class SignatureConstraint {
   /// <param name="argIndex">arg index cursor focuses on in script.</param>
   /// <param name="signatureCount">arg count in signature.</param>
   /// <param name="signatureIndex">signature index in funcDisplayString.</param>
-  public canParamOmit(argCount: number, argIndex: number, signatureCount: number, signatureIndex: number): boolean {
+  public canParamOmit(
+    argCount: number,
+    argIndex: number,
+    signatureCount: number,
+    signatureIndex: number
+  ): boolean {
     if (
       signatureCount > this.repeatTopLength &&
       this.isIndexInRange(signatureIndex, this.repeatTopLength, signatureCount)
@@ -77,13 +98,22 @@ export class SignatureConstraint {
     }
 
     // headOmitRange: [startIndex, endIndex)
-    const headOmitRange = [this.omitStartIndex, this.omitStartIndex + this.repeatSpan]
+    const headOmitRange = [
+      this.omitStartIndex,
+      this.omitStartIndex + this.repeatSpan,
+    ]
     const tailOmitRange = [
       signatureCount - this.endNonRepeatCount - this.repeatSpan,
       signatureCount - this.endNonRepeatCount,
     ]
-    if (this.endNonRepeatCount > 0 && this.isIndexInRange(signatureIndex, tailOmitRange[0], tailOmitRange[1])) {
-      var tailArgRange = [argCount - this.endNonRepeatCount - this.repeatSpan, argCount - this.endNonRepeatCount]
+    if (
+      this.endNonRepeatCount > 0 &&
+      this.isIndexInRange(signatureIndex, tailOmitRange[0], tailOmitRange[1])
+    ) {
+      let tailArgRange = [
+        argCount - this.endNonRepeatCount - this.repeatSpan,
+        argCount - this.endNonRepeatCount,
+      ]
       return !this.isIndexInRange(argIndex, tailArgRange[0], tailArgRange[1])
     }
 

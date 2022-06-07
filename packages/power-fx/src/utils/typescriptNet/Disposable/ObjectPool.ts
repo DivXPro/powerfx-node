@@ -35,11 +35,13 @@ export class ObjectPool<T> extends DisposableBase {
   constructor(
     private readonly _generator?: (...args: any[]) => T,
     private readonly _recycler?: (o: T) => void,
-    private readonly _maxSize: number = DEFAULT_MAX_SIZE,
+    private readonly _maxSize: number = DEFAULT_MAX_SIZE
   ) {
     super(OBJECT_POOL)
-    if (isNaN(_maxSize) || _maxSize < 1) throw new ArgumentOutOfRangeException(_MAX_SIZE, _maxSize, MUST_BE_GT1)
-    if (_maxSize > ABSOLUTE_MAX_SIZE) throw new ArgumentOutOfRangeException(_MAX_SIZE, _maxSize, MUST_BE_LTM)
+    if (isNaN(_maxSize) || _maxSize < 1)
+      throw new ArgumentOutOfRangeException(_MAX_SIZE, _maxSize, MUST_BE_GT1)
+    if (_maxSize > ABSOLUTE_MAX_SIZE)
+      throw new ArgumentOutOfRangeException(_MAX_SIZE, _maxSize, MUST_BE_LTM)
 
     this._toRecycle = _recycler ? [] : null
     this._pool = []
@@ -84,7 +86,7 @@ export class ObjectPool<T> extends DisposableBase {
     if (typeof max != 'number' || isNaN(max)) {
       max = Math.min(
         this._maxSize, // Hold no more than the maximum.
-        Math.floor(pool.length / 2) - 1,
+        Math.floor(pool.length / 2) - 1
       ) // continue to reduce to zero over time.
     }
 
@@ -104,7 +106,7 @@ export class ObjectPool<T> extends DisposableBase {
   }
 
   protected _cancelAutoTrim() {
-    var tid = this._reduceTimeoutId
+    let tid = this._reduceTimeoutId
     if (tid) {
       clearTimeout(tid)
       this._reduceTimeoutId = 0
@@ -185,7 +187,7 @@ export class ObjectPool<T> extends DisposableBase {
     const _ = this
     _.throwIfDisposed()
 
-    var entry = _._pool.pop()
+    let entry = _._pool.pop()
     if (!entry && _._toRecycle && (entry = _._toRecycle.pop())) {
       _._recycler!(entry)
     }
@@ -196,7 +198,10 @@ export class ObjectPool<T> extends DisposableBase {
     const _ = this
     _.throwIfDisposed()
     if (!_._generator && !factory)
-      throw new ArgumentException('factory', 'Must provide a factory if on was not provided at construction time.')
+      throw new ArgumentException(
+        'factory',
+        'Must provide a factory if on was not provided at construction time.'
+      )
 
     return _.tryTake() || (factory && factory()) || _._generator!()
   }
@@ -204,14 +209,14 @@ export class ObjectPool<T> extends DisposableBase {
   static create<T>(
     generator?: (...args: any[]) => T,
     recycler?: (o: T) => void,
-    max: number = DEFAULT_MAX_SIZE,
+    max: number = DEFAULT_MAX_SIZE
   ): ObjectPool<T> {
     return new ObjectPool<T>(generator, recycler, max)
   }
 
   static createAutoRecycled<T extends IRecyclable>(
     generator?: (...args: any[]) => T,
-    max: number = DEFAULT_MAX_SIZE,
+    max: number = DEFAULT_MAX_SIZE
   ): ObjectPool<T> {
     return new ObjectPool<T>(generator, recycle, max)
   }

@@ -13,14 +13,19 @@ import NotImplementedException from '../Exceptions/NotImplementedException'
 import InvalidOperationException from '../Exceptions/InvalidOperationException'
 import ArgumentOutOfRangeException from '../Exceptions/ArgumentOutOfRangeException'
 import CollectionBase from './CollectionBase'
-import { Action, ActionWithIndex, EqualityComparison, PredicateWithIndex } from '../FunctionTypes'
+import {
+  Action,
+  ActionWithIndex,
+  EqualityComparison,
+  PredicateWithIndex,
+} from '../FunctionTypes'
 import { FiniteIEnumerator } from './Enumeration/IEnumerator'
 import FiniteEnumerableOrArrayLike from './FiniteEnumerableOrArrayLike'
 
 const VOID0: undefined = void 0
 const MINIMUM_GROW: number = 4
 const SHRINK_THRESHOLD: number = 32 // Unused?
-// var GROW_FACTOR: number = 200;  // double each time
+// let GROW_FACTOR: number = 200;  // double each time
 const GROW_FACTOR_HALF: number = 100
 const DEFAULT_CAPACITY: number = MINIMUM_GROW
 const emptyArray: any = Object.freeze([])
@@ -32,7 +37,10 @@ export class Queue<T> extends CollectionBase<T> {
   private _size: number // Number of elements.
   private _capacity: number // Maps to _array.length;
 
-  constructor(source?: FiniteEnumerableOrArrayLike<T> | number, equalityComparer: EqualityComparison<T> = areEqual) {
+  constructor(
+    source?: FiniteEnumerableOrArrayLike<T> | number,
+    equalityComparer: EqualityComparison<T> = areEqual
+  ) {
     super(VOID0, equalityComparer)
     this._head = 0
     this._tail = 0
@@ -47,7 +55,9 @@ export class Queue<T> extends CollectionBase<T> {
         this._array = capacity ? AU.initialize<T>(capacity) : emptyArray
       } else {
         const se = <FiniteEnumerableOrArrayLike<T>>source
-        this._array = AU.initialize<T>(Type.isArrayLike(se) ? se.length : DEFAULT_CAPACITY)
+        this._array = AU.initialize<T>(
+          Type.isArrayLike(se) ? se.length : DEFAULT_CAPACITY
+        )
 
         this._importEntries(se)
       }
@@ -84,7 +94,7 @@ export class Queue<T> extends CollectionBase<T> {
     //noinspection HtmlUnknownTag
     throw new NotImplementedException(
       'ICollection<T>.remove is not implemented in Queue<T>' +
-        ' since it would require destroying the underlying array to remove the item.',
+        ' since it would require destroying the underlying array to remove the item.'
     )
   }
 
@@ -312,7 +322,10 @@ export class Queue<T> extends CollectionBase<T> {
   // noinspection JSUnusedGlobalSymbols
   peek(throwIfEmpty: boolean = false): T | undefined {
     if (this._size == 0) {
-      if (throwIfEmpty) throw new InvalidOperationException('Cannot call peek on an empty queue.')
+      if (throwIfEmpty)
+        throw new InvalidOperationException(
+          'Cannot call peek on an empty queue.'
+        )
       return VOID0
     }
 
@@ -347,18 +360,26 @@ export class Queue<T> extends CollectionBase<T> {
         if (index == size) return yielder.yieldBreak()
 
         return yielder.yieldReturn(_._getElement(index++))
-      },
+      }
     )
   }
 }
 
 function assertZeroOrGreater(value: number, property: string): true | never {
-  if (value < 0) throw new ArgumentOutOfRangeException(property, value, 'Must be greater than zero')
+  if (value < 0)
+    throw new ArgumentOutOfRangeException(
+      property,
+      value,
+      'Must be greater than zero'
+    )
 
   return true
 }
 
-function assertIntegerZeroOrGreater(value: number, property: string): true | never {
+function assertIntegerZeroOrGreater(
+  value: number,
+  property: string
+): true | never {
   Integer.assert(value, property)
   return assertZeroOrGreater(value, property)
 }

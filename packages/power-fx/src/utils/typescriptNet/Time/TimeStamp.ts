@@ -16,7 +16,7 @@ export class TimeStamp implements ITimeStamp, IDateTime {
     public readonly minute: number = 0,
     public readonly second: number = 0,
     public readonly millisecond: number = 0,
-    public readonly tick: number = 0,
+    public readonly tick: number = 0
   ) {
     // Add validation or properly carry out of range values?
 
@@ -24,12 +24,22 @@ export class TimeStamp implements ITimeStamp, IDateTime {
   }
 
   toJsDate(): Date {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const _ = this
-    return new Date(_.year, _.month, _.day, _.hour, _.minute, _.second, _.millisecond + _.tick / Ticks.Per.Millisecond)
+    return new Date(
+      _.year,
+      _.month,
+      _.day,
+      _.hour,
+      _.minute,
+      _.second,
+      _.millisecond + _.tick / Ticks.Per.Millisecond
+    )
   }
 
   static from(d: Date | IDateTime): TimeStamp {
-    if (!(d instanceof Date) && Type.hasMember(d, 'toJsDate')) d = (<IDateTime>d).toJsDate()
+    if (!(d instanceof Date) && Type.hasMember(d, 'toJsDate'))
+      d = (<IDateTime>d).toJsDate()
     if (d instanceof Date) {
       return new TimeStamp(
         d.getFullYear(),
@@ -38,7 +48,7 @@ export class TimeStamp implements ITimeStamp, IDateTime {
         d.getHours(),
         d.getMinutes(),
         d.getSeconds(),
-        d.getMilliseconds(),
+        d.getMilliseconds()
       )
     } else {
       throw Error('Invalid date type.')

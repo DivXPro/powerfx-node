@@ -2,7 +2,7 @@ import { TextDocumentUri } from '../languageServerProtocol/protocol/TextDocument
 import { CheckResult } from '../public/CheckResult'
 import { IPowerFxScope } from '../public/IPowerFxScope'
 import { FormulaType } from '../public/types/FormulaType'
-import { FormulaValue } from '../public/values'
+import { FormulaValueStatic } from '../public/values'
 import { IIntellisenseResult } from '../texl/intellisense/IIntellisenseResult'
 import { RecalcEngine } from './RecalcEngine'
 
@@ -16,13 +16,19 @@ export class RecalcEngineScope implements IPowerFxScope {
     this._contextType = contextType
   }
 
-  public static FromRecord(engine: RecalcEngine, type: FormulaType): RecalcEngineScope {
+  public static FromRecord(
+    engine: RecalcEngine,
+    type: FormulaType
+  ): RecalcEngineScope {
     return new RecalcEngineScope(engine, type)
   }
 
-  public static FromUri(engine: RecalcEngine, uri: TextDocumentUri): RecalcEngineScope {
-    // var uriObj = new Uri(uri);
-    // var contextJson = HttpUtility.ParseQueryString(uriObj.Query).Get("context");
+  public static FromUri(
+    engine: RecalcEngine,
+    uri: TextDocumentUri
+  ): RecalcEngineScope {
+    // let uriObj = new Uri(uri);
+    // let contextJson = HttpUtility.ParseQueryString(uriObj.Query).Get("context");
     let contextJson = uri.context
     if (contextJson == null) {
       contextJson = '{}'
@@ -31,8 +37,11 @@ export class RecalcEngineScope implements IPowerFxScope {
     return RecalcEngineScope.FromJson(engine, uri.context)
   }
 
-  public static FromJson(engine: RecalcEngine, json: string): RecalcEngineScope {
-    const context = FormulaValue.FromJsonString(json)
+  public static FromJson(
+    engine: RecalcEngine,
+    json: string
+  ): RecalcEngineScope {
+    const context = FormulaValueStatic.FromJsonString(json)
     return RecalcEngineScope.FromRecord(engine, context.type)
   }
 

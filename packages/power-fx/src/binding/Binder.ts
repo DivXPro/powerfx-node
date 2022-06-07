@@ -1,6 +1,13 @@
-import { IExternalControl, IsIExternalControl } from '../app/controls/IExternalControl'
+import {
+  IExternalControl,
+  IsIExternalControl,
+} from '../app/controls/IExternalControl'
 import { IExternalControlProperty } from '../app/controls/IExternalControlProperty'
-import { ErrorContainer, IErrorContainer, LimitedSeverityErrorContainer } from '../app/errorContainers'
+import {
+  ErrorContainer,
+  IErrorContainer,
+  LimitedSeverityErrorContainer,
+} from '../app/errorContainers'
 import { IExternalRule } from '../app/controls/IExternalRule'
 import {
   IExternalTabularDataSource,
@@ -41,7 +48,10 @@ import { NodeKind } from '../syntax/NodeKind'
 import { BuiltinFunctionsCore } from '../texl/BuiltinFunctionsCore'
 import { DType } from '../types/DType'
 import { IExpandInfo, IsIExpandInfo } from '../types/IExpandInfo'
-import { IExternalControlType, IsIExternalControlType } from '../types/IExternalControlType'
+import {
+  IExternalControlType,
+  IsIExternalControlType,
+} from '../types/IExternalControlType'
 import { BitArray } from '../utils/BitArray'
 import { Dictionary } from '../utils/Dictionary'
 import { DName, DPath } from '../utils'
@@ -209,7 +219,7 @@ export class TexlBinding {
     //         get
     //         {
     // #if DEBUG
-    //             if (NameResolver?.CurrentEntity?.IsControl == true && NameResolver.CurrentProperty.IsValid && NameResolver.TryGetCurrentControlProperty(out var currentProperty)
+    //             if (NameResolver?.CurrentEntity?.IsControl == true && NameResolver.CurrentProperty.IsValid && NameResolver.TryGetCurrentControlProperty(out let currentProperty)
     //                 Contracts.Assert(_property == currentProperty);
     // #endif
     return this._property
@@ -262,13 +272,21 @@ export class TexlBinding {
   public hasParentItemReference: boolean
   public hasSelfReference: boolean
   public get isBehavior() {
-    return this.nameResolver != null && this.nameResolver.currentPropertyIsBehavior
+    return (
+      this.nameResolver != null && this.nameResolver.currentPropertyIsBehavior
+    )
   }
   public get isConstantData() {
-    return this.nameResolver != null && this.nameResolver.currentPropertyIsConstantData
+    return (
+      this.nameResolver != null &&
+      this.nameResolver.currentPropertyIsConstantData
+    )
   }
   public get isNavigationAllowed() {
-    return this.nameResolver != null && this.nameResolver.currentPropertyAllowsNavigation
+    return (
+      this.nameResolver != null &&
+      this.nameResolver.currentPropertyAllowsNavigation
+    )
   }
   public get document() {
     return this.nameResolver != null ? this.nameResolver.document : undefined
@@ -303,7 +321,10 @@ export class TexlBinding {
     return this.property != null && this.property.supportsPaging
   }
   public get currentPropertyRequiresDefaultableReferences() {
-    return this.property != null && this.property.requiresDefaultablePropertyReferences
+    return (
+      this.property != null &&
+      this.property.requiresDefaultablePropertyReferences
+    )
   }
   public get containsAnyPageableNode() {
     for (const isPageable of this._isPageable) {
@@ -341,7 +362,7 @@ export class TexlBinding {
     useThisRecordForRuleScope: boolean,
     updateDisplayNames = false,
     forceUpdateDisplayNames = false,
-    rule?: IExternalRule,
+    rule?: IExternalRule
   ) {
     // Contracts.AssertValue(node);
     // Contracts.AssertValueOrNull(resolver);
@@ -403,12 +424,13 @@ export class TexlBinding {
     this.hasParentItemReference = false
 
     this.contextScope = ruleScope
-    this.binderNodeMetadataArgTypeVisitor = new BinderNodesMetadataArgTypeVisitor(
-      this,
-      resolver,
-      ruleScope,
-      useThisRecordForRuleScope,
-    )
+    this.binderNodeMetadataArgTypeVisitor =
+      new BinderNodesMetadataArgTypeVisitor(
+        this,
+        resolver,
+        ruleScope,
+        useThisRecordForRuleScope
+      )
     this.hasReferenceToAttachment = false
     this.nodesToReplace = []
     this.updateDisplayNames = updateDisplayNames
@@ -418,7 +440,10 @@ export class TexlBinding {
     this.rule = rule
     if (resolver != null) {
       this.entityPath = resolver.currentEntityPath
-      this.entityName = resolver.currentEntity == null ? DName.Default() : resolver.currentEntity.entityName
+      this.entityName =
+        resolver.currentEntity == null
+          ? DName.Default()
+          : resolver.currentEntity.entityName
     }
 
     if (resolver) {
@@ -468,7 +493,7 @@ export class TexlBinding {
       useThisRecordForRuleScope,
       updateDisplayNames,
       forceUpdateDisplayNames,
-      rule,
+      rule
     )
     const vis = new Visitor(txb, resolver, ruleScope, useThisRecordForRuleScope)
     vis.run()
@@ -491,7 +516,11 @@ export class TexlBinding {
 
   public widenResultType() {
     this.setType(this.top, DType.Error)
-    this.errorContainer.ensureErrorWithSeverity(DocumentErrorSeverity.Severe, this.top, TexlStrings.ErrTypeError)
+    this.errorContainer.ensureErrorWithSeverity(
+      DocumentErrorSeverity.Severe,
+      this.top,
+      TexlStrings.ErrTypeError
+    )
   }
 
   public getType(node: TexlNode): DType {
@@ -550,7 +579,10 @@ export class TexlBinding {
     this._isStateful.set(node.id, isStateful)
   }
 
-  public setAppScopedVariable(node: FirstNameNode, isAppScopedVariable: boolean) {
+  public setAppScopedVariable(
+    node: FirstNameNode,
+    isAppScopedVariable: boolean
+  ) {
     // Contracts.AssertValue(node);
     // Contracts.AssertIndex(node.Id, _typeMap.Length);
     // Contracts.Assert(isAppScopedVariable || !_isAppScopedVariable.Get(node.Id));
@@ -577,8 +609,12 @@ export class TexlBinding {
   public addVolatileVariables(node: TexlNode, variables: Set<string>) {
     // Contracts.AssertValue(node);
     // Contracts.AssertIndex(node.Id, _volatileVariables.Length);
-    const volatileVariables = this._volatileVariables[node.id] ?? new Set<string>()
-    this._volatileVariables[node.id] = new Set([...volatileVariables, ...variables])
+    const volatileVariables =
+      this._volatileVariables[node.id] ?? new Set<string>()
+    this._volatileVariables[node.id] = new Set([
+      ...volatileVariables,
+      ...variables,
+    ])
   }
   /// <summary>
   /// See documentation for <see cref="GetVolatileVariables"/> for more information.
@@ -622,7 +658,10 @@ export class TexlBinding {
     }
 
     // One To N Relationships are pagable using nextlinks
-    if (info.kind == BindKind.DeprecatedImplicitThisItem && (this.getType(node).expandInfo?.isTable ?? false)) {
+    if (
+      info.kind == BindKind.DeprecatedImplicitThisItem &&
+      (this.getType(node).expandInfo?.isTable ?? false)
+    ) {
       return true
     }
 
@@ -643,11 +682,13 @@ export class TexlBinding {
   private supportsPagingForCallNode(node: CallNode): boolean {
     // Contracts.AssertValue(node);
 
-    var info = this.getInfo(node)
+    let info = this.getInfo(node)
     return info?.function?.supportsPaging(node, this) ?? false
   }
 
-  private supportsPaging(node: TexlNode | CallNode | DottedNameNode | FirstNameNode): boolean {
+  private supportsPaging(
+    node: TexlNode | CallNode | DottedNameNode | FirstNameNode
+  ): boolean {
     // Contracts.AssertValue(node);
 
     switch (node.kind) {
@@ -663,7 +704,9 @@ export class TexlBinding {
     }
   }
 
-  private tryGetEntityInfoForDottedName(node: DottedNameNode): [boolean, IExpandInfo] {
+  private tryGetEntityInfoForDottedName(
+    node: DottedNameNode
+  ): [boolean, IExpandInfo] {
     // Contracts.AssertValue(node);
 
     let info: IExpandInfo = undefined
@@ -674,7 +717,9 @@ export class TexlBinding {
     return [info != null, info]
   }
 
-  private tryGetEntityInfoForFirstName(node: FirstNameNode): [boolean, IExpandInfo] {
+  private tryGetEntityInfoForFirstName(
+    node: FirstNameNode
+  ): [boolean, IExpandInfo] {
     // Contracts.AssertValue(node);
 
     let info: IExpandInfo
@@ -700,7 +745,9 @@ export class TexlBinding {
     return result[0] ? result : [false, info]
   }
 
-  private tryGetFlowInfoForDottedName(node: DottedNameNode): [boolean, IFlowInfo] {
+  private tryGetFlowInfoForDottedName(
+    node: DottedNameNode
+  ): [boolean, IFlowInfo] {
     let info: IFlowInfo
     const firstNameNode = node.asDottedName()
     if (firstNameNode == null) return [false, info]
@@ -710,7 +757,9 @@ export class TexlBinding {
     return [IsIFlowInfo(info), IsIFlowInfo(info) ? info : undefined]
   }
 
-  private tryGetFlowInfoForFirstName(node: FirstNameNode): [boolean, IFlowInfo] {
+  private tryGetFlowInfoForFirstName(
+    node: FirstNameNode
+  ): [boolean, IFlowInfo] {
     let info: IFlowInfo
     const firstNameNode = node.asFirstName()
     if (firstNameNode == null) return [false, info]
@@ -737,7 +786,7 @@ export class TexlBinding {
   // When getting projections from a chain rule, ensure that the projection belongs to the same DS as the one we're operating on (using match param)
   tryGetDataQueryOptions(
     node: TexlNode = this.top,
-    forCodegen: boolean = false,
+    forCodegen: boolean = false
   ): [boolean, DataSourceToQueryOptionsMap] {
     // Contracts.AssertValue(node);
     let tabularDataQueryOptionsMap: DataSourceToQueryOptionsMap
@@ -773,8 +822,13 @@ export class TexlBinding {
 
     // Contracts.AssertValue(topNode);
 
-    if (node.kind == NodeKind.FirstName && this.rule.texlNodeQueryOptions.size > 1) {
-      const tabularDs = this.rule.document.globalScope.getTabularDataSource(node.asFirstName().ident.name.toString())
+    if (
+      node.kind == NodeKind.FirstName &&
+      this.rule.texlNodeQueryOptions.size > 1
+    ) {
+      const tabularDs = this.rule.document.globalScope.getTabularDataSource(
+        node.asFirstName().ident.name.toString()
+      )
       if (!IsIExternalTabularDataSource(tabularDs)) {
         tabularDataQueryOptionsMap = this.rule.texlNodeQueryOptions.get(node.id)
         return [true, tabularDataQueryOptionsMap]
@@ -786,7 +840,7 @@ export class TexlBinding {
       for (const x of this.rule.texlNodeQueryOptions) {
         if (topNode.MinChildID > x[0] || x[0] > topNode.id) continue
 
-        var qo = x[1].getQueryOptions(tabularDs)
+        let qo = x[1].getQueryOptions(tabularDs)
 
         if (qo == null) continue
 
@@ -799,7 +853,10 @@ export class TexlBinding {
     }
   }
 
-  private static GetParentControl(parent: ParentNode, nameResolver: INameResolver): IExternalControl {
+  private static GetParentControl(
+    parent: ParentNode,
+    nameResolver: INameResolver
+  ): IExternalControl {
     // Contracts.AssertValue(parent);
     // Contracts.AssertValueOrNull(nameResolver);
 
@@ -813,7 +870,10 @@ export class TexlBinding {
     return lookupInfo.data as IExternalControl
   }
 
-  private static GetSelfControl(self: SelfNode, nameResolver: INameResolver): IExternalControl {
+  private static GetSelfControl(
+    self: SelfNode,
+    nameResolver: INameResolver
+  ): IExternalControl {
     // Contracts.AssertValue(self);
     // Contracts.AssertValueOrNull(nameResolver);
 
@@ -828,26 +888,36 @@ export class TexlBinding {
   }
 
   private isDataComponentDataSource(lookupInfo: NameLookupInfo): boolean {
-    return lookupInfo.kind == BindKind.Data && this._glue.isComponentDataSource(lookupInfo.data)
+    return (
+      lookupInfo.kind == BindKind.Data &&
+      this._glue.isComponentDataSource(lookupInfo.data)
+    )
   }
 
   private isDataComponentDefinition(lookupInfo: NameLookupInfo): boolean {
-    return lookupInfo.kind == BindKind.Control && this._glue.isDataComponentDefinition(lookupInfo.data)
+    return (
+      lookupInfo.kind == BindKind.Control &&
+      this._glue.isDataComponentDefinition(lookupInfo.data)
+    )
   }
 
   private isDataComponentInstance(lookupInfo: NameLookupInfo): boolean {
-    return lookupInfo.kind == BindKind.Control && this._glue.isDataComponentInstance(lookupInfo.data)
+    return (
+      lookupInfo.kind == BindKind.Control &&
+      this._glue.isDataComponentInstance(lookupInfo.data)
+    )
   }
 
   private getDataComponentControl(
     dottedNameNode: DottedNameNode,
     nameResolver: INameResolver,
-    visitor: TexlVisitor,
+    visitor: TexlVisitor
   ): IExternalControl {
     // Contracts.AssertValue(dottedNameNode);
     // Contracts.AssertValueOrNull(nameResolver);
     // Contracts.AssertValueOrNull(visitor);
-    if (nameResolver == null || !(dottedNameNode.left instanceof FirstNameNode)) return null
+    if (nameResolver == null || !(dottedNameNode.left instanceof FirstNameNode))
+      return null
 
     const lhsNode = dottedNameNode.left
     let lookupInfo: NameLookupInfo
@@ -885,12 +955,18 @@ export class TexlBinding {
     } else if (leftNode instanceof SelfNode) {
       ctrlInfo = TexlBinding.GetSelfControl(leftNode, this.nameResolver)
     } else if (leftNode instanceof FirstNameInfo) {
-      ctrlInfo = this.getDataComponentControl(leftNode, this.nameResolver, visitor)
+      ctrlInfo = this.getDataComponentControl(
+        leftNode,
+        this.nameResolver,
+        visitor
+      )
     } else {
       ctrlInfo = undefined
     }
 
-    return ctrlInfo != null ? DPath.Root.append(new DName(ctrlInfo.displayName)) : node.head.namespace
+    return ctrlInfo != null
+      ? DPath.Root.append(new DName(ctrlInfo.displayName))
+      : node.head.namespace
     // const ctrlInfo = leftNode switch
     // {
     //     ParentNode parentNode => GetParentControl(parentNode, NameResolver),
@@ -909,13 +985,15 @@ export class TexlBinding {
   //   }
 
   getDataQuerySelects(node: TexlNode) {
-    if (!this.document.properties.enabledFeatures.isProjectionMappingEnabled) return []
+    if (!this.document.properties.enabledFeatures.isProjectionMappingEnabled)
+      return []
 
     const result = this.tryGetDataQueryOptions(node, true)
     const tabularDataQueryOptionsMap = result[1]
     if (!result[0]) return []
 
-    const currNodeQueryOptions = tabularDataQueryOptionsMap.getQueryOptionsArray()
+    const currNodeQueryOptions =
+      tabularDataQueryOptionsMap.getQueryOptionsArray()
 
     if (currNodeQueryOptions.length == 0) return []
 
@@ -924,7 +1002,8 @@ export class TexlBinding {
 
       if (!ds.isSelectable) return []
 
-      const ruleQueryOptions = this.rule.binding.queryOptions.getQueryOptions(ds)
+      const ruleQueryOptions =
+        this.rule.binding.queryOptions.getQueryOptions(ds)
       if (ruleQueryOptions != null) {
         for (const nodeQO of this.rule.texlNodeQueryOptions) {
           const nodeQOSelects = nodeQO[1].getQueryOptions(ds)?.selects
@@ -944,19 +1023,27 @@ export class TexlBinding {
     return []
   }
 
-  getExpandQuerySelects(node: TexlNode, expandEntityLogicalName: string): Array<string> {
+  getExpandQuerySelects(
+    node: TexlNode,
+    expandEntityLogicalName: string
+  ): Array<string> {
     if (this.document.properties.enabledFeatures.isProjectionMappingEnabled) {
       const result = this.tryGetDataQueryOptions(node, true)
       const tabularDataQueryOptionsMap = result[1]
       if (result[0]) {
-        const currNodeQueryOptions = tabularDataQueryOptionsMap.getQueryOptionsArray()
+        const currNodeQueryOptions =
+          tabularDataQueryOptionsMap.getQueryOptionsArray()
 
         for (const qoItem of currNodeQueryOptions) {
           for (const expandQueryOptions of qoItem.expands) {
-            if (expandQueryOptions[1].expandInfo.identity == expandEntityLogicalName) {
+            if (
+              expandQueryOptions[1].expandInfo.identity ==
+              expandEntityLogicalName
+            ) {
               if (
                 !expandQueryOptions[1].selectsEqualKeyColumns() &&
-                expandQueryOptions[1].selects.size <= TexlBinding.MaxSelectsToInclude
+                expandQueryOptions[1].selects.size <=
+                  TexlBinding.MaxSelectsToInclude
               ) {
                 const selects: string[] = []
                 for (const select of expandQueryOptions[1].selects) {
@@ -1031,11 +1118,13 @@ export class TexlBinding {
       case NodeKind.Call:
         const callNode = node.asCall()
         const callFunction = this.getInfo(callNode)?.function
-        if (callFunction != null) return callFunction.tryGetDataSource(callNode, this)
+        if (callFunction != null)
+          return callFunction.tryGetDataSource(callNode, this)
         break
       case NodeKind.FirstName:
         const firstNameNode = node.asFirstName()
-        dataSourceInfo = this.getInfo(firstNameNode)?.data as IExternalDataSource
+        dataSourceInfo = this.getInfo(firstNameNode)
+          ?.data as IExternalDataSource
         return [dataSourceInfo != null, dataSourceInfo]
       case NodeKind.DottedName:
         const result = this.tryGetEntityInfo(node.asDottedName())
@@ -1108,7 +1197,10 @@ export class TexlBinding {
     }
   }
 
-  public checkAndMarkAsPageable(node: CallNode | FirstNameNode | AsNode | DottedNameNode, func?: TexlFunction) {
+  public checkAndMarkAsPageable(
+    node: CallNode | FirstNameNode | AsNode | DottedNameNode,
+    func?: TexlFunction
+  ) {
     switch (node.kind) {
       case NodeKind.Call:
         this.checkAndMarkAsPageableForCall(node as CallNode, func)
@@ -1294,12 +1386,14 @@ export class TexlBinding {
         if (dottedNameNode.left.kind == NodeKind.FirstName) {
           // let enumType: DType
           const namedEnumResult = this.document.globalScope.tryGetNamedEnum(
-            dottedNameNode.left.asFirstName().ident.name,
+            dottedNameNode.left.asFirstName().ident.name
           )
           const enumType = namedEnumResult[1]
           if (namedEnumResult[0]) {
             // object enumValue;
-            const enumValueResult = enumType.tryGetEnumValue(dottedNameNode.right.name)
+            const enumValueResult = enumType.tryGetEnumValue(
+              dottedNameNode.right.name
+            )
             const enumValue = enumValueResult[1]
             if (enumValueResult[0]) {
               const strValue = enumValue as string
@@ -1356,7 +1450,9 @@ export class TexlBinding {
     return this.tryGetFullRecordRowScopeAccessInfo(node)[0]
   }
 
-  public tryGetFullRecordRowScopeAccessInfo(node: TexlNode): [boolean, FirstNameInfo] {
+  public tryGetFullRecordRowScopeAccessInfo(
+    node: TexlNode
+  ): [boolean, FirstNameInfo] {
     // Contracts.CheckValue(node, nameof(node));
     let firstNameInfo: FirstNameInfo
 
@@ -1456,7 +1552,8 @@ export class TexlBinding {
     // Contracts.Assert(IsGlobal(node) || upCount >= 0);
 
     // Ensure we don't exceed the supported up-count limit.
-    if (upCount > ScopeUseSet.MaxUpCount) this.errorContainer.error(node, TexlStrings.ErrTooManyUps)
+    if (upCount > ScopeUseSet.MaxUpCount)
+      this.errorContainer.error(node, TexlStrings.ErrTooManyUps)
 
     this.setScopeUseSet(node, new ScopeUseSet(upCount))
   }
@@ -1501,13 +1598,21 @@ export class TexlBinding {
       let callInfo: CallInfo
       const callResult = this.tryGetCall(parentNode.id)
       callInfo = callResult[1]
-      if (callResult[0] && callInfo.function != null && callInfo.function.hasLambdas) {
+      if (
+        callResult[0] &&
+        callInfo.function != null &&
+        callInfo.function.hasLambdas
+      ) {
         upCount--
       }
 
       if (upCount < 0) return false
 
-      if (this._supportsRowScopedParamDelegationExempted.get(parentNode.id) && upCount == 0) return true
+      if (
+        this._supportsRowScopedParamDelegationExempted.get(parentNode.id) &&
+        upCount == 0
+      )
+        return true
     }
 
     return false
@@ -1632,7 +1737,11 @@ export class TexlBinding {
     const firstNames: FirstNameInfo[] = []
     for (let id = 0; id < this.idLim; id++) {
       let info: FirstNameInfo
-      if ((info = this._infoMap[id] as FirstNameInfo) != null && info.node.inTree(node)) firstNames.push(info)
+      if (
+        (info = this._infoMap[id] as FirstNameInfo) != null &&
+        info.node.inTree(node)
+      )
+        firstNames.push(info)
     }
     return firstNames
   }
@@ -1654,7 +1763,7 @@ export class TexlBinding {
           info.Kind == BindKind.NamedValue ||
           info.Kind == BindKind.ComponentNameSpace ||
           info.Kind == BindKind.WebResource ||
-          info.Kind == BindKind.QualifiedValue,
+          info.Kind == BindKind.QualifiedValue
       )
   }
 
@@ -1678,7 +1787,9 @@ export class TexlBinding {
     let firstName: TexlNode = null
     if (!this.usesGlobals && !this.usesResources) return [false, firstName]
 
-    for (const info of this._infoMap.filter((info) => info instanceof FirstNameInfo) as FirstNameInfo[]) {
+    for (const info of this._infoMap.filter(
+      (info) => info instanceof FirstNameInfo
+    ) as FirstNameInfo[]) {
       const kind = info.kind
       if (
         info.name.value === globalName &&
@@ -1716,7 +1827,9 @@ export class TexlBinding {
 
     return this._infoMap
       .filter((info) => info instanceof FirstNameInfo)
-      .filter((info) => (info as FirstNameInfo).kind == BindKind.ScopeCollection)
+      .filter(
+        (info) => (info as FirstNameInfo).kind == BindKind.ScopeCollection
+      )
   }
 
   public getThisItemFirstNames() {
@@ -1731,7 +1844,10 @@ export class TexlBinding {
 
     return this._infoMap
       .filter((info) => info instanceof FirstNameInfo)
-      .filter((info) => (info as FirstNameInfo).kind == BindKind.DeprecatedImplicitThisItem)
+      .filter(
+        (info) =>
+          (info as FirstNameInfo).kind == BindKind.DeprecatedImplicitThisItem
+      )
 
     // return _infoMap.OfType<FirstNameInfo>().Where((info) => info.Kind == BindKind.DeprecatedImplicitThisItem)
   }
@@ -1750,7 +1866,10 @@ export class TexlBinding {
     const dottedNames: DottedNameInfo[] = []
     for (let id = 0; id < this.idLim; id++) {
       let info: DottedNameInfo
-      if ((info = this._infoMap[id] as DottedNameInfo) != null && info.node.inTree(node)) {
+      if (
+        (info = this._infoMap[id] as DottedNameInfo) != null &&
+        info.node.inTree(node)
+      ) {
         dottedNames.push(info)
       }
     }
@@ -1772,7 +1891,10 @@ export class TexlBinding {
     const calls: CallInfo[] = []
     for (let id = 0; id < this.idLim; id++) {
       let info: CallInfo
-      if ((info = this._infoMap[id] as CallInfo) != null && info.node.inTree(node)) {
+      if (
+        (info = this._infoMap[id] as CallInfo) != null &&
+        info.node.inTree(node)
+      ) {
         calls.push(info)
       }
     }
@@ -1857,7 +1979,10 @@ export class TexlBinding {
   // Returns all scope fields consumed by this rule that match the given scope type.
   // This is always a subset of the scope type.
   // Returns DType.EmptyRecord if no scope fields are consumed by the rule.
-  public getTopUsedScopeFields(sourceControlName: DName, outputTablePropertyName: DName): DType {
+  public getTopUsedScopeFields(
+    sourceControlName: DName,
+    outputTablePropertyName: DName
+  ): DType {
     // Contracts.AssertValid(sourceControlName);
     // Contracts.AssertValid(outputTablePropertyName);
 
@@ -1866,7 +1991,7 @@ export class TexlBinding {
 
     // Identify all accesses to the specified output table in this rule.
     const sourceTableAccesses = this.getDottedNames().filter((d) =>
-      d.node.matches(sourceControlName, outputTablePropertyName),
+      d.node.matches(sourceControlName, outputTablePropertyName)
     )
 
     for (const sourceTableAccess of sourceTableAccesses) {
@@ -1881,12 +2006,18 @@ export class TexlBinding {
 
       // Walk up the parse tree to find the first CallNode, then determine if the
       // required type can be reduced to scope fields.
-      for (; node.parent != null && node.parent.parent != null; node = node.parent) {
+      for (
+        ;
+        node.parent != null && node.parent.parent != null;
+        node = node.parent
+      ) {
         if (node.parent.parent.kind == NodeKind.Call) {
-          const callInfo = this.getInfo(node.parent.parent as CallNode) as CallInfo
+          const callInfo = this.getInfo(
+            node.parent.parent as CallNode
+          ) as CallInfo
 
           if (callInfo.function.scopeInfo != null) {
-            var scopeFunction = callInfo.function
+            let scopeFunction = callInfo.function
 
             // Contracts.Assert(callInfo.Node.Args.Children.Length > 0);
             const firstArg = callInfo.node.args.children[0]
@@ -1894,7 +2025,10 @@ export class TexlBinding {
             // Determine if we arrived as the first (scope) argument of the function call
             // and whether we can reduce the type to contain only the used scope fields
             // for the call.
-            if (firstArg == node && !scopeFunction.scopeInfo.usesAllFieldsInScope) {
+            if (
+              firstArg == node &&
+              !scopeFunction.scopeInfo.usesAllFieldsInScope
+            ) {
               // The cursor type must be the same as the current type.
               //   Contracts.Assert(currentRecordType.Accepts(callInfo.CursorType))
               currentRecordType = this.getUsedScopeFields(callInfo)
@@ -1950,7 +2084,9 @@ export class TexlBinding {
             accParamType = typeResult1[1]
             if (!typeResult1[0]) accParamType = DType.EmptyRecord
             // Get the RHS property type reported by the scope
-            let tempRhsType: DType = lambdaParamType.isControl ? lambdaParamType.toRecord() : lambdaParamType
+            let tempRhsType: DType = lambdaParamType.isControl
+              ? lambdaParamType.toRecord()
+              : lambdaParamType
 
             const typeResult2 = tempRhsType.tryGetType(dotted.right.name)
             if (!typeResult2[0]) {
@@ -1958,12 +2094,22 @@ export class TexlBinding {
             }
 
             // Accumulate into the param type
-            const addResult = accParamType.tryAdd(fError, DPath.Root, dotted.right.name, propertyType)
+            const addResult = accParamType.tryAdd(
+              fError,
+              DPath.Root,
+              dotted.right.name,
+              propertyType
+            )
             accParamType = addResult[0]
             fError = addResult[1]
             lambdaParamType = accParamType
           }
-          const recordAddResult = DType.EmptyRecord.tryAdd(fError, DPath.Root, name.name, lambdaParamType)
+          const recordAddResult = DType.EmptyRecord.tryAdd(
+            fError,
+            DPath.Root,
+            name.name,
+            lambdaParamType
+          )
           fError = recordAddResult[1]
           fields = DType.Union(fields, recordAddResult[0])
         }
@@ -1998,7 +2144,10 @@ export class TexlBinding {
     // Contracts.AssertValue(info);
     // Contracts.AssertIndex(node.Id, _infoMap.Length);
     // Contracts.Assert(_infoMap[node.Id] == null);
-    if (info.kind == BindKind.LambdaField || info.kind == BindKind.LambdaFullRecord) {
+    if (
+      info.kind == BindKind.LambdaField ||
+      info.kind == BindKind.LambdaFullRecord
+    ) {
       if (!this._lambdaParams.has(info.nestDst)) {
         this._lambdaParams.set(info.nestDst, [])
       }
@@ -2073,7 +2222,8 @@ export class TexlBinding {
       // If the invocation affects scope varialbe, cache that info.
       if (fn.affectsScopeVariable) this.affectsScopeVariable = true
 
-      if (fn.affectsDataSourceQueryOptions) this.affectsTabularDataSources = true
+      if (fn.affectsDataSourceQueryOptions)
+        this.affectsTabularDataSources = true
     }
   }
 
@@ -2092,7 +2242,10 @@ export class TexlBinding {
       // If this is accessing datasource itself then we don't need to capture this.
       if (associatedDataSource.name == fieldName) continue
 
-      retVal ||= this.queryOptions.addSelect(associatedDataSource, new DName(fieldName))
+      retVal ||= this.queryOptions.addSelect(
+        associatedDataSource,
+        new DName(fieldName)
+      )
 
       this.affectsTabularDataSources = true
     }
@@ -2119,7 +2272,9 @@ export class TexlBinding {
       // Token equality doesn't work here, compare the spans to be certain
       const newName =
         this.nodesToReplace.find(
-          (kvp) => kvp.key.span.min == ident.token.span.min && kvp.key.span.lim == ident.token.span.lim,
+          (kvp) =>
+            kvp.key.span.min == ident.token.span.min &&
+            kvp.key.span.lim == ident.token.span.lim
         ) || ({ key: undefined, value: null } as KeyValuePair<Token, string>)
       if (newName.value != null && newName.key != null) {
         replacedIdent = newName.value
@@ -2223,7 +2378,8 @@ export class TexlBinding {
       this._typesNeedingMetadata = []
     }
 
-    if (!this._typesNeedingMetadata.includes(type)) this._typesNeedingMetadata.push(type)
+    if (!this._typesNeedingMetadata.includes(type))
+      this._typesNeedingMetadata.push(type)
   }
 
   getExpandEntitiesMissingMetadata(): Array<DType> {
@@ -2247,7 +2403,12 @@ export class Visitor implements TexlVisitor {
   private _currentScope: Scope
   private _currentScopeDsNodeId: number
 
-  constructor(txb: TexlBinding, resolver: INameResolver, topScope: DType, useThisRecordForRuleScope: boolean) {
+  constructor(
+    txb: TexlBinding,
+    resolver: INameResolver,
+    topScope: DType,
+    useThisRecordForRuleScope: boolean
+  ) {
     // Contracts.AssertValue(txb);
     // Contracts.AssertValueOrNull(resolver);
     this._txb = txb
@@ -2257,7 +2418,7 @@ export class Visitor implements TexlVisitor {
       undefined,
       undefined,
       topScope ?? DType.Error,
-      useThisRecordForRuleScope ? txb.thisRecordDefaultName : DName.Default(),
+      useThisRecordForRuleScope ? txb.thisRecordDefaultName : DName.Default()
     )
     this._currentScope = this._topScope
     this._currentScopeDsNodeId = -1
@@ -2287,7 +2448,10 @@ export class Visitor implements TexlVisitor {
   /// <param name="node">Node for which we are checking the type</param>
   /// <param name="alternateTypes">List of acceptable types for this operation, in order of suitability</param>
   /// <returns></returns>
-  private checkComparisonTypeOneOf(node: TexlNode, ...alternateTypes: DType[]): boolean {
+  private checkComparisonTypeOneOf(
+    node: TexlNode,
+    ...alternateTypes: DType[]
+  ): boolean {
     // Contracts.AssertValue(node);
     // Contracts.AssertValue(alternateTypes);
     // Contracts.Assert(alternateTypes.Any());
@@ -2305,11 +2469,13 @@ export class Visitor implements TexlVisitor {
     if (
       IsIExternalControlType(controlType) &&
       node.asFirstName() != null &&
-      (primaryOutProp = controlType.controlTemplate.primaryOutputProperty) != null
+      (primaryOutProp = controlType.controlTemplate.primaryOutputProperty) !=
+        null
     ) {
       let outType: DType = primaryOutProp.getOpaqueType()
       // let acceptedType =  (alternateTypes[0] || DType.Default()).accepts(outType)
-      let acceptedType = alternateTypes.find((alt) => alt.accepts(outType)) || null
+      let acceptedType =
+        alternateTypes.find((alt) => alt.accepts(outType)) || null
       if (acceptedType != null) {
         // We'll coerce the control to the desired type, by pulling from the control's
         // primary output property. See codegen for details.
@@ -2322,14 +2488,18 @@ export class Visitor implements TexlVisitor {
       DocumentErrorSeverity.Severe,
       node,
       TexlStrings.ErrBadType_ExpectedTypesCSV,
-      alternateTypes.map((t) => t.getKindString()).join(', '),
+      alternateTypes.map((t) => t.getKindString()).join(', ')
     )
     return false
   }
 
   // Returns whether the node was of the type wanted, and reports appropriate errors.
   // A list of allowed alternate types specifies what other types of values can be coerced to the wanted type.
-  private checkType(node: TexlNode, typeWant: DType, ...alternateTypes: DType[]) {
+  private checkType(
+    node: TexlNode,
+    typeWant: DType,
+    ...alternateTypes: DType[]
+  ) {
     // Contracts.AssertValue(node);
     // Contracts.Assert(typeWant.IsValid);
     // Contracts.Assert(!typeWant.IsError);
@@ -2337,7 +2507,8 @@ export class Visitor implements TexlVisitor {
 
     let type: DType = this._txb.getType(node)
     if (typeWant.accepts(type)) {
-      if (type.requiresExplicitCast(typeWant)) this._txb.setCoercedType(node, typeWant)
+      if (type.requiresExplicitCast(typeWant))
+        this._txb.setCoercedType(node, typeWant)
       return true
     }
 
@@ -2365,10 +2536,14 @@ export class Visitor implements TexlVisitor {
     if (
       IsIExternalControlType(controlType) &&
       node.asFirstName() != null &&
-      (primaryOutProp = controlType.controlTemplate.primaryOutputProperty) != null
+      (primaryOutProp = controlType.controlTemplate.primaryOutputProperty) !=
+        null
     ) {
       const outType = primaryOutProp.getOpaqueType()
-      if (typeWant.accepts(outType) || alternateTypes.some((alt) => alt.accepts(outType))) {
+      if (
+        typeWant.accepts(outType) ||
+        alternateTypes.some((alt) => alt.accepts(outType))
+      ) {
         // We'll "coerce" the control to the desired type, by pulling from the control's
         // primary output property. See codegen for details.
         this._txb.setCoercedType(node, typeWant)
@@ -2377,13 +2552,20 @@ export class Visitor implements TexlVisitor {
     }
 
     const messageKey =
-      alternateTypes.length == 0 ? TexlStrings.ErrBadType_ExpectedType : TexlStrings.ErrBadType_ExpectedTypesCSV
+      alternateTypes.length == 0
+        ? TexlStrings.ErrBadType_ExpectedType
+        : TexlStrings.ErrBadType_ExpectedTypesCSV
     const messageArg =
       alternateTypes.length == 0
         ? typeWant.getKindString()
         : [typeWant, ...alternateTypes].map((t) => t.getKindString()).join(', ')
 
-    this._txb.errorContainer.ensureErrorWithSeverity(DocumentErrorSeverity.Severe, node, messageKey, messageArg)
+    this._txb.errorContainer.ensureErrorWithSeverity(
+      DocumentErrorSeverity.Severe,
+      node,
+      messageKey,
+      messageArg
+    )
     return false
   }
 
@@ -2394,13 +2576,21 @@ export class Visitor implements TexlVisitor {
 
     const typeLeft = this._txb.getType(left)
     if (!typeLeft.isValid || typeLeft.isUnknown || typeLeft.isError) {
-      this._txb.errorContainer.ensureErrorWithSeverity(DocumentErrorSeverity.Severe, left, TexlStrings.ErrTypeError)
+      this._txb.errorContainer.ensureErrorWithSeverity(
+        DocumentErrorSeverity.Severe,
+        left,
+        TexlStrings.ErrTypeError
+      )
       return false
     }
 
     const typeRight = this._txb.getType(right)
     if (!typeRight.isValid || typeRight.isUnknown || typeRight.isError) {
-      this._txb.errorContainer.ensureErrorWithSeverity(DocumentErrorSeverity.Severe, right, TexlStrings.ErrTypeError)
+      this._txb.errorContainer.ensureErrorWithSeverity(
+        DocumentErrorSeverity.Severe,
+        right,
+        TexlStrings.ErrTypeError
+      )
       return false
     }
 
@@ -2412,14 +2602,17 @@ export class Visitor implements TexlVisitor {
       // This case deals with substring matches, e.g. 'FirstName in "Aldous Huxley"' or "123" in 123.
       if (!typeRight.isAggregate) {
         if (!DType.String.accepts(typeRight)) {
-          if (typeRight.coercesTo(DType.String) && DType.String.accepts(typeLeft)) {
+          if (
+            typeRight.coercesTo(DType.String) &&
+            DType.String.accepts(typeLeft)
+          ) {
             // Coerce RHS to a string type.
             this._txb.setCoercedType(right, DType.String)
           } else {
             this._txb.errorContainer.ensureErrorWithSeverity(
               DocumentErrorSeverity.Severe,
               right,
-              TexlStrings.ErrStringExpected,
+              TexlStrings.ErrStringExpected
             )
             return false
           }
@@ -2431,7 +2624,7 @@ export class Visitor implements TexlVisitor {
             left,
             TexlStrings.ErrCannotCoerce_SourceType_TargetType,
             typeLeft.getKindString(),
-            DType.String.getKindString(),
+            DType.String.getKindString()
           )
           return false
         }
@@ -2447,13 +2640,16 @@ export class Visitor implements TexlVisitor {
           this._txb.errorContainer.ensureErrorWithSeverity(
             DocumentErrorSeverity.Severe,
             right,
-            TexlStrings.ErrInvalidSchemaNeedCol,
+            TexlStrings.ErrInvalidSchemaNeedCol
           )
           return false
         }
 
         const typedName = names.length === 1 ? names[0] : undefined
-        if (typedName.type.accepts(typeLeft) || typeLeft.accepts(typedName.type)) {
+        if (
+          typedName.type.accepts(typeLeft) ||
+          typeLeft.accepts(typedName.type)
+        ) {
           return true
         }
         if (!typeLeft.coercesTo(typedName.type)) {
@@ -2462,7 +2658,7 @@ export class Visitor implements TexlVisitor {
             left,
             TexlStrings.ErrCannotCoerce_SourceType_TargetType,
             typeLeft.getKindString(),
-            typedName.type.getKindString(),
+            typedName.type.getKindString()
           )
           return false
         }
@@ -2477,7 +2673,7 @@ export class Visitor implements TexlVisitor {
         DocumentErrorSeverity.Severe,
         right,
         TexlStrings.ErrBadType_Type,
-        typeRight.getKindString(),
+        typeRight.getKindString()
       )
       return false
     }
@@ -2489,7 +2685,7 @@ export class Visitor implements TexlVisitor {
           DocumentErrorSeverity.Severe,
           right,
           TexlStrings.ErrBadType_Type,
-          typeRight.getKindString(),
+          typeRight.getKindString()
         )
         return false
       }
@@ -2516,12 +2712,22 @@ export class Visitor implements TexlVisitor {
           }
         }
 
-        // if (typeLeftAsTable.Accepts(typeRight, out var typeRightDifferingSchema, out var typeRightDifferingSchemaType) ||
-        //     typeRight.Accepts(typeLeftAsTable, out var typeLeftDifferingSchema, out var typeLeftDifferingSchemaType))
+        // if (typeLeftAsTable.Accepts(typeRight, out let typeRightDifferingSchema, out let typeRightDifferingSchemaType) ||
+        //     typeRight.Accepts(typeLeftAsTable, out let typeLeftDifferingSchema, out let typeLeftDifferingSchemaType))
         //     return true;
 
-        this._txb.errorContainer.errors(left, typeLeft, typeLeftDifferingSchema, typeLeftDifferingSchemaType)
-        this._txb.errorContainer.errors(right, typeRight, typeRightDifferingSchema, typeRightDifferingSchemaType)
+        this._txb.errorContainer.errors(
+          left,
+          typeLeft,
+          typeLeftDifferingSchema,
+          typeLeftDifferingSchemaType
+        )
+        this._txb.errorContainer.errors(
+          right,
+          typeRight,
+          typeRightDifferingSchema,
+          typeRightDifferingSchemaType
+        )
 
         return false
       }
@@ -2532,7 +2738,7 @@ export class Visitor implements TexlVisitor {
         DocumentErrorSeverity.Severe,
         right,
         TexlStrings.ErrBadType_Type,
-        typeRight.getKindString(),
+        typeRight.getKindString()
       )
       return false
     }
@@ -2542,7 +2748,7 @@ export class Visitor implements TexlVisitor {
       DocumentErrorSeverity.Severe,
       left,
       TexlStrings.ErrBadType_Type,
-      typeLeft.getKindString(),
+      typeLeft.getKindString()
     )
     return false
   }
@@ -2635,7 +2841,10 @@ export class Visitor implements TexlVisitor {
     this._txb.setType(node, DType.String)
 
     // For Data Table Scenario Only
-    if (this._txb.property != null && this._txb.property.useForDataQuerySelects) {
+    if (
+      this._txb.property != null &&
+      this._txb.property.useForDataQuerySelects
+    ) {
       // Lookup ThisItem info
       if (this._nameResolver == null) {
         return
@@ -2660,14 +2869,22 @@ export class Visitor implements TexlVisitor {
     this._txb.setType(node, DType.Number)
   }
 
-  public getLogicalNodeNameAndUpdateDisplayNames(type: DType, ident: Identifier, isThisItem = false): DName {
-    return this.getLogicalNodeNameAndUpdateDisplayNamesOut(type, ident, isThisItem)[0]
+  public getLogicalNodeNameAndUpdateDisplayNames(
+    type: DType,
+    ident: Identifier,
+    isThisItem = false
+  ): DName {
+    return this.getLogicalNodeNameAndUpdateDisplayNamesOut(
+      type,
+      ident,
+      isThisItem
+    )[0]
   }
 
   public getLogicalNodeNameAndUpdateDisplayNamesOut(
     type: DType,
     ident: Identifier,
-    isThisItem = false,
+    isThisItem = false
   ): [DName, string] {
     // Contracts.AssertValid(type);
     // Contracts.AssertValue(ident);
@@ -2675,14 +2892,23 @@ export class Visitor implements TexlVisitor {
     let logicalNodeName: DName = ident.name
     let newDisplayName = logicalNodeName.value
 
-    if (type == DType.Invalid || (!type.isOptionSet && !type.isView && type.associatedDataSources == null))
+    if (
+      type == DType.Invalid ||
+      (!type.isOptionSet && !type.isView && type.associatedDataSources == null)
+    )
       return [logicalNodeName, newDisplayName]
 
     // Skip trying to match display names if the type isn't associated with a data source, an option set or view
-    if (type.associatedDataSources.size == 0 && !type.isOptionSet && !type.isView && !type.hasExpandInfo)
+    if (
+      type.associatedDataSources.size == 0 &&
+      !type.isOptionSet &&
+      !type.isView &&
+      !type.hasExpandInfo
+    )
       return [logicalNodeName, newDisplayName]
 
-    const firstOrDefault = type.associatedDataSources.values().next().value as IExternalTabularDataSource
+    const firstOrDefault = type.associatedDataSources.values().next()
+      .value as IExternalTabularDataSource
     let useUpdatedDisplayNames =
       (firstOrDefault?.isConvertingDisplayNameMapping ?? false) ||
       (type.optionSetInfo?.isConvertingDisplayNameMapping ?? false) ||
@@ -2695,10 +2921,12 @@ export class Visitor implements TexlVisitor {
       type.hasExpandInfo &&
       type.expandInfo.parentDataSource.kind == DataSourceKind.CdsNative
     ) {
-      const rst = this._txb.document.globalScope.tryGetCdsDataSourceWithLogicalName(
-        (type.expandInfo.parentDataSource as IExternalCdsDataSource).datasetName,
-        type.expandInfo.identity,
-      )
+      const rst =
+        this._txb.document.globalScope.tryGetCdsDataSourceWithLogicalName(
+          (type.expandInfo.parentDataSource as IExternalCdsDataSource)
+            .datasetName,
+          type.expandInfo.identity
+        )
       const relatedDataSource = rst[1]
       if (rst[0] && relatedDataSource.isConvertingDisplayNameMapping) {
         useUpdatedDisplayNames = true
@@ -2711,17 +2939,29 @@ export class Visitor implements TexlVisitor {
       // Or we need to go Logical Name -> Display Name
       let maybeDisplayName: string
       let maybeLogicalName: string
-      const result = DType.TryGetConvertedDisplayNameAndLogicalNameForColumn(updatedDisplayNamesType, ident.name.value)
+      const result = DType.TryGetConvertedDisplayNameAndLogicalNameForColumn(
+        updatedDisplayNamesType,
+        ident.name.value
+      )
       maybeDisplayName = result[1].newDisplayName
       maybeLogicalName = result[1].logicalName
       if (result[0]) {
         logicalNodeName = new DName(maybeLogicalName)
-        this._txb.nodesToReplace.push({ key: ident.token, value: maybeDisplayName })
+        this._txb.nodesToReplace.push({
+          key: ident.token,
+          value: maybeDisplayName,
+        })
       } else {
-        const rst = DType.TryGetDisplayNameForColumn(updatedDisplayNamesType, ident.name.value)
+        const rst = DType.TryGetDisplayNameForColumn(
+          updatedDisplayNamesType,
+          ident.name.value
+        )
         maybeDisplayName = rst[1]
         if (rst[0]) {
-          this._txb.nodesToReplace.push({ key: ident.token, value: maybeDisplayName })
+          this._txb.nodesToReplace.push({
+            key: ident.token,
+            value: maybeDisplayName,
+          })
         }
       }
 
@@ -2730,11 +2970,18 @@ export class Visitor implements TexlVisitor {
       }
     } else {
       let maybeLogicalName: string
-      const rst = DType.TryGetLogicalNameForColumn(updatedDisplayNamesType, ident.name.value, isThisItem)
+      const rst = DType.TryGetLogicalNameForColumn(
+        updatedDisplayNamesType,
+        ident.name.value,
+        isThisItem
+      )
       maybeLogicalName = rst[1]
       if (rst[0]) {
         logicalNodeName = new DName(maybeLogicalName)
-        this._txb.nodesToReplace.push({ key: ident.token, value: maybeLogicalName })
+        this._txb.nodesToReplace.push({
+          key: ident.token,
+          value: maybeLogicalName,
+        })
       }
     }
 
@@ -2771,10 +3018,19 @@ export class Visitor implements TexlVisitor {
 
       if (rst[0]) {
         // Contracts.Assert(scope.Type.IsRecord);
-        info = FirstNameInfo.Create6(BindKind.LambdaFullRecord, node, scope.nest, this._currentScope.nest, scope.data)
+        info = FirstNameInfo.Create6(
+          BindKind.LambdaFullRecord,
+          node,
+          scope.nest,
+          this._currentScope.nest,
+          scope.data
+        )
         // Contracts.Assert(info.Kind == BindKind.LambdaFullRecord);
 
-        nodeName = this.getLogicalNodeNameAndUpdateDisplayNames(scope.type, node.ident)
+        nodeName = this.getLogicalNodeNameAndUpdateDisplayNames(
+          scope.type,
+          node.ident
+        )
 
         if (scope.nest < this._currentScope.nest) {
           this._txb.setBlockScopedConstantNode(node)
@@ -2798,8 +3054,17 @@ export class Visitor implements TexlVisitor {
           let nodeType = scope.type
 
           if (!isWholeScope) {
-            info = FirstNameInfo.Create6(BindKind.LambdaField, node, scope.nest, this._currentScope.nest, scope.data)
-            nodeName = this.getLogicalNodeNameAndUpdateDisplayNames(scope.type, node.ident)
+            info = FirstNameInfo.Create6(
+              BindKind.LambdaField,
+              node,
+              scope.nest,
+              this._currentScope.nest,
+              scope.data
+            )
+            nodeName = this.getLogicalNodeNameAndUpdateDisplayNames(
+              scope.type,
+              node.ident
+            )
             nodeType = scope.type.getType(nodeName)
           } else {
             info = FirstNameInfo.Create6(
@@ -2807,7 +3072,7 @@ export class Visitor implements TexlVisitor {
               node,
               scope.nest,
               this._currentScope.nest,
-              scope.data,
+              scope.data
             )
             if (scope.nest < this._currentScope.nest) {
               this._txb.setBlockScopedConstantNode(node)
@@ -2829,19 +3094,30 @@ export class Visitor implements TexlVisitor {
     let lookupInfo: NameLookupInfo = NameLookupInfo.Default()
     if (this._txb.affectsScopeVariableName) {
       if (haveNameResolver && this._nameResolver.currentEntity != null) {
-        const scopedControl: IExternalControl = this._txb.glue.getVariableScopedControlFromTexlBinding(this._txb)
+        const scopedControl: IExternalControl =
+          this._txb.glue.getVariableScopedControlFromTexlBinding(this._txb)
         // App variable name cannot conflict with any existing global entity name, eg. control/data/table/enum.
-        const rst = scopedControl.isAppInfoControl && this._nameResolver.lookupGlobalEntity(node.ident.name)
+        const rst =
+          scopedControl.isAppInfoControl &&
+          this._nameResolver.lookupGlobalEntity(node.ident.name)
         lookupInfo = rst[1]
         if (rst[0]) {
-          this._txb.errorContainer.error(node, TexlStrings.ErrExpectedFound_Ex_Fnd, TokKind.Ident, lookupInfo.kind)
+          this._txb.errorContainer.error(
+            node,
+            TexlStrings.ErrExpectedFound_Ex_Fnd,
+            TokKind.Ident,
+            lookupInfo.kind
+          )
         }
         this._txb.setAppScopedVariable(node, scopedControl.isAppInfoControl)
       }
 
       // Set the variable name node as DType.String.
       this._txb.setType(node, DType.String)
-      this._txb.setInfoFirstName(node, FirstNameInfo.Create1(node, NameLookupInfo.Default()))
+      this._txb.setInfoFirstName(
+        node,
+        FirstNameInfo.Create1(node, NameLookupInfo.Default())
+      )
       return
     }
 
@@ -2856,7 +3132,10 @@ export class Visitor implements TexlVisitor {
       const scopedInfo = rst[1]
       if (rst[0]) {
         this._txb.setType(node, scopedInfo.type)
-        this._txb.setInfoFirstName(node, FirstNameInfo.Create4(node, scopedInfo))
+        this._txb.setInfoFirstName(
+          node,
+          FirstNameInfo.Create4(node, scopedInfo)
+        )
         this._txb.setStateful(node, scopedInfo.isStateful)
         this._txb.hasLocalReferences = true
         return
@@ -2866,7 +3145,10 @@ export class Visitor implements TexlVisitor {
     if (!haveNameResolver) {
       this._txb.errorContainer.error(node, TexlStrings.ErrInvalidName)
       this._txb.setType(node, DType.Error)
-      this._txb.setInfoFirstName(node, FirstNameInfo.Create1(node, NameLookupInfo.Default()))
+      this._txb.setInfoFirstName(
+        node,
+        FirstNameInfo.Create1(node, NameLookupInfo.Default())
+      )
       return
     } else {
       const rst = this._nameResolver.lookup(node.ident.name, lookupPrefs)
@@ -2874,7 +3156,10 @@ export class Visitor implements TexlVisitor {
       if (!rst[0]) {
         this._txb.errorContainer.error(node, TexlStrings.ErrInvalidName)
         this._txb.setType(node, DType.Error)
-        this._txb.setInfoFirstName(node, FirstNameInfo.Create1(node, NameLookupInfo.Default()))
+        this._txb.setInfoFirstName(
+          node,
+          FirstNameInfo.Create1(node, NameLookupInfo.Default())
+        )
         return
       }
     }
@@ -2886,21 +3171,36 @@ export class Visitor implements TexlVisitor {
     let lookupType = lookupInfo.type
 
     // Internal control references are not allowed in component input properties.
-    if (IsIExternalControl(lookupInfo.data) && this.checkComponentProperty(lookupInfo.data as IExternalControl)) {
-      this._txb.errorContainer.error(node, TexlStrings.ErrInternalControlInInputProperty)
+    if (
+      IsIExternalControl(lookupInfo.data) &&
+      this.checkComponentProperty(lookupInfo.data as IExternalControl)
+    ) {
+      this._txb.errorContainer.error(
+        node,
+        TexlStrings.ErrInternalControlInInputProperty
+      )
       this._txb.setType(node, DType.Error)
-      this._txb.setInfoFirstName(node, fnInfo ?? FirstNameInfo.Create1(node, NameLookupInfo.Default()))
+      this._txb.setInfoFirstName(
+        node,
+        fnInfo ?? FirstNameInfo.Create1(node, NameLookupInfo.Default())
+      )
       return
     }
     if (lookupInfo.kind == BindKind.ThisItem) {
       this._txb.hasThisItemReference = true
-      const rst = this.tryProcessFirstNameNodeForThisItemAccess(node, lookupInfo)
+      const rst = this.tryProcessFirstNameNodeForThisItemAccess(
+        node,
+        lookupInfo
+      )
       lookupType = rst[1].nodeType
       fnInfo = rst[1].info
       if (!rst[0] || lookupType.isError) {
         this._txb.errorContainer.error(node, TexlStrings.ErrInvalidName)
         this._txb.setType(node, DType.Error)
-        this._txb.setInfoFirstName(node, fnInfo ?? FirstNameInfo.Create1(node, NameLookupInfo.Default()))
+        this._txb.setInfoFirstName(
+          node,
+          fnInfo ?? FirstNameInfo.Create1(node, NameLookupInfo.Default())
+        )
         return
       }
       this._txb.setContextual(node, true)
@@ -2908,7 +3208,11 @@ export class Visitor implements TexlVisitor {
       this._txb.hasThisItemReference = true
 
       // Even though lookupInfo.Type isn't the full data source type, it still is tagged with the full datasource info if this is a thisitem node
-      nodeName = this.getLogicalNodeNameAndUpdateDisplayNames(lookupType, node.ident, /* isThisItem */ true)
+      nodeName = this.getLogicalNodeNameAndUpdateDisplayNames(
+        lookupType,
+        node.ident,
+        /* isThisItem */ true
+      )
 
       // If the ThisItem reference is an entity, the type should be expanded.
       if (lookupType.isExpandEntity) {
@@ -2923,7 +3227,11 @@ export class Visitor implements TexlVisitor {
           parentEntityPath = thisItemType.expandInfo.expandPath.toString()
 
         lookupType = this.getExpandedEntityType(lookupType, parentEntityPath)
-        fnInfo = FirstNameInfo.Create2(node, lookupInfo, lookupInfo.type.expandInfo)
+        fnInfo = FirstNameInfo.Create2(
+          node,
+          lookupInfo,
+          lookupInfo.type.expandInfo
+        )
       }
     }
 
@@ -2939,19 +3247,28 @@ export class Visitor implements TexlVisitor {
 
     // If the firstName is a standalone global control reference (i.e. not a LHS for a property access)
     // make sure to record this, as it's something that is needed later during codegen.
-    if (lookupType.isControl && (node.parent == null || node.parent.asDottedName() == null)) {
+    if (
+      lookupType.isControl &&
+      (node.parent == null || node.parent.asDottedName() == null)
+    ) {
       this._txb.hasControlReferences = true
 
       // If the current property doesn't support global control references, set an error
       if (this._txb.currentPropertyRequiresDefaultableReferences)
-        this._txb.errorContainer.ensureError(node, TexlStrings.ErrInvalidControlReference)
+        this._txb.errorContainer.ensureError(
+          node,
+          TexlStrings.ErrInvalidControlReference
+        )
     }
 
     // Update _usesGlobals, _usesResources, etc.
     this.updateBindKindUseFlags(lookupInfo.kind)
 
     // Update statefulness of global datasources excluding dynamic datasources.
-    if (lookupInfo.kind == BindKind.Data && !this._txb.glue.isDynamicDataSourceInfo(lookupInfo.data)) {
+    if (
+      lookupInfo.kind == BindKind.Data &&
+      !this._txb.glue.isDynamicDataSourceInfo(lookupInfo.data)
+    ) {
       this._txb.setStateful(node, true)
     }
 
@@ -2967,10 +3284,14 @@ export class Visitor implements TexlVisitor {
     this._txb.checkAndMarkAsPageable(node)
 
     if (
-      (lookupInfo.kind == BindKind.WebResource || lookupInfo.kind == BindKind.QualifiedValue) &&
+      (lookupInfo.kind == BindKind.WebResource ||
+        lookupInfo.kind == BindKind.QualifiedValue) &&
       !(node.parent instanceof DottedNameNode)
     ) {
-      this._txb.errorContainer.ensureError(node, TexlStrings.ErrValueMustBeFullyQualified)
+      this._txb.errorContainer.ensureError(
+        node,
+        TexlStrings.ErrValueMustBeFullyQualified
+      )
     }
     // Any connectedDataSourceInfo or option set or view needs to be accessed asynchronously to allow data to be loaded.
     if (
@@ -2984,18 +3305,25 @@ export class Visitor implements TexlVisitor {
 
   private tryProcessFirstNameNodeForThisItemAccess(
     node: FirstNameNode,
-    lookupInfo: NameLookupInfo,
+    lookupInfo: NameLookupInfo
   ): [boolean, { nodeType: DType; info: FirstNameInfo }] {
     let nodeType: DType
     let info: FirstNameInfo
     if (IsIExternalControl(this._nameResolver.currentEntity)) {
       // Check to see if we only want to include ThisItem in specific
       // properties of this Control
-      const result = this._nameResolver.entityScope.tryGetEntity(this._nameResolver.currentEntity.entityName)
+      const result = this._nameResolver.entityScope.tryGetEntity(
+        this._nameResolver.currentEntity.entityName
+      )
       const nodeAssociatedControl = result[1] as IExternalControl
-      if (result[0] && nodeAssociatedControl.template.includesThisItemInSpecificProperty) {
+      if (
+        result[0] &&
+        nodeAssociatedControl.template.includesThisItemInSpecificProperty
+      ) {
         let nodeAssociatedProperty: IExternalControlProperty
-        const rst = nodeAssociatedControl.template.tryGetProperty(this._nameResolver.currentProperty.toString())
+        const rst = nodeAssociatedControl.template.tryGetProperty(
+          this._nameResolver.currentProperty.toString()
+        )
         nodeAssociatedProperty = rst[1]
         if (rst[0] && !nodeAssociatedProperty.shouldIncludeThisItemInFormula) {
           nodeType = null
@@ -3020,7 +3348,11 @@ export class Visitor implements TexlVisitor {
       // Contracts.Assert(dataControlLookupInfo.Type.IsControl);
 
       // Check to see if the dotted name is accessing a property of the data control.
-      if ((dataControlLookupInfo.type as unknown as IExternalControlType).controlTemplate.hasOutput(rightName)) {
+      if (
+        (
+          dataControlLookupInfo.type as unknown as IExternalControlType
+        ).controlTemplate.hasOutput(rightName)
+      ) {
         // Set the result type to the data control type.
         nodeType = dataControlLookupInfo.type
         info = FirstNameInfo.Create3(node, lookupInfo, dataControlName, true)
@@ -3033,7 +3365,9 @@ export class Visitor implements TexlVisitor {
     return [true, { nodeType, info }]
   }
 
-  private isRowScopeField(node: FirstNameNode): [boolean, { scope: Scope; fError: boolean; isWholeScope: boolean }] {
+  private isRowScopeField(
+    node: FirstNameNode
+  ): [boolean, { scope: Scope; fError: boolean; isWholeScope: boolean }] {
     // Contracts.AssertValue(node);
 
     let fError = false
@@ -3064,17 +3398,23 @@ export class Visitor implements TexlVisitor {
         // display name, so we need to check the old mapping as well as the current mapping.
         let usesDisplayName: boolean
         let maybeLogicalName: string
-        const rst = DType.TryGetConvertedDisplayNameAndLogicalNameForColumn(scope.type, nodeName.value)
+        const rst = DType.TryGetConvertedDisplayNameAndLogicalNameForColumn(
+          scope.type,
+          nodeName.value
+        )
         maybeLogicalName = rst[1].logicalName
         if (rst[0]) {
           usesDisplayName = true
         } else {
-          const rst2 = DType.TryGetLogicalNameForColumn(scope.type, nodeName.value)
+          const rst2 = DType.TryGetLogicalNameForColumn(
+            scope.type,
+            nodeName.value
+          )
           maybeLogicalName = rst2[1]
           usesDisplayName = rst2[0]
         }
-        // var usesDisplayName =
-        //     DType.TryGetConvertedDisplayNameAndLogicalNameForColumn(scope.Type, nodeName.Value, out var maybeLogicalName, out _) ||
+        // let usesDisplayName =
+        //     DType.TryGetConvertedDisplayNameAndLogicalNameForColumn(scope.Type, nodeName.Value, out let maybeLogicalName, out _) ||
         //     DType.TryGetLogicalNameForColumn(scope.Type, nodeName.Value, out maybeLogicalName);
         if (usesDisplayName) nodeName = new DName(maybeLogicalName)
 
@@ -3085,30 +3425,42 @@ export class Visitor implements TexlVisitor {
           // Expand the entity type here.
           if (typeTmp.isExpandEntity) {
             let parentEntityPath = ''
-            if (scope.type.hasExpandInfo) parentEntityPath = scope.type.expandInfo.expandPath.toString()
+            if (scope.type.hasExpandInfo)
+              parentEntityPath = scope.type.expandInfo.expandPath.toString()
 
             // We cannot access pageable entities in row-scope, as it will generate too many calls to the connector
             // Set an error and skip it.
             if (typeTmp.expandInfo.isTable) {
               if (
                 this._txb.document != null &&
-                this._txb.document.properties.enabledFeatures.isEnableRowScopeOneToNExpandEnabled
+                this._txb.document.properties.enabledFeatures
+                  .isEnableRowScopeOneToNExpandEnabled
               ) {
                 this._txb.errorContainer.ensureErrorWithSeverity(
                   DocumentErrorSeverity.Warning,
                   node,
-                  TexlStrings.WrnRowScopeOneToNExpandNumberOfCalls,
+                  TexlStrings.WrnRowScopeOneToNExpandNumberOfCalls
                 )
               } else {
-                this._txb.errorContainer.error(node, TexlStrings.ErrColumnNotAccessibleInCurrentContext)
+                this._txb.errorContainer.error(
+                  node,
+                  TexlStrings.ErrColumnNotAccessibleInCurrentContext
+                )
                 this._txb.setType(node, DType.Error)
                 fError = true
                 return [true, { scope, fError, isWholeScope }]
               }
             }
 
-            let expandedEntityType: DType = this.getExpandedEntityType(typeTmp, parentEntityPath)
-            const rst = scope.type.setType(fError, DPath.Root.append(nodeName), expandedEntityType)
+            let expandedEntityType: DType = this.getExpandedEntityType(
+              typeTmp,
+              parentEntityPath
+            )
+            const rst = scope.type.setType(
+              fError,
+              DPath.Root.append(nodeName),
+              expandedEntityType
+            )
             let type: DType = rst[0]
             fError = rst[1]
             scope = new Scope(
@@ -3117,7 +3469,7 @@ export class Visitor implements TexlVisitor {
               type,
               scope.scopeIdentifier,
               scope.requireScopeIdentifier,
-              expandedEntityType.expandInfo,
+              expandedEntityType.expandInfo
             )
           }
           return [true, { scope, fError, isWholeScope }]
@@ -3171,7 +3523,10 @@ export class Visitor implements TexlVisitor {
     this.assertValid()
     // Contracts.AssertValue(node);
 
-    if (this._nameResolver == null || this._nameResolver.currentEntity == null) {
+    if (
+      this._nameResolver == null ||
+      this._nameResolver.currentEntity == null
+    ) {
       this._txb.errorContainer.error(node, TexlStrings.ErrInvalidName)
       this._txb.setType(node, DType.Error)
       return
@@ -3201,7 +3556,10 @@ export class Visitor implements TexlVisitor {
 
     // Treat this as a standard access to the parent control ("v" type).
     this._txb.setType(node, lookupInfo.type)
-    this._txb.setInfoParentNode(node, new ParentInfo(node, lookupInfo.path, lookupInfo.data as IExternalControl))
+    this._txb.setInfoParentNode(
+      node,
+      new ParentInfo(node, lookupInfo.path, lookupInfo.data as IExternalControl)
+    )
     this._txb.hasParentItemReference = true
 
     this.updateBindKindUseFlags(lookupInfo.kind)
@@ -3211,7 +3569,10 @@ export class Visitor implements TexlVisitor {
     this.assertValid()
     // Contracts.AssertValue(node);
 
-    if (this._nameResolver == null || this._nameResolver.currentEntity == null) {
+    if (
+      this._nameResolver == null ||
+      this._nameResolver.currentEntity == null
+    ) {
       this._txb.errorContainer.error(node, TexlStrings.ErrInvalidName)
       this._txb.setType(node, DType.Error)
       return
@@ -3228,7 +3589,10 @@ export class Visitor implements TexlVisitor {
 
     // Treat this as a standard access to the current control ("v" type).
     this._txb.setType(node, lookupInfo.type)
-    this._txb.setInfoSelfNode(node, new SelfInfo(node, lookupInfo.path, lookupInfo.data as IExternalControl))
+    this._txb.setInfoSelfNode(
+      node,
+      new SelfInfo(node, lookupInfo.path, lookupInfo.data as IExternalControl)
+    )
     this._txb.hasSelfReference = true
 
     this.updateBindKindUseFlags(lookupInfo.kind)
@@ -3316,7 +3680,8 @@ export class Visitor implements TexlVisitor {
     // Contracts.AssertValue(node);
 
     const volatileVariables = this._txb.getVolatileVariables(node)
-    for (const child of node.children) this._txb.addVolatileVariables(child, volatileVariables)
+    for (const child of node.children)
+      this._txb.addVolatileVariables(child, volatileVariables)
 
     return true
   }
@@ -3324,7 +3689,10 @@ export class Visitor implements TexlVisitor {
   private preVisitDottedNameNode(node: DottedNameNode) {
     // Contracts.AssertValue(node);
 
-    this._txb.addVolatileVariables(node.left, this._txb.getVolatileVariables(node))
+    this._txb.addVolatileVariables(
+      node.left,
+      this._txb.getVolatileVariables(node)
+    )
     if (node.left instanceof FirstNameNode && node.parent == null) {
       node.left.parent = node
     }
@@ -3343,25 +3711,36 @@ export class Visitor implements TexlVisitor {
       this._txb.addVolatileVariables(child, runningWeight)
       child.accept(this)
       argTypes[i] = this._txb.getType(args[i])
-      runningWeight = new Set([...runningWeight, ...this._txb.getVolatileVariables(child)])
+      runningWeight = new Set([
+        ...runningWeight,
+        ...this._txb.getVolatileVariables(child),
+      ])
       isUnliftable ||= this._txb.isUnliftable(child)
     }
 
     // Typecheck the node's children against the built-in Concatenate function
-    const result = BuiltinFunctionsCore.Concatenate.checkInvocation(args, argTypes, this._txb.errorContainer, this._txb)
+    const result = BuiltinFunctionsCore.Concatenate.checkInvocation(
+      args,
+      argTypes,
+      this._txb.errorContainer,
+      this._txb
+    )
     const fArgsValid = result[0]
     const { returnType, nodeToCoercedTypeMap } = result[1]
     if (!fArgsValid) {
       this._txb.errorContainer.errorWithSeverity(
         DocumentErrorSeverity.Severe,
         node,
-        TexlStrings.ErrInvalidStringInterpolation,
+        TexlStrings.ErrInvalidStringInterpolation
       )
     }
 
     if (fArgsValid && nodeToCoercedTypeMap != null) {
       for (const nodeToCoercedTypeKvp of nodeToCoercedTypeMap) {
-        this._txb.setCoercedType(nodeToCoercedTypeKvp[0], nodeToCoercedTypeKvp[1])
+        this._txb.setCoercedType(
+          nodeToCoercedTypeKvp[0],
+          nodeToCoercedTypeKvp[1]
+        )
       }
     }
 
@@ -3424,7 +3803,9 @@ export class Visitor implements TexlVisitor {
     // In order for the node to be constant, it must be a member of an enum,
     // a member of a constant aggregate,
     // or a reference to a constant rule (checked later).
-    let isConstant = leftType.isEnum || (leftType.isAggregate && this._txb.isConstant(node.left))
+    let isConstant =
+      leftType.isEnum ||
+      (leftType.isAggregate && this._txb.isConstant(node.left))
 
     // Some nodes are never pageable, use this to
     // skip the check for pageability and default to non-pageable;
@@ -3442,9 +3823,16 @@ export class Visitor implements TexlVisitor {
       // This should be a fast O(1) lookup that covers 99% of all cases, such as
       // Couleur!Rouge, Align.Droit, etc.
       let firstNodeLhs = node.left.asFirstName()
-      let firstInfoLhs = firstNodeLhs == null ? null : this._txb.getInfo(firstNodeLhs)
-      const rstOne = this._nameResolver.lookupEnumValueByInfoAndLocName(firstInfoLhs.data, nameRhs)
-      const rstLast = this._nameResolver.lookupEnumValueByTypeAndLocName(leftType, nameRhs)
+      let firstInfoLhs =
+        firstNodeLhs == null ? null : this._txb.getInfo(firstNodeLhs)
+      const rstOne = this._nameResolver.lookupEnumValueByInfoAndLocName(
+        firstInfoLhs.data,
+        nameRhs
+      )
+      const rstLast = this._nameResolver.lookupEnumValueByTypeAndLocName(
+        leftType,
+        nameRhs
+      )
 
       if (firstInfoLhs != null && rstOne[0]) {
         typeRhs = leftType.getEnumSupertype()
@@ -3471,14 +3859,21 @@ export class Visitor implements TexlVisitor {
     } else if (IsIExternalControlType(leftType)) {
       const leftControl: IExternalControlType = leftType
       // const result = this.getLHSControlInfo(node)
-      let { controlInfo, isIndirectPropertyUsage } = this.getLHSControlInfo(node)
+      let { controlInfo, isIndirectPropertyUsage } =
+        this.getLHSControlInfo(node)
       if (isIndirectPropertyUsage) {
         this._txb.usedControlProperties.add(nameRhs)
       }
 
       // Explicitly block accesses to the parent's nested-aware property.
-      if (controlInfo != null && this.usesParentsNestedAwareProperty(controlInfo, nameRhs)) {
-        this.setDottedNameError(node, TexlStrings.ErrNotAccessibleInCurrentContext)
+      if (
+        controlInfo != null &&
+        this.usesParentsNestedAwareProperty(controlInfo, nameRhs)
+      ) {
+        this.setDottedNameError(
+          node,
+          TexlStrings.ErrNotAccessibleInCurrentContext
+        )
         return
       }
 
@@ -3493,7 +3888,10 @@ export class Visitor implements TexlVisitor {
       }
 
       // We block the property access usage for behavior component properties.
-      if (template.isComponent && PropertyRuleCategoryExtensions.IsBehavioral(property.propertyCategory)) {
+      if (
+        template.isComponent &&
+        PropertyRuleCategoryExtensions.IsBehavioral(property.propertyCategory)
+      ) {
         this.setDottedNameError(node, TexlStrings.ErrInvalidPropertyReference)
         return
       }
@@ -3505,7 +3903,10 @@ export class Visitor implements TexlVisitor {
       }
 
       // We block the property access usage for datasource of the command component.
-      if (template.isCommandComponent && this._txb.glue.isPrimaryCommandComponentProperty(property)) {
+      if (
+        template.isCommandComponent &&
+        this._txb.glue.isPrimaryCommandComponentProperty(property)
+      ) {
         this.setDottedNameError(node, TexlStrings.ErrInvalidPropertyReference)
         return
       }
@@ -3525,13 +3926,22 @@ export class Visitor implements TexlVisitor {
       }
 
       // Explicitly block access to design properties referenced via Selected/AllItems.
-      if (leftControl.isDataLimitedControl && property.propertyCategory != PropertyRuleCategory.Data) {
-        this.setDottedNameError(node, TexlStrings.ErrNotAccessibleInCurrentContext)
+      if (
+        leftControl.isDataLimitedControl &&
+        property.propertyCategory != PropertyRuleCategory.Data
+      ) {
+        this.setDottedNameError(
+          node,
+          TexlStrings.ErrNotAccessibleInCurrentContext
+        )
         return
       }
 
       // For properties requiring default references, block non-defaultable properties
-      if (this._txb.currentPropertyRequiresDefaultableReferences && property.unloadedDefault == null) {
+      if (
+        this._txb.currentPropertyRequiresDefaultableReferences &&
+        property.unloadedDefault == null
+      ) {
         this.setDottedNameError(node, TexlStrings.ErrInvalidControlReference)
         return
       }
@@ -3545,14 +3955,20 @@ export class Visitor implements TexlVisitor {
         let firstNodeLhs: FirstNameNode = node.left.asFirstName()
         if (
           template.hasExpandoProperties &&
-          template.expandoProperties.some((p) => p.invariantName == property.invariantName) &&
+          template.expandoProperties.some(
+            (p) => p.invariantName == property.invariantName
+          ) &&
           controlInfo != null &&
-          (firstNodeLhs == null || this._txb.getInfo(firstNodeLhs).kind != BindKind.ScopeVariable)
+          (firstNodeLhs == null ||
+            this._txb.getInfo(firstNodeLhs).kind != BindKind.ScopeVariable)
         ) {
           // If visiting an expando type property of control type variable, we cannot calculate the type here because
           // The LHS associated ControlInfo is App/Component.
           // e.g. Set(controlVariable1, DropDown1), Label1.Text = controlVariable1.Selected.Value.
-          leftType = controlInfo.getControlDType(true, false) as unknown as DType
+          leftType = controlInfo.getControlDType(
+            true,
+            false
+          ) as unknown as DType
         }
         const rst = leftType.toRecord().tryGetType(property.invariantName)
         typeRhs = rst[1]
@@ -3566,7 +3982,10 @@ export class Visitor implements TexlVisitor {
       // we need to mark the node as constant, and save the control info so we may look up the
       // rule later.
       const rule = controlInfo?.getRule(property.invariantName.toString())
-      if (rule?.hasErrors === false && rule.binding.isConstant(rule.binding.top)) {
+      if (
+        rule?.hasErrors === false &&
+        rule.binding.isConstant(rule.binding.top)
+      ) {
         value = controlInfo
         isConstant = true
       }
@@ -3577,19 +3996,31 @@ export class Visitor implements TexlVisitor {
         this._txb.control != null &&
         this._txb.property != null &&
         controlInfo != null &&
-        !Visitor.IsValidAccessToScopedProperty(controlInfo, property, this._txb.control, this._txb.property)
+        !Visitor.IsValidAccessToScopedProperty(
+          controlInfo,
+          property,
+          this._txb.control,
+          this._txb.property
+        )
       ) {
-        this.setDottedNameError(node, TexlStrings.ErrUnSupportedComponentDataPropertyAccess)
+        this.setDottedNameError(
+          node,
+          TexlStrings.ErrUnSupportedComponentDataPropertyAccess
+        )
         return
       }
 
       // Check for scoped property access with required scoped variable.
-      if (property.isScopedProperty && property.scopeFunctionPrototype.minArity > 0) {
+      if (
+        property.isScopedProperty &&
+        property.scopeFunctionPrototype.minArity > 0
+      ) {
         this.setDottedNameError(node, TexlStrings.ErrInvalidPropertyAccess)
         return
       }
 
-      if (property.isScopedProperty && property.scopeFunctionPrototype.isAsync) this._txb.flagPathAsAsync(node)
+      if (property.isScopedProperty && property.scopeFunctionPrototype.isAsync)
+        this._txb.flagPathAsAsync(node)
     } else {
       const result = leftType.tryGetType(nameRhs)
       typeRhs = result[1]
@@ -3602,7 +4033,9 @@ export class Visitor implements TexlVisitor {
         const rst = leftType.tryGetMetaField()
         const vType = rst[1]
         if (rst[0]) {
-          const propertyResult = vType.controlTemplate.tryGetOutputProperty(nameRhs.value)
+          const propertyResult = vType.controlTemplate.tryGetOutputProperty(
+            nameRhs.value
+          )
           const property = propertyResult[1]
           if (!propertyResult[0]) {
             this.setDottedNameError(node, TexlStrings.ErrInvalidName)
@@ -3621,18 +4054,26 @@ export class Visitor implements TexlVisitor {
         typeRhs = this.getEntitySchema(typeRhs, node)
         value = typeRhs.expandInfo
         // Contracts.Assert(typeRhs == DType.Error || typeRhs.ExpandInfo != null);
-        if (this._txb.isRowScope(node.left) && typeRhs.expandInfo != null && typeRhs.expandInfo.isTable) {
+        if (
+          this._txb.isRowScope(node.left) &&
+          typeRhs.expandInfo != null &&
+          typeRhs.expandInfo.isTable
+        ) {
           if (
             this._txb.document != null &&
-            this._txb.document.properties.enabledFeatures.isEnableRowScopeOneToNExpandEnabled
+            this._txb.document.properties.enabledFeatures
+              .isEnableRowScopeOneToNExpandEnabled
           ) {
             this._txb.errorContainer.ensureErrorWithSeverity(
               DocumentErrorSeverity.Warning,
               node,
-              TexlStrings.WrnRowScopeOneToNExpandNumberOfCalls,
+              TexlStrings.WrnRowScopeOneToNExpandNumberOfCalls
             )
           } else {
-            this.setDottedNameError(node, TexlStrings.ErrColumnNotAccessibleInCurrentContext)
+            this.setDottedNameError(
+              node,
+              TexlStrings.ErrColumnNotAccessibleInCurrentContext
+            )
             return
           }
         }
@@ -3647,7 +4088,10 @@ export class Visitor implements TexlVisitor {
       // Disable accessing the attachment in RowScope or single column table
       // to prevent a large number of calls to the service
       if (this._txb.isRowScope(node.left) || leftType.isTable) {
-        this.setDottedNameError(node, TexlStrings.ErrColumnNotAccessibleInCurrentContext)
+        this.setDottedNameError(
+          node,
+          TexlStrings.ErrColumnNotAccessibleInCurrentContext
+        )
         return
       }
 
@@ -3676,7 +4120,10 @@ export class Visitor implements TexlVisitor {
       // *[id:type, ...] . id  --> *[id:type]
       // We don't support scenario when lhs is table and rhs is entity of table type (1-n)
       if (IsIExpandInfo(value) && typeRhs.isTable) {
-        this.setDottedNameError(node, TexlStrings.ErrColumnNotAccessibleInCurrentContext)
+        this.setDottedNameError(
+          node,
+          TexlStrings.ErrColumnNotAccessibleInCurrentContext
+        )
         return
       } else if (IsIExpandInfo(value)) {
         let resultType = DType.CreateTable(new TypedName(typeRhs, nameRhs))
@@ -3689,15 +4136,17 @@ export class Visitor implements TexlVisitor {
         // 获取ThisItem后面的属性的值，避免数组无法触犯Reactive的问题
         if (this._txb.getInfo(node.left)?.kind === BindKind.ThisItem) {
           value = this._txb.nameResolver.lookupFormulaValuesIn(
-            `${this._txb.getInfo(node.left).path.toDottedSyntax()}.${node.right.name.value}`,
+            `${this._txb.getInfo(node.left).path.toDottedSyntax()}.${
+              node.right.name.value
+            }`
           )
         }
         this._txb.setType(
           node,
           DType.CreateDTypeWithConnectedDataSourceInfoMetadata(
             DType.CreateTable(new TypedName(typeRhs, nameRhs)),
-            typeRhs.associatedDataSources,
-          ),
+            typeRhs.associatedDataSources
+          )
         )
       }
     } else {
@@ -3715,9 +4164,11 @@ export class Visitor implements TexlVisitor {
     this._txb.setConstant(node, isConstant)
     this._txb.setSelfContainedConstant(
       node,
-      leftType.isEnum || (leftType.isAggregate && this._txb.isSelfContainedConstant(node.left)),
+      leftType.isEnum ||
+        (leftType.isAggregate && this._txb.isSelfContainedConstant(node.left))
     )
-    if (this._txb.isBlockScopedConstant(node.left)) this._txb.setBlockScopedConstantNode(node)
+    if (this._txb.isBlockScopedConstant(node.left))
+      this._txb.setBlockScopedConstantNode(node)
 
     this._txb.setScopeUseSet(node, this.joinScopeUseSets(node.left))
 
@@ -3726,11 +4177,17 @@ export class Visitor implements TexlVisitor {
       this._txb.checkAndMarkAsPageable(node)
     }
 
-    this._txb.addVolatileVariables(node, this._txb.getVolatileVariables(node.left))
+    this._txb.addVolatileVariables(
+      node,
+      this._txb.getVolatileVariables(node.left)
+    )
     this._txb.setIsUnliftable(node, this._txb.isUnliftable(node.left))
   }
 
-  private getLHSControlInfo(node: DottedNameNode): { controlInfo: IExternalControl; isIndirectPropertyUsage: boolean } {
+  private getLHSControlInfo(node: DottedNameNode): {
+    controlInfo: IExternalControl
+    isIndirectPropertyUsage: boolean
+  } {
     let isIndirectPropertyUsage = false
     const result = this.tryGetControlInfoLHS(node.left)
     let info = result[1]
@@ -3741,7 +4198,11 @@ export class Visitor implements TexlVisitor {
       // and creating cross screen dependencies that are not required.
       const rst = this.tryGetControlInfoLHS(node.left.asDottedName().left)
       const outerInfo = rst[1]
-      isIndirectPropertyUsage = !(node.left.kind == NodeKind.DottedName && rst[0] && outerInfo.isAppGlobalControl)
+      isIndirectPropertyUsage = !(
+        node.left.kind == NodeKind.DottedName &&
+        rst[0] &&
+        outerInfo.isAppGlobalControl
+      )
     }
 
     return { controlInfo: info, isIndirectPropertyUsage }
@@ -3749,7 +4210,10 @@ export class Visitor implements TexlVisitor {
 
   // Check if the control can be used in current component property
   private checkComponentProperty(control: IExternalControl): boolean {
-    return control != null && !this._txb.glue.canControlBeUsedInComponentProperty(this._txb, control)
+    return (
+      control != null &&
+      !this._txb.glue.canControlBeUsedInComponentProperty(this._txb, control)
+    )
   }
 
   private getEntitySchema(entityType: DType, node: DottedNameNode): DType {
@@ -3767,7 +4231,10 @@ export class Visitor implements TexlVisitor {
     return this.getExpandedEntityType(entityType, entityPath)
   }
 
-  protected getExpandedEntityType(expandEntityType: DType, relatedEntityPath: string): DType {
+  protected getExpandedEntityType(
+    expandEntityType: DType,
+    relatedEntityPath: string
+  ): DType {
     // Contracts.AssertValid(expandEntityType);
     // Contracts.Assert(expandEntityType.HasExpandInfo);
     // Contracts.AssertValue(relatedEntityPath);
@@ -3793,11 +4260,17 @@ export class Visitor implements TexlVisitor {
         return DType.Error
       }
 
-      type = expandEntityType.expandEntityType(metadata.schema, metadata.schema.associatedDataSources)
+      type = expandEntityType.expandEntityType(
+        metadata.schema,
+        metadata.schema.associatedDataSources
+      )
       // Contracts.Assert(type.hasExpandInfo);
 
       // Update the datasource and relatedEntity path.
-      type.expandInfo.updateEntityInfo(expandEntityInfo.parentDataSource, relatedEntityPath)
+      type.expandInfo.updateEntityInfo(
+        expandEntityInfo.parentDataSource,
+        relatedEntityPath
+      )
       entityTypes.set(expandEntityInfo.expandPath, type)
     }
 
@@ -3817,7 +4290,11 @@ export class Visitor implements TexlVisitor {
     return [info != null, info]
   }
 
-  protected setDottedNameError(node: DottedNameNode, errKey: ErrorResourceKey, ...args: any[]) {
+  protected setDottedNameError(
+    node: DottedNameNode,
+    errKey: ErrorResourceKey,
+    ...args: any[]
+  ) {
     // Contracts.AssertValue(node);
     // Contracts.AssertValue(errKey.Key);
     // Contracts.AssertValue(args);
@@ -3829,14 +4306,18 @@ export class Visitor implements TexlVisitor {
 
   // Returns true if the currentControl is a replicating child of the controlName being passed and the propertyName passed is
   // a nestedAware out property of the parent and currentProperty is not a behaviour property.
-  private usesParentsNestedAwareProperty(controlInfo: IExternalControl, propertyName: DName): boolean {
+  private usesParentsNestedAwareProperty(
+    controlInfo: IExternalControl,
+    propertyName: DName
+  ): boolean {
     // Contracts.AssertValue(controlInfo);
     // Contracts.Assert(propertyName.IsValid);
 
     let currentControlInfo: IExternalControl
     if (
       this._nameResolver == null ||
-      (currentControlInfo = this._nameResolver.currentEntity as IExternalControl) == null
+      (currentControlInfo = this._nameResolver
+        .currentEntity as IExternalControl) == null
     )
       return false
 
@@ -3844,7 +4325,7 @@ export class Visitor implements TexlVisitor {
       currentControlInfo.isReplicable &&
       !currentControlInfo.template.hasProperty(
         this._nameResolver.currentProperty.value,
-        PropertyRuleCategory.Behavior,
+        PropertyRuleCategory.Behavior
       ) &&
       controlInfo.template.replicatesNestedControls &&
       currentControlInfo.isDescendentOf(controlInfo) &&
@@ -3858,7 +4339,13 @@ export class Visitor implements TexlVisitor {
 
     switch (node.op) {
       case UnaryOp.Not:
-        this.checkType(node.child, DType.Boolean, /* coerced: */ DType.Number, DType.String, DType.OptionSetValue)
+        this.checkType(
+          node.child,
+          DType.Boolean,
+          /* coerced: */ DType.Number,
+          DType.String,
+          DType.OptionSetValue
+        )
         this._txb.setType(node, DType.Boolean)
         break
       case UnaryOp.Minus:
@@ -3877,7 +4364,12 @@ export class Visitor implements TexlVisitor {
             this._txb.setType(node, DType.DateTime)
             break
           default:
-            this.checkType(node.child, DType.Number, /* coerced: */ DType.String, DType.Boolean)
+            this.checkType(
+              node.child,
+              DType.Number,
+              /* coerced: */ DType.String,
+              DType.Boolean
+            )
             this._txb.setType(node, DType.Number)
             break
         }
@@ -3891,7 +4383,7 @@ export class Visitor implements TexlVisitor {
           DType.Date,
           DType.Time,
           DType.DateTimeNoTimeZone,
-          DType.DateTime,
+          DType.DateTime
         )
         this._txb.setType(node, DType.Number)
         break
@@ -3905,9 +4397,15 @@ export class Visitor implements TexlVisitor {
     this._txb.setStateful(node, this._txb.isStateful(node.child))
     this._txb.setContextual(node, this._txb.isContextual(node.child))
     this._txb.setConstant(node, this._txb.isConstant(node.child))
-    this._txb.setSelfContainedConstant(node, this._txb.isSelfContainedConstant(node.child))
+    this._txb.setSelfContainedConstant(
+      node,
+      this._txb.isSelfContainedConstant(node.child)
+    )
     this._txb.setScopeUseSet(node, this.joinScopeUseSets(node.child))
-    this._txb.addVolatileVariables(node, this._txb.getVolatileVariables(node.child))
+    this._txb.addVolatileVariables(
+      node,
+      this._txb.getVolatileVariables(node.child)
+    )
     this._txb.setIsUnliftable(node, this._txb.isUnliftable(node.child))
   }
 
@@ -3970,7 +4468,7 @@ export class Visitor implements TexlVisitor {
           DType.Date,
           DType.Time,
           DType.DateTimeNoTimeZone,
-          DType.DateTime,
+          DType.DateTime
         )
         this.checkType(
           node.right,
@@ -3980,15 +4478,27 @@ export class Visitor implements TexlVisitor {
           DType.Date,
           DType.Time,
           DType.DateTimeNoTimeZone,
-          DType.DateTime,
+          DType.DateTime
         )
         this._txb.setType(node, DType.Number)
         break
 
       case BinaryOp.Or:
       case BinaryOp.And:
-        this.checkType(node.left, DType.Boolean, /* coerced: */ DType.Number, DType.String, DType.OptionSetValue)
-        this.checkType(node.right, DType.Boolean, /* coerced: */ DType.Number, DType.String, DType.OptionSetValue)
+        this.checkType(
+          node.left,
+          DType.Boolean,
+          /* coerced: */ DType.Number,
+          DType.String,
+          DType.OptionSetValue
+        )
+        this.checkType(
+          node.right,
+          DType.Boolean,
+          /* coerced: */ DType.Number,
+          DType.String,
+          DType.OptionSetValue
+        )
         this._txb.setType(node, DType.Boolean)
         break
 
@@ -4003,7 +4513,7 @@ export class Visitor implements TexlVisitor {
           DType.DateTime,
           DType.Boolean,
           DType.OptionSetValue,
-          DType.ViewValue,
+          DType.ViewValue
         )
         this.checkType(
           node.right,
@@ -4015,7 +4525,7 @@ export class Visitor implements TexlVisitor {
           DType.DateTime,
           DType.Boolean,
           DType.OptionSetValue,
-          DType.ViewValue,
+          DType.ViewValue
         )
         this._txb.setType(node, DType.String)
         break
@@ -4025,7 +4535,7 @@ export class Visitor implements TexlVisitor {
         this._txb.errorContainer.ensureErrorWithSeverity(
           DocumentErrorSeverity.Severe,
           node,
-          TexlStrings.ErrOperatorExpected,
+          TexlStrings.ErrOperatorExpected
         )
         break
 
@@ -4058,18 +4568,41 @@ export class Visitor implements TexlVisitor {
         break
     }
 
-    this._txb.setSideEffects(node, this._txb.hasSideEffects(node.left) || this._txb.hasSideEffects(node.right))
-    this._txb.setStateful(node, this._txb.isStateful(node.left) || this._txb.isStateful(node.right))
-    this._txb.setContextual(node, this._txb.isContextual(node.left) || this._txb.isContextual(node.right))
-    this._txb.setConstant(node, this._txb.isConstant(node.left) && this._txb.isConstant(node.right))
+    this._txb.setSideEffects(
+      node,
+      this._txb.hasSideEffects(node.left) ||
+        this._txb.hasSideEffects(node.right)
+    )
+    this._txb.setStateful(
+      node,
+      this._txb.isStateful(node.left) || this._txb.isStateful(node.right)
+    )
+    this._txb.setContextual(
+      node,
+      this._txb.isContextual(node.left) || this._txb.isContextual(node.right)
+    )
+    this._txb.setConstant(
+      node,
+      this._txb.isConstant(node.left) && this._txb.isConstant(node.right)
+    )
     this._txb.setSelfContainedConstant(
       node,
-      this._txb.isSelfContainedConstant(node.left) && this._txb.isSelfContainedConstant(node.right),
+      this._txb.isSelfContainedConstant(node.left) &&
+        this._txb.isSelfContainedConstant(node.right)
     )
     this._txb.setScopeUseSet(node, this.joinScopeUseSets(node.left, node.right))
-    this._txb.addVolatileVariables(node, this._txb.getVolatileVariables(node.left))
-    this._txb.addVolatileVariables(node, this._txb.getVolatileVariables(node.right))
-    this._txb.setIsUnliftable(node, this._txb.isUnliftable(node.left) || this._txb.isUnliftable(node.right))
+    this._txb.addVolatileVariables(
+      node,
+      this._txb.getVolatileVariables(node.left)
+    )
+    this._txb.addVolatileVariables(
+      node,
+      this._txb.getVolatileVariables(node.right)
+    )
+    this._txb.setIsUnliftable(
+      node,
+      this._txb.isUnliftable(node.left) || this._txb.isUnliftable(node.right)
+    )
   }
 
   private postVisitBinaryOpNodeAddition(node: BinaryOpNode) {
@@ -4089,7 +4622,7 @@ export class Visitor implements TexlVisitor {
         node,
         TexlStrings.ErrBadOperatorTypes,
         left.getKindString(),
-        right.getKindString(),
+        right.getKindString()
       )
     }
 
@@ -4117,7 +4650,12 @@ export class Visitor implements TexlVisitor {
             break
           default:
             // DateTime + number = DateTime
-            this.checkType(node.right, DType.Number, /* coerced: */ DType.String, DType.Boolean)
+            this.checkType(
+              node.right,
+              DType.Number,
+              /* coerced: */ DType.String,
+              DType.Boolean
+            )
             this._txb.setType(node, DType.DateTime)
             break
         }
@@ -4158,7 +4696,12 @@ export class Visitor implements TexlVisitor {
             break
           default:
             // Date + number = Date
-            this.checkType(node.right, DType.Number, /* coerced: */ DType.String, DType.Boolean)
+            this.checkType(
+              node.right,
+              DType.Number,
+              /* coerced: */ DType.String,
+              DType.Boolean
+            )
             this._txb.setType(node, DType.Date)
             break
         }
@@ -4192,7 +4735,12 @@ export class Visitor implements TexlVisitor {
             break
           default:
             // Time + number = Time
-            this.checkType(node.right, DType.Number, /* coerced: */ DType.String, DType.Boolean)
+            this.checkType(
+              node.right,
+              DType.Number,
+              /* coerced: */ DType.String,
+              DType.Boolean
+            )
             this._txb.setType(node, DType.Time)
             break
         }
@@ -4201,23 +4749,48 @@ export class Visitor implements TexlVisitor {
         switch (rightKind) {
           case DKind.DateTime:
             // number + DateTime = DateTime
-            this.checkType(node.left, DType.Number, /* coerced: */ DType.String, DType.Boolean)
+            this.checkType(
+              node.left,
+              DType.Number,
+              /* coerced: */ DType.String,
+              DType.Boolean
+            )
             this._txb.setType(node, DType.DateTime)
             break
           case DKind.Date:
             // number + Date = Date
-            this.checkType(node.left, DType.Number, /* coerced: */ DType.String, DType.Boolean)
+            this.checkType(
+              node.left,
+              DType.Number,
+              /* coerced: */ DType.String,
+              DType.Boolean
+            )
             this._txb.setType(node, DType.Date)
             break
           case DKind.Time:
             // number + Time = Time
-            this.checkType(node.left, DType.Number, /* coerced: */ DType.String, DType.Boolean)
+            this.checkType(
+              node.left,
+              DType.Number,
+              /* coerced: */ DType.String,
+              DType.Boolean
+            )
             this._txb.setType(node, DType.Time)
             break
           default:
             // Regular Addition
-            this.checkType(node.left, DType.Number, /* coerced: */ DType.String, DType.Boolean)
-            this.checkType(node.right, DType.Number, /* coerced: */ DType.String, DType.Boolean)
+            this.checkType(
+              node.left,
+              DType.Number,
+              /* coerced: */ DType.String,
+              DType.Boolean
+            )
+            this.checkType(
+              node.right,
+              DType.Number,
+              /* coerced: */ DType.String,
+              DType.Boolean
+            )
             this._txb.setType(node, DType.Number)
             break
         }
@@ -4231,12 +4804,13 @@ export class Visitor implements TexlVisitor {
     // As must be either the top node, or an immediate child of a call node
     if (
       node.id != this._txb.top.id &&
-      (node.parent?.kind != NodeKind.List || node.parent?.parent?.kind != NodeKind.Call)
+      (node.parent?.kind != NodeKind.List ||
+        node.parent?.parent?.kind != NodeKind.Call)
     ) {
       this._txb.errorContainer.ensureErrorWithSeverity(
         DocumentErrorSeverity.Severe,
         node,
-        TexlStrings.ErrAsNotInContext,
+        TexlStrings.ErrAsNotInContext
       )
     } else if (
       node.id == this._txb.top.id &&
@@ -4244,14 +4818,15 @@ export class Visitor implements TexlVisitor {
         !IsIExternalControl(this._nameResolver.currentEntity) ||
         !this._nameResolver.currentEntity.template.replicatesNestedControls ||
         !(
-          this._nameResolver.currentEntity.template.thisItemInputInvariantName ==
+          this._nameResolver.currentEntity.template
+            .thisItemInputInvariantName ==
           this._nameResolver.currentProperty.toString()
         ))
     ) {
       this._txb.errorContainer.ensureErrorWithSeverity(
         DocumentErrorSeverity.Severe,
         node,
-        TexlStrings.ErrAsNotInContext,
+        TexlStrings.ErrAsNotInContext
       )
     }
 
@@ -4265,7 +4840,10 @@ export class Visitor implements TexlVisitor {
     this._txb.setStateful(node, this._txb.isStateful(left))
     this._txb.setContextual(node, this._txb.isContextual(left))
     this._txb.setConstant(node, this._txb.isConstant(left))
-    this._txb.setSelfContainedConstant(node, this._txb.isSelfContainedConstant(left))
+    this._txb.setSelfContainedConstant(
+      node,
+      this._txb.isSelfContainedConstant(left)
+    )
     this._txb.setScopeUseSet(node, this._txb.getScopeUseSet(left))
     this._txb.addVolatileVariables(node, this._txb.getVolatileVariables(left))
     this._txb.setIsUnliftable(node, this._txb.isUnliftable(node.left))
@@ -4275,8 +4853,20 @@ export class Visitor implements TexlVisitor {
     // Excel's type coercion for inequality operators is inconsistent / borderline wrong, so we can't
     // use it as a reference. For example, in Excel '2 < TRUE' produces TRUE, but so does '2 < FALSE'.
     // Sticking to a restricted set of numeric-like types for now until evidence arises to support the need for coercion.
-    this.checkComparisonTypeOneOf(left, DType.Number, DType.Date, DType.Time, DType.DateTime)
-    this.checkComparisonTypeOneOf(right, DType.Number, DType.Date, DType.Time, DType.DateTime)
+    this.checkComparisonTypeOneOf(
+      left,
+      DType.Number,
+      DType.Date,
+      DType.Time,
+      DType.DateTime
+    )
+    this.checkComparisonTypeOneOf(
+      right,
+      DType.Number,
+      DType.Date,
+      DType.Time,
+      DType.DateTime
+    )
 
     let typeLeft = this._txb.getType(left)
     let typeRight = this._txb.getType(right)
@@ -4286,7 +4876,10 @@ export class Visitor implements TexlVisitor {
       if (DType.Number.accepts(typeLeft) && DType.DateTime.accepts(typeRight)) {
         this._txb.setCoercedType(right, DType.Number)
         return
-      } else if (DType.Number.accepts(typeRight) && DType.DateTime.accepts(typeLeft)) {
+      } else if (
+        DType.Number.accepts(typeRight) &&
+        DType.DateTime.accepts(typeLeft)
+      ) {
         this._txb.setCoercedType(left, DType.Number)
         return
       }
@@ -4311,16 +4904,20 @@ export class Visitor implements TexlVisitor {
       !(typeLeft.isRecord && typeRight.isPolymorphic)
     ) {
       const leftTypeDisambiguation =
-        typeLeft.isOptionSet && typeLeft.optionSetInfo != null ? `(${typeLeft.optionSetInfo.entityName})` : ''
+        typeLeft.isOptionSet && typeLeft.optionSetInfo != null
+          ? `(${typeLeft.optionSetInfo.entityName})`
+          : ''
       const rightTypeDisambiguation =
-        typeRight.isOptionSet && typeRight.optionSetInfo != null ? `(${typeRight.optionSetInfo.entityName})` : ''
+        typeRight.isOptionSet && typeRight.optionSetInfo != null
+          ? `(${typeRight.optionSetInfo.entityName})`
+          : ''
 
       this._txb.errorContainer.ensureErrorWithSeverity(
         DocumentErrorSeverity.Severe,
         left.parent,
         TexlStrings.ErrIncompatibleTypesForEquality_Left_Right,
         typeLeft.getKindString() + leftTypeDisambiguation,
-        typeRight.getKindString() + rightTypeDisambiguation,
+        typeRight.getKindString() + rightTypeDisambiguation
       )
       return
     }
@@ -4333,7 +4930,7 @@ export class Visitor implements TexlVisitor {
       this._txb.errorContainer.ensureErrorWithSeverity(
         DocumentErrorSeverity.Severe,
         left.parent,
-        TexlStrings.ErrGuidStrictComparison,
+        TexlStrings.ErrGuidStrictComparison
       )
       return
     }
@@ -4341,16 +4938,20 @@ export class Visitor implements TexlVisitor {
     // Special case for option set values, it should produce an error when the base option sets are different
     if (typeLeft.kind == DKind.OptionSetValue && !typeLeft.accepts(typeRight)) {
       let leftTypeDisambiguation =
-        typeLeft.isOptionSet && typeLeft.optionSetInfo != null ? `(${typeLeft.optionSetInfo.entityName})` : ''
+        typeLeft.isOptionSet && typeLeft.optionSetInfo != null
+          ? `(${typeLeft.optionSetInfo.entityName})`
+          : ''
       let rightTypeDisambiguation =
-        typeRight.isOptionSet && typeRight.optionSetInfo != null ? `(${typeRight.optionSetInfo.entityName})` : ''
+        typeRight.isOptionSet && typeRight.optionSetInfo != null
+          ? `(${typeRight.optionSetInfo.entityName})`
+          : ''
 
       this._txb.errorContainer.ensureErrorWithSeverity(
         DocumentErrorSeverity.Severe,
         left.parent,
         TexlStrings.ErrIncompatibleTypesForEquality_Left_Right,
         typeLeft.getKindString() + leftTypeDisambiguation,
-        typeRight.getKindString() + rightTypeDisambiguation,
+        typeRight.getKindString() + rightTypeDisambiguation
       )
 
       return
@@ -4358,15 +4959,21 @@ export class Visitor implements TexlVisitor {
 
     // Special case for view values, it should produce an error when the base views are different
     if (typeLeft.kind == DKind.ViewValue && !typeLeft.accepts(typeRight)) {
-      let leftTypeDisambiguation = typeLeft.isView && typeLeft.viewInfo != null ? `(${typeLeft.viewInfo.name})` : ''
-      let rightTypeDisambiguation = typeRight.isView && typeRight.viewInfo != null ? `(${typeRight.viewInfo.name})` : ''
+      let leftTypeDisambiguation =
+        typeLeft.isView && typeLeft.viewInfo != null
+          ? `(${typeLeft.viewInfo.name})`
+          : ''
+      let rightTypeDisambiguation =
+        typeRight.isView && typeRight.viewInfo != null
+          ? `(${typeRight.viewInfo.name})`
+          : ''
 
       this._txb.errorContainer.ensureErrorWithSeverity(
         DocumentErrorSeverity.Severe,
         left.parent,
         TexlStrings.ErrIncompatibleTypesForEquality_Left_Right,
         typeLeft.getKindString() + leftTypeDisambiguation,
-        typeRight.getKindString() + rightTypeDisambiguation,
+        typeRight.getKindString() + rightTypeDisambiguation
       )
 
       return
@@ -4377,7 +4984,10 @@ export class Visitor implements TexlVisitor {
       if (DType.Number.accepts(typeLeft) && DType.DateTime.accepts(typeRight)) {
         this._txb.setCoercedType(right, DType.Number)
         return
-      } else if (DType.Number.accepts(typeRight) && DType.DateTime.accepts(typeLeft)) {
+      } else if (
+        DType.Number.accepts(typeRight) &&
+        DType.DateTime.accepts(typeLeft)
+      ) {
         this._txb.setCoercedType(left, DType.Number)
         return
       }
@@ -4387,7 +4997,7 @@ export class Visitor implements TexlVisitor {
         left.parent,
         TexlStrings.ErrIncompatibleTypesForEquality_Left_Right,
         typeLeft.getKindString(),
-        typeRight.getKindString(),
+        typeRight.getKindString()
       )
     }
   }
@@ -4412,7 +5022,8 @@ export class Visitor implements TexlVisitor {
       isContextual ||= this._txb.isContextual(child)
       isConstant &&= this._txb.isConstant(child)
       isSelfContainedConstant &&= this._txb.isSelfContainedConstant(child)
-      isBlockScopedConstant &&= this._txb.isBlockScopedConstant(child) || this._txb.isPure(child)
+      isBlockScopedConstant &&=
+        this._txb.isBlockScopedConstant(child) || this._txb.isPure(child)
       isUnliftable ||= this._txb.isUnliftable(child)
     }
 
@@ -4436,7 +5047,10 @@ export class Visitor implements TexlVisitor {
 
     switch (node.op) {
       case VariadicOp.Chain:
-        this._txb.setType(node, this._txb.getType(node.children[node.children.length - 1]))
+        this._txb.setType(
+          node,
+          this._txb.getType(node.children[node.children.length - 1])
+        )
         break
 
       default:
@@ -4467,7 +5081,7 @@ export class Visitor implements TexlVisitor {
     rhsProperty: IExternalControlProperty,
     currentControl: IExternalControl,
     currentProperty: IExternalControlProperty,
-    isBehaviorOnly = false,
+    isBehaviorOnly = false
   ): boolean {
     // Contracts.AssertValue(lhsControl);
     // Contracts.AssertValue(rhsProperty);
@@ -4486,13 +5100,19 @@ export class Visitor implements TexlVisitor {
 
       // If current property is output property of the component then access is allowed.
       // Or if the rhs property is out put property then it's allowed which could only be possible if the current control is component definition.
-      return currentProperty.isImmutableOnInstance || rhsProperty.isImmutableOnInstance
+      return (
+        currentProperty.isImmutableOnInstance ||
+        rhsProperty.isImmutableOnInstance
+      )
     }
 
     return true
   }
 
-  private isValidScopedPropertyFunction(node: CallNode, info: CallInfo): boolean {
+  private isValidScopedPropertyFunction(
+    node: CallNode,
+    info: CallInfo
+  ): boolean {
     // Contracts.AssertValue(node);
     // Contracts.AssertIndex(node.Id, _txb.IdLim);
     // Contracts.AssertValue(info);
@@ -4500,14 +5120,19 @@ export class Visitor implements TexlVisitor {
 
     let currentControl = this._txb.control
     let currentProperty = this._txb.property
-    if (currentControl.isComponentControl && currentControl.template.componentType != ComponentType.CanvasComponent) {
+    if (
+      currentControl.isComponentControl &&
+      currentControl.template.componentType != ComponentType.CanvasComponent
+    ) {
       return true
     }
 
     let infoTexlFunction = info.function
     if (this._txb.glue.isComponentScopedPropertyFunction(infoTexlFunction)) {
       // Component custom behavior properties can only be accessed by controls within a component.
-      const rst1 = this._txb.document.tryGetControlByUniqueId(infoTexlFunction.namespace.name.value)
+      const rst1 = this._txb.document.tryGetControlByUniqueId(
+        infoTexlFunction.namespace.name.value
+      )
       const lhsControl = rst1[1]
       const rst2 = lhsControl.template.tryGetProperty(infoTexlFunction.name)
       const rhsProperty = rst2[1]
@@ -4517,7 +5142,7 @@ export class Visitor implements TexlVisitor {
           rhsProperty,
           currentControl,
           currentProperty,
-          infoTexlFunction.isBehaviorOnly,
+          infoTexlFunction.isBehaviorOnly
         )
       }
     }
@@ -4539,7 +5164,9 @@ export class Visitor implements TexlVisitor {
       if (this._txb.glue.isComponentScopedPropertyFunction(infoTexlFunction)) {
         // We only have to check the property's rule and the calling arguments for purity as scoped variables
         // (default values) are by definition data rules and therefore always pure.
-        const rst1 = this._txb.document.tryGetControlByUniqueId(infoTexlFunction.namespace.name.value)
+        const rst1 = this._txb.document.tryGetControlByUniqueId(
+          infoTexlFunction.namespace.name.value
+        )
         const ctrl = rst1[1]
         if (rst1[0]) {
           const rst2 = ctrl.tryGetRule(new DName(infoTexlFunction.name))
@@ -4547,7 +5174,7 @@ export class Visitor implements TexlVisitor {
           hasSideEffects ||= rule.binding.hasSideEffects(rule.binding.top)
           isStateFul ||= rule.binding.isStateful(rule.binding.top)
         }
-        // if (this._txb.document.tryGetControlByUniqueId(infoTexlFunction.namespace.name.value, out var ctrl) &&
+        // if (this._txb.document.tryGetControlByUniqueId(infoTexlFunction.namespace.name.value, out let ctrl) &&
         //     ctrl.TryGetRule(new DName(infoTexlFunction.Name), out IExternalRule rule))
         // {
         //     hasSideEffects |= rule.Binding.HasSideEffects(rule.Binding.Top);
@@ -4565,7 +5192,10 @@ export class Visitor implements TexlVisitor {
 
     // Nonempty variable weight containing variable "x" implies this node or a node that is to be
     // evaluated before this node is non pure and modifies "x"
-    this._txb.addVolatileVariables(node, this._txb.getVolatileVariables(node.args))
+    this._txb.addVolatileVariables(
+      node,
+      this._txb.getVolatileVariables(node.args)
+    )
 
     // True if this node or one of its children contains any element of this node's variable weight
     this._txb.setIsUnliftable(node, this._txb.isUnliftable(node.args))
@@ -4597,7 +5227,10 @@ export class Visitor implements TexlVisitor {
     }
   }
 
-  private tryGetFunctionNameLookupInfo(node: CallNode, functionNamespace: DPath): [boolean, NameLookupInfo] {
+  private tryGetFunctionNameLookupInfo(
+    node: CallNode,
+    functionNamespace: DPath
+  ): [boolean, NameLookupInfo] {
     // Contracts.AssertValue(node);
     // Contracts.AssertValid(functionNamespace);
 
@@ -4616,7 +5249,11 @@ export class Visitor implements TexlVisitor {
 
     const rst = this._nameResolver.lookupGlobalEntity(functionNamespace.name)
     lookupInfo = rst[1]
-    if (!rst[0] || lookupInfo.data == null || !IsIExternalControl(lookupInfo.data)) {
+    if (
+      !rst[0] ||
+      lookupInfo.data == null ||
+      !IsIExternalControl(lookupInfo.data)
+    ) {
       return [false, lookupInfo]
     }
 
@@ -4655,7 +5292,10 @@ export class Visitor implements TexlVisitor {
     for (const child of node.children) {
       this._txb.addVolatileVariables(child, runningWeight)
       child.accept(this)
-      runningWeight = new Set([...runningWeight, ...this._txb.getVolatileVariables(child)])
+      runningWeight = new Set([
+        ...runningWeight,
+        ...this._txb.getVolatileVariables(child),
+      ])
       isUnliftable ||= this._txb.isUnliftable(child)
     }
 
@@ -4680,10 +5320,18 @@ export class Visitor implements TexlVisitor {
     maxArity: number,
     node: TexlNode,
     actual: number,
-    errors: IErrorContainer,
+    errors: IErrorContainer
   ) {
-    if (maxArity == Number.MIN_SAFE_INTEGER) errors.error(node, TexlStrings.ErrBadArityMinimum, actual, minArity)
-    else if (minArity != maxArity) errors.error(node, TexlStrings.ErrBadArityRange, actual, minArity, maxArity)
+    if (maxArity == Number.MIN_SAFE_INTEGER)
+      errors.error(node, TexlStrings.ErrBadArityMinimum, actual, minArity)
+    else if (minArity != maxArity)
+      errors.error(
+        node,
+        TexlStrings.ErrBadArityRange,
+        actual,
+        minArity,
+        maxArity
+      )
     else errors.error(node, TexlStrings.ErrBadArity, actual, minArity)
   }
 
@@ -4693,7 +5341,10 @@ export class Visitor implements TexlVisitor {
 
     let funcNamespace = this._txb.getFunctionNamespace(node, this)
 
-    let overloads: TexlFunction[] = this.lookupFunctions(funcNamespace, node.head.name.value)
+    let overloads: TexlFunction[] = this.lookupFunctions(
+      funcNamespace,
+      node.head.name.value
+    )
     if (overloads.length === 0) {
       this._txb.errorContainer.error(node, TexlStrings.ErrUnknownFunction)
       this._txb.setInfoForCall(node, new CallInfo(node))
@@ -4705,7 +5356,7 @@ export class Visitor implements TexlVisitor {
     }
 
     let overloadsWithMetadataTypeSupportedArgs = overloads.filter(
-      (func) => func.supportsMetadataTypeArg && !func.hasLambdas,
+      (func) => func.supportsMetadataTypeArg && !func.hasLambdas
     )
     if (overloadsWithMetadataTypeSupportedArgs.length > 0) {
       // Overloads are not supported for such functions yet.
@@ -4727,7 +5378,8 @@ export class Visitor implements TexlVisitor {
       // Construct a scope if display names are enabled and this function requires a data source scope for inline records
       if (
         this._txb.document != null &&
-        this._txb.document.properties?.enabledFeatures?.isUseDisplayNameMetadataEnabled &&
+        this._txb.document.properties?.enabledFeatures
+          ?.isUseDisplayNameMetadataEnabled &&
         overloads.filter((func) => func.requiresDataSourceScope).length > 0 &&
         node.args.count > 0
       ) {
@@ -4739,7 +5391,7 @@ export class Visitor implements TexlVisitor {
           this._txb.errorContainer.ensureErrorWithSeverity(
             DocumentErrorSeverity.Severe,
             node,
-            TexlStrings.ErrAsNotInContext,
+            TexlStrings.ErrAsNotInContext
           )
         }
 
@@ -4747,7 +5399,15 @@ export class Visitor implements TexlVisitor {
         let typescope = this._txb.getType(nodeInp)
 
         if (typescope.associatedDataSources.size > 0 && typescope.isTable) {
-          maybeScope = new Scope(node, this._currentScope, typescope.toRecord(), undefined, undefined, undefined, false)
+          maybeScope = new Scope(
+            node,
+            this._currentScope,
+            typescope.toRecord(),
+            undefined,
+            undefined,
+            undefined,
+            false
+          )
         }
 
         startArg++
@@ -4763,7 +5423,8 @@ export class Visitor implements TexlVisitor {
     // problem, whereby in order to bind the lambda args we need the precise overload (for
     // its lambda mask), which in turn requires binding the args (for their types).
     // Contracts.Assert(overloadsWithLambdas.Count() == 1, "Incorrect multiple overloads with lambdas.");
-    let maybeFunc = overloadsWithLambdas.length === 1 ? overloadsWithLambdas[0] : undefined
+    let maybeFunc =
+      overloadsWithLambdas.length === 1 ? overloadsWithLambdas[0] : undefined
     // Contracts.Assert(maybeFunc.HasLambdas);
 
     let scopeInfo = maybeFunc.scopeInfo
@@ -4790,7 +5451,7 @@ export class Visitor implements TexlVisitor {
             undefined,
             undefined,
             undefined,
-            maybeFunc.skipScopeForInlineRecords,
+            maybeFunc.skipScopeForInlineRecords
           )
         } else if (carg > 0) {
           // Visit the first arg. This will give us the scope type for any subsequent lambda/predicate args.
@@ -4803,7 +5464,10 @@ export class Visitor implements TexlVisitor {
           scopeIdentifier = scopeIdentRst[1]
           // required = this._txb.getScopeIdent(nodeInp, out scopeIdentifier);
 
-          const checkResult = scopeInfo.checkInput(nodeInp, this._txb.getType(nodeInp))
+          const checkResult = scopeInfo.checkInput(
+            nodeInp,
+            this._txb.getType(nodeInp)
+          )
           scope = checkResult[1]
 
           if (checkResult[0]) {
@@ -4818,7 +5482,7 @@ export class Visitor implements TexlVisitor {
                 required,
                 expandInfo,
                 undefined,
-                maybeFunc.skipScopeForInlineRecords,
+                maybeFunc.skipScopeForInlineRecords
               )
             } else {
               metadata = maybeFunc.tryGetDelegationMetadata(node, this._txb)[1]
@@ -4830,7 +5494,7 @@ export class Visitor implements TexlVisitor {
                 required,
                 metadata,
                 undefined,
-                maybeFunc.skipScopeForInlineRecords,
+                maybeFunc.skipScopeForInlineRecords
               )
             }
           }
@@ -4840,10 +5504,24 @@ export class Visitor implements TexlVisitor {
 
         // If there is only one function with this name and its arity doesn't match,
         // that means the invocation is erroneous.
-        Visitor.ArityError(maybeFunc.minArity, maybeFunc.maxArity, node, carg, this._txb.errorContainer)
+        Visitor.ArityError(
+          maybeFunc.minArity,
+          maybeFunc.maxArity,
+          node,
+          carg,
+          this._txb.errorContainer
+        )
         this._txb.setInfoForCall(
           node,
-          new CallInfo(node, maybeFunc, undefined, scope, scopeIdentifier, required, this._currentScope.nest),
+          new CallInfo(
+            node,
+            maybeFunc,
+            undefined,
+            scope,
+            scopeIdentifier,
+            required,
+            this._currentScope.nest
+          )
         )
         this._txb.setType(node, maybeFunc.returnType)
       }
@@ -4877,7 +5555,10 @@ export class Visitor implements TexlVisitor {
     let dsNodes: Array<FirstNameNode>
     let dsNode: FirstNameNode
 
-    const dataSourceNodesResult = maybeFunc.tryGetDataSourceNodes(node, this._txb)
+    const dataSourceNodesResult = maybeFunc.tryGetDataSourceNodes(
+      node,
+      this._txb
+    )
     dsNodes = dataSourceNodesResult[1]
     if (dataSourceNodesResult[0] && (dsNode = dsNodes[0]) != null) {
       this._currentScopeDsNodeId = dsNode.id
@@ -4915,12 +5596,24 @@ export class Visitor implements TexlVisitor {
         this._txb.errorContainer.ensureErrorWithSeverity(
           DocumentErrorSeverity.Severe,
           nodeInput,
-          TexlStrings.ErrBadType,
+          TexlStrings.ErrBadType
         )
-        this._txb.errorContainer.error(node, TexlStrings.ErrInvalidArgs_Func, maybeFunc.name)
+        this._txb.errorContainer.error(
+          node,
+          TexlStrings.ErrInvalidArgs_Func,
+          maybeFunc.name
+        )
         this._txb.setInfoForCall(
           node,
-          new CallInfo(node, maybeFunc, undefined, typeScope, scopeIdent, identRequired, this._currentScope.nest),
+          new CallInfo(
+            node,
+            maybeFunc,
+            undefined,
+            typeScope,
+            scopeIdent,
+            identRequired,
+            this._currentScope.nest
+          )
         )
         this._txb.setType(node, maybeFunc.returnType)
       }
@@ -4943,8 +5636,16 @@ export class Visitor implements TexlVisitor {
 
     this._txb.setInfoForCall(
       node,
-      new CallInfo(node, maybeFunc, undefined, typeScope, scopeIdent, identRequired, this._currentScope.nest),
-      false,
+      new CallInfo(
+        node,
+        maybeFunc,
+        undefined,
+        typeScope,
+        scopeIdent,
+        identRequired,
+        this._currentScope.nest
+      ),
+      false
     )
 
     const entityInfoResult = this._txb.tryGetEntityInfo(nodeInput)
@@ -4958,7 +5659,7 @@ export class Visitor implements TexlVisitor {
         identRequired,
         expandInfo,
         undefined,
-        maybeFunc.skipScopeForInlineRecords,
+        maybeFunc.skipScopeForInlineRecords
       )
     } else {
       metadata = maybeFunc.tryGetDelegationMetadata(node, this._txb)[1]
@@ -4970,7 +5671,7 @@ export class Visitor implements TexlVisitor {
         identRequired,
         metadata,
         undefined,
-        maybeFunc.skipScopeForInlineRecords,
+        maybeFunc.skipScopeForInlineRecords
       )
     }
 
@@ -4991,10 +5692,16 @@ export class Visitor implements TexlVisitor {
       }
 
       // Use the new scope only for lambda args.
-      this._currentScope = maybeFunc.isLambdaParam(i) && scopeInfo.appliesToArgument(i) ? scopeNew : scopeNew.parent
+      this._currentScope =
+        maybeFunc.isLambdaParam(i) && scopeInfo.appliesToArgument(i)
+          ? scopeNew
+          : scopeNew.parent
       args[i].accept(this)
 
-      this._txb.addVolatileVariables(node, this._txb.getVolatileVariables(args[i]))
+      this._txb.addVolatileVariables(
+        node,
+        this._txb.getVolatileVariables(args[i])
+      )
 
       argTypes[i] = this._txb.getType(args[i])
       // Contracts.Assert(argTypes[i].IsValid);
@@ -5002,7 +5709,11 @@ export class Visitor implements TexlVisitor {
       // Async lambdas are not (yet) supported for this function. Flag these with errors.
       if (this._txb.isAsync(args[i]) && !scopeInfo.supportsAsyncLambdas) {
         fArgsValid = false
-        this._txb.errorContainer.errorWithSeverity(DocumentErrorSeverity.Severe, node, TexlStrings.ErrAsyncLambda)
+        this._txb.errorContainer.errorWithSeverity(
+          DocumentErrorSeverity.Severe,
+          node,
+          TexlStrings.ErrAsyncLambda
+        )
       }
 
       // Accept should leave the scope as it found it.
@@ -5022,7 +5733,12 @@ export class Visitor implements TexlVisitor {
     let nodeToCoercedTypeMap: Dictionary<TexlNode, DType> = null
 
     // Typecheck the invocation and infer the return type.
-    const checkInvocationResult = maybeFunc.checkInvocation(args, argTypes, this._txb.errorContainer, this._txb)
+    const checkInvocationResult = maybeFunc.checkInvocation(
+      args,
+      argTypes,
+      this._txb.errorContainer,
+      this._txb
+    )
     returnType = checkInvocationResult[1].returnType
     nodeToCoercedTypeMap = checkInvocationResult[1].nodeToCoercedTypeMap
 
@@ -5037,7 +5753,7 @@ export class Visitor implements TexlVisitor {
         DocumentErrorSeverity.Severe,
         node,
         TexlStrings.ErrInvalidArgs_Func,
-        maybeFunc.name,
+        maybeFunc.name
       )
 
     // Set the inferred return type for the node.
@@ -5045,7 +5761,10 @@ export class Visitor implements TexlVisitor {
 
     if (fArgsValid && nodeToCoercedTypeMap != null) {
       for (const nodeToCoercedTypeKvp of nodeToCoercedTypeMap) {
-        this._txb.setCoercedType(nodeToCoercedTypeKvp[0], nodeToCoercedTypeKvp[1])
+        this._txb.setCoercedType(
+          nodeToCoercedTypeKvp[0],
+          nodeToCoercedTypeKvp[1]
+        )
       }
     }
 
@@ -5069,23 +5788,40 @@ export class Visitor implements TexlVisitor {
 
     // Invalid datasources always result in error
     if (func.isBehaviorOnly && !this._txb.isBehavior) {
-      this._txb.errorContainer.ensureError(node, TexlStrings.ErrBehaviorPropertyExpected)
+      this._txb.errorContainer.ensureError(
+        node,
+        TexlStrings.ErrBehaviorPropertyExpected
+      )
     }
     // Test-only functions can only be used within test cases.
-    else if (func.isTestOnly && this._txb.property != null && !this._txb.property.isTestCaseProperty) {
-      this._txb.errorContainer.ensureError(node, TexlStrings.ErrTestPropertyExpected)
+    else if (
+      func.isTestOnly &&
+      this._txb.property != null &&
+      !this._txb.property.isTestCaseProperty
+    ) {
+      this._txb.errorContainer.ensureError(
+        node,
+        TexlStrings.ErrTestPropertyExpected
+      )
     }
     // Auto-refreshable functions cannot be used in behavior rules.
     else if (func.isAutoRefreshable && this._txb.isBehavior) {
-      this._txb.errorContainer.ensureError(node, TexlStrings.ErrAutoRefreshNotAllowed)
+      this._txb.errorContainer.ensureError(
+        node,
+        TexlStrings.ErrAutoRefreshNotAllowed
+      )
     }
     // Give warning if returning dynamic metadata without a known dynamic type
-    else if (func.isDynamic && this._nameResolver.document.properties.enabledFeatures.isDynamicSchemaEnabled) {
+    else if (
+      func.isDynamic &&
+      this._nameResolver.document.properties.enabledFeatures
+        .isDynamicSchemaEnabled
+    ) {
       if (!func.checkForDynamicReturnType(this._txb, node.args.children)) {
         this._txb.errorContainer.ensureErrorWithSeverity(
           DocumentErrorSeverity.Warning,
           node,
-          TexlStrings.WarnDynamicMetadata,
+          TexlStrings.WarnDynamicMetadata
         )
       }
     } else if (
@@ -5096,7 +5832,11 @@ export class Visitor implements TexlVisitor {
       const errorMessage = callInfo.function.isBehaviorOnly
         ? TexlStrings.ErrUnSupportedComponentBehaviorInvocation
         : TexlStrings.ErrUnSupportedComponentDataPropertyAccess
-      this._txb.errorContainer.ensureErrorWithSeverity(DocumentErrorSeverity.Critical, node, errorMessage)
+      this._txb.errorContainer.ensureErrorWithSeverity(
+        DocumentErrorSeverity.Critical,
+        node,
+        errorMessage
+      )
     }
     // Apply custom function validation last
     else if (!func.postVisitValidation(this._txb, node)) {
@@ -5104,7 +5844,11 @@ export class Visitor implements TexlVisitor {
       const result = this.isIncorrectlySideEffectful(node)
       const { errorKey, badAncestor } = result[1]
       if (result[0]) {
-        this._txb.errorContainer.ensureError(node, errorKey, badAncestor.head.name)
+        this._txb.errorContainer.ensureError(
+          node,
+          errorKey,
+          badAncestor.head.name
+        )
       }
     }
 
@@ -5114,12 +5858,18 @@ export class Visitor implements TexlVisitor {
     // A function will produce a constant output (and have no side-effects, which is important for
     // caching/precomputing the result) iff the function is pure and its arguments are constant.
     this._txb.setConstant(node, func.isPure && this._txb.isConstant(node.args))
-    this._txb.setSelfContainedConstant(node, func.isPure && this._txb.isSelfContainedConstant(node.args))
+    this._txb.setSelfContainedConstant(
+      node,
+      func.isPure && this._txb.isSelfContainedConstant(node.args)
+    )
 
     // Mark node as blockscoped constant if the function's return value only depends on the global variable
     // This node will skip delegation check, be codegened as constant and be simply passed into the delegation query.
     // e.g. Today() in formula Filter(CDS, CreatedDate < Today())
-    if (func.isGlobalReliant || (func.isPure && this._txb.isBlockScopedConstant(node.args))) {
+    if (
+      func.isGlobalReliant ||
+      (func.isPure && this._txb.isBlockScopedConstant(node.args))
+    ) {
       this._txb.setBlockScopedConstantNode(node)
     }
 
@@ -5129,7 +5879,9 @@ export class Visitor implements TexlVisitor {
     }
   }
 
-  private isIncorrectlySideEffectful(node: CallNode): [boolean, { errorKey: ErrorResourceKey; badAncestor: CallNode }] {
+  private isIncorrectlySideEffectful(
+    node: CallNode
+  ): [boolean, { errorKey: ErrorResourceKey; badAncestor: CallNode }] {
     // Contracts.AssertValue(node);
 
     let badAncestor = null
@@ -5157,9 +5909,10 @@ export class Visitor implements TexlVisitor {
         // In that case, verify that the node has overloads that support record scoping.
         if (
           ancestorCall == null &&
-          this.lookupFunctions(ancestorScope.call.head.namespace, ancestorScope.call.head.name.value).some(
-            (overload) => overload.requiresDataSourceScope,
-          )
+          this.lookupFunctions(
+            ancestorScope.call.head.namespace,
+            ancestorScope.call.head.name.value
+          ).some((overload) => overload.requiresDataSourceScope)
         ) {
           ancestorScope = ancestorScope.parent
           continue
@@ -5169,9 +5922,17 @@ export class Visitor implements TexlVisitor {
         let ancestorScopeInfo = ancestorCall.function?.scopeInfo
 
         // Check for bad scope modification
-        if (ancestorFunc != null && ancestorScopeInfo != null && ds != null && ancestorScopeInfo.iteratesOverScope) {
+        if (
+          ancestorFunc != null &&
+          ancestorScopeInfo != null &&
+          ds != null &&
+          ancestorScopeInfo.iteratesOverScope
+        ) {
           let ancestorDs: IExternalDataSource
-          const dataSourceResult = ancestorFunc.tryGetDataSource(ancestorScope.call, this._txb)
+          const dataSourceResult = ancestorFunc.tryGetDataSource(
+            ancestorScope.call,
+            this._txb
+          )
           ancestorDs = dataSourceResult[1]
           if (dataSourceResult[0] && ancestorDs == ds) {
             errorKey = TexlStrings.ErrScopeModificationLambda
@@ -5187,7 +5948,8 @@ export class Visitor implements TexlVisitor {
           ancestorScopeInfo.hasNondeterministicOperationOrder &&
           !func.allowedWithinNondeterministicOperationOrder
         ) {
-          errorKey = TexlStrings.ErrFunctionDisallowedWithinNondeterministicOperationOrder
+          errorKey =
+            TexlStrings.ErrFunctionDisallowedWithinNondeterministicOperationOrder
           badAncestor = ancestorScope.call
           return [true, { errorKey, badAncestor }]
         }
@@ -5204,11 +5966,16 @@ export class Visitor implements TexlVisitor {
     // Contracts.Assert(false, "Should never get here");
   }
 
-  private tryGetAffectScopeVariableFunc(node: CallNode): [boolean, TexlFunction] {
+  private tryGetAffectScopeVariableFunc(
+    node: CallNode
+  ): [boolean, TexlFunction] {
     // Contracts.AssertValue(node);
 
     let funcNamespace = this._txb.getFunctionNamespace(node, this)
-    let overloads = this.lookupFunctions(funcNamespace, node.head.name.value).filter((fnc) => fnc.affectsScopeVariable)
+    let overloads = this.lookupFunctions(
+      funcNamespace,
+      node.head.name.value
+    ).filter((fnc) => fnc.affectsScopeVariable)
 
     // Contracts.Assert(overloads.Length == 1 || overloads.Length == 0, "Lookup Affect scopeVariable Function by CallNode should be 0 or 1");
 
@@ -5227,14 +5994,15 @@ export class Visitor implements TexlVisitor {
 
     let returnType = func.returnType
     for (let i = 0; i < argCount; i++) {
-      if (func.isMetadataTypeArg(i)) args[i].accept(this._txb.binderNodeMetadataArgTypeVisitor)
+      if (func.isMetadataTypeArg(i))
+        args[i].accept(this._txb.binderNodeMetadataArgTypeVisitor)
       else args[i].accept(this)
 
       if (args[i].kind == NodeKind.As)
         this._txb.errorContainer.ensureErrorWithSeverity(
           DocumentErrorSeverity.Severe,
           node,
-          TexlStrings.ErrAsNotInContext,
+          TexlStrings.ErrAsNotInContext
         )
     }
 
@@ -5253,7 +6021,13 @@ export class Visitor implements TexlVisitor {
 
     this._txb.setInfoForCall(node, new CallInfo(node, func))
     if (argCount < func.minArity || argCount > func.maxArity) {
-      Visitor.ArityError(func.minArity, func.maxArity, node, argCount, this._txb.errorContainer)
+      Visitor.ArityError(
+        func.minArity,
+        func.maxArity,
+        node,
+        argCount,
+        this._txb.errorContainer
+      )
       this._txb.setType(node, returnType)
       return
     }
@@ -5262,7 +6036,12 @@ export class Visitor implements TexlVisitor {
     let fArgsValid: boolean
 
     // Typecheck the invocation and infer the return type.
-    const checkResult = func.checkInvocation(args, argTypes, this._txb.errorContainer, this._txb)
+    const checkResult = func.checkInvocation(
+      args,
+      argTypes,
+      this._txb.errorContainer,
+      this._txb
+    )
     returnType = checkResult[1].returnType
     fArgsValid = checkResult[0]
     // fArgsValid = func.checkInvocation(this._txb, args, argTypes, this._txb.errorContainer, out returnType, out _);
@@ -5271,13 +6050,17 @@ export class Visitor implements TexlVisitor {
         DocumentErrorSeverity.Severe,
         node,
         TexlStrings.ErrInvalidArgs_Func,
-        func.name,
+        func.name
       )
 
     this._txb.setType(node, returnType)
   }
 
-  private preVisitBottomUp(node: CallNode, argCountVisited: number, scopeNew?: Scope) {
+  private preVisitBottomUp(
+    node: CallNode,
+    argCountVisited: number,
+    scopeNew?: Scope
+  ) {
     this.assertValid()
     // Contracts.AssertValue(node);
     // Contracts.AssertIndexInclusive(argCountVisited, node.Args.Count);
@@ -5294,7 +6077,10 @@ export class Visitor implements TexlVisitor {
     // We're only interested in the overloads without lambdas, since those were
     // already processed in PreVisit.
     let funcNamespace = this._txb.getFunctionNamespace(node, this)
-    let overloads = this.lookupFunctions(funcNamespace, node.head.name.value).filter((fnc) => !fnc.hasLambdas)
+    let overloads = this.lookupFunctions(
+      funcNamespace,
+      node.head.name.value
+    ).filter((fnc) => !fnc.hasLambdas)
 
     let funcWithScope: TexlFunction = null
     if (info != null && info.function != null && scopeNew != null) {
@@ -5305,7 +6091,7 @@ export class Visitor implements TexlVisitor {
     const varFuncResult = this.tryGetAffectScopeVariableFunc(node)
     let affectScopeVariablefunc = varFuncResult[1]
     let affectScopeVariable = varFuncResult[0]
-    // bool affectScopeVariable = TryGetAffectScopeVariableFunc(node, out var affectScopeVariablefunc);
+    // bool affectScopeVariable = TryGetAffectScopeVariableFunc(node, out let affectScopeVariablefunc);
 
     // Contracts.Assert(affectScopeVariable ^ affectScopeVariablefunc == null);
 
@@ -5315,7 +6101,8 @@ export class Visitor implements TexlVisitor {
 
       if (affectScopeVariable) {
         // If the function affects app/component variable, update the cache info if it is the arg affects scopeVariableName.
-        this._txb.affectsScopeVariableName = affectScopeVariablefunc.scopeVariableNameAffectingArg() == i
+        this._txb.affectsScopeVariableName =
+          affectScopeVariablefunc.scopeVariableNameAffectingArg() == i
       }
       // Use the new scope only for lambda args and args with datasource scope for display name matching.
       if (scopeNew != null) {
@@ -5336,13 +6123,16 @@ export class Visitor implements TexlVisitor {
       args[i].accept(this)
 
       // In case weight was added during visitation
-      this._txb.addVolatileVariables(node, this._txb.getVolatileVariables(args[i]))
+      this._txb.addVolatileVariables(
+        node,
+        this._txb.getVolatileVariables(args[i])
+      )
 
       if (args[i].kind == NodeKind.As) {
         this._txb.errorContainer.ensureErrorWithSeverity(
           DocumentErrorSeverity.Severe,
           args[i],
-          TexlStrings.ErrAsNotInContext,
+          TexlStrings.ErrAsNotInContext
         )
       }
     }
@@ -5379,14 +6169,20 @@ export class Visitor implements TexlVisitor {
     // document errors for incorrect arguments, etc.
     let func: TexlFunction = overloads[0]
     if (this._txb.glue.isComponentScopedPropertyFunction(func)) {
-      const lookInfoResult = this.tryGetFunctionNameLookupInfo(node, funcNamespace)
+      const lookInfoResult = this.tryGetFunctionNameLookupInfo(
+        node,
+        funcNamespace
+      )
       const lookupInfo = lookInfoResult[1]
       if (lookInfoResult[0]) {
         const headNode = node.headNode as DottedNameNode
         // Contracts.AssertValue(headNode);
 
         this.updateBindKindUseFlags(BindKind.Control)
-        this._txb.setInfoForCall(node, new CallInfo(node, func, lookupInfo.data))
+        this._txb.setInfoForCall(
+          node,
+          new CallInfo(node, func, lookupInfo.data)
+        )
       } else {
         this._txb.errorContainer.error(node, TexlStrings.ErrInvalidName)
         this._txb.setInfoForCall(node, new CallInfo(node))
@@ -5401,14 +6197,25 @@ export class Visitor implements TexlVisitor {
 
     let returnType: DType = func.returnType
     if (argCount < func.minArity || argCount > func.maxArity) {
-      Visitor.ArityError(func.minArity, func.maxArity, node, argCount, this._txb.errorContainer)
+      Visitor.ArityError(
+        func.minArity,
+        func.maxArity,
+        node,
+        argCount,
+        this._txb.errorContainer
+      )
       this._txb.setType(node, returnType)
       return
     }
 
     let modifiedIdentifiers = func.getIdentifierOfModifiedValue(args)[0]
     if (modifiedIdentifiers != null) {
-      this._txb.addVolatileVariables(node, new Set(modifiedIdentifiers.map((identifier) => identifier.name.toString())))
+      this._txb.addVolatileVariables(
+        node,
+        new Set(
+          modifiedIdentifiers.map((identifier) => identifier.name.toString())
+        )
+      )
     }
 
     // Typecheck the invocation and infer the return type.
@@ -5417,7 +6224,12 @@ export class Visitor implements TexlVisitor {
     let nodeToCoercedTypeMap: Dictionary<TexlNode, DType> = null
 
     // Typecheck the invocation and infer the return type.
-    const checkResult = func.checkInvocation(args, argTypes, this._txb.errorContainer, this._txb)
+    const checkResult = func.checkInvocation(
+      args,
+      argTypes,
+      this._txb.errorContainer,
+      this._txb
+    )
     returnType = checkResult[1].returnType
     nodeToCoercedTypeMap = checkResult[1].nodeToCoercedTypeMap
     fArgsValid = checkResult[0]
@@ -5428,7 +6240,7 @@ export class Visitor implements TexlVisitor {
         DocumentErrorSeverity.Severe,
         node,
         TexlStrings.ErrInvalidArgs_Func,
-        func.name,
+        func.name
       )
     }
 
@@ -5436,12 +6248,18 @@ export class Visitor implements TexlVisitor {
 
     if (fArgsValid && nodeToCoercedTypeMap != null) {
       for (const nodeToCoercedTypeKvp of nodeToCoercedTypeMap) {
-        this._txb.setCoercedType(nodeToCoercedTypeKvp[0], nodeToCoercedTypeKvp[1])
+        this._txb.setCoercedType(
+          nodeToCoercedTypeKvp[0],
+          nodeToCoercedTypeKvp[1]
+        )
       }
     }
   }
 
-  private lookupFunctions(theNamespace: DPath, name: string): Array<TexlFunction> {
+  private lookupFunctions(
+    theNamespace: DPath,
+    name: string
+  ): Array<TexlFunction> {
     // Contracts.Assert(theNamespace.IsValid);
     // Contracts.AssertNonEmpty(name);
 
@@ -5485,8 +6303,15 @@ export class Visitor implements TexlVisitor {
     txb: TexlBinding,
     node: CallNode,
     argTypes: DType[],
-    overloads: TexlFunction[],
-  ): [boolean, { bestOverload: TexlFunction; nodeToCoercedTypeMap: Dictionary<TexlNode, DType>; returnType: DType }] {
+    overloads: TexlFunction[]
+  ): [
+    boolean,
+    {
+      bestOverload: TexlFunction
+      nodeToCoercedTypeMap: Dictionary<TexlNode, DType>
+      returnType: DType
+    }
+  ] {
     // Contracts.AssertValue(node, nameof(node));
     // Contracts.AssertValue(overloads, nameof(overloads));
 
@@ -5500,7 +6325,10 @@ export class Visitor implements TexlVisitor {
     let matchingFuncWithCoercionReturnType: DType = DType.Invalid
     let nodeToCoercedTypeMap: Dictionary<TexlNode, DType> = null
 
-    let matchingFuncWithCoercionNodeToCoercedTypeMap: Dictionary<TexlNode, DType> = null
+    let matchingFuncWithCoercionNodeToCoercedTypeMap: Dictionary<
+      TexlNode,
+      DType
+    > = null
 
     for (const maybeFunc of overloads) {
       // Contracts.Assert(!maybeFunc.HasLambdas);
@@ -5515,10 +6343,15 @@ export class Visitor implements TexlVisitor {
 
       let warnings: IErrorContainer = new LimitedSeverityErrorContainer(
         txb.errorContainer,
-        DocumentErrorSeverity.Warning,
+        DocumentErrorSeverity.Warning
       )
       // Typecheck the invocation and infer the return type.
-      const checkInvocationResult = maybeFunc.checkInvocation(args, argTypes, warnings, txb)
+      const checkInvocationResult = maybeFunc.checkInvocation(
+        args,
+        argTypes,
+        warnings,
+        txb
+      )
       returnType = checkInvocationResult[1].returnType
       nodeToCoercedTypeMap = checkInvocationResult[1].nodeToCoercedTypeMap
       typeCheckSucceeded = checkInvocationResult[0]
@@ -5538,7 +6371,8 @@ export class Visitor implements TexlVisitor {
         // overload that involves fewer coercions.
         if (
           matchingFuncWithCoercion == null ||
-          nodeToCoercedTypeMap.size < matchingFuncWithCoercionNodeToCoercedTypeMap.size
+          nodeToCoercedTypeMap.size <
+            matchingFuncWithCoercionNodeToCoercedTypeMap.size
         ) {
           matchingFuncWithCoercionNodeToCoercedTypeMap = nodeToCoercedTypeMap
           matchingFuncWithCoercion = maybeFunc
@@ -5565,26 +6399,40 @@ export class Visitor implements TexlVisitor {
   /// <summary>
   /// Returns best overload in case there are no matches based on first argument and order
   /// </summary>
-  private findBestErrorOverload(overloads: TexlFunction[], argTypes: DType[], cArg: number): TexlFunction {
-    let candidates = overloads.filter((overload) => overload.minArity <= cArg && cArg <= overload.maxArity)
+  private findBestErrorOverload(
+    overloads: TexlFunction[],
+    argTypes: DType[],
+    cArg: number
+  ): TexlFunction {
+    let candidates = overloads.filter(
+      (overload) => overload.minArity <= cArg && cArg <= overload.maxArity
+    )
     if (cArg == 0) {
       return candidates[0] || undefined
     }
 
     // Consider overloads that have DType.Error parameter the last
     candidates = candidates.sort((candidate) =>
-      candidate.paramTypes.length > 0 && candidate.paramTypes[0] == DType.Error ? 1 : 0,
+      candidate.paramTypes.length > 0 && candidate.paramTypes[0] == DType.Error
+        ? 1
+        : 0
     )
     // candidates = candidates.OrderBy(candidate => candidate.ParamTypes.Length > 0 && candidate.ParamTypes[0] == DType.Error).ToArray();
     for (const candidate of candidates) {
-      if (candidate.paramTypes.length > 0 && candidate.paramTypes[0].accepts(argTypes[0])) {
+      if (
+        candidate.paramTypes.length > 0 &&
+        candidate.paramTypes[0].accepts(argTypes[0])
+      ) {
         return candidate
       }
     }
     return candidates[0]
   }
 
-  private preVisitWithOverloadResolution(node: CallNode, overloads: TexlFunction[]) {
+  private preVisitWithOverloadResolution(
+    node: CallNode,
+    overloads: TexlFunction[]
+  ) {
     // Contracts.AssertValue(node);
     // Contracts.AssertNull(_txb.GetInfo(node));
     // Contracts.AssertValue(overloads);
@@ -5595,7 +6443,12 @@ export class Visitor implements TexlVisitor {
     let carg = args.length
     let argTypes = args.map((arg) => this._txb.getType(arg))
 
-    const result = Visitor.TryGetBestOverload(this._txb, node, argTypes, overloads)
+    const result = Visitor.TryGetBestOverload(
+      this._txb,
+      node,
+      argTypes,
+      overloads
+    )
 
     let { bestOverload, nodeToCoercedTypeMap, returnType } = result[1]
     if (result[0]) {
@@ -5604,7 +6457,10 @@ export class Visitor implements TexlVisitor {
       // If we found an overload and this value is set then we require parameter conversion
       if (nodeToCoercedTypeMap != null) {
         for (const nodeToCoercedTypeKvp of nodeToCoercedTypeMap) {
-          this._txb.setCoercedType(nodeToCoercedTypeKvp[0], nodeToCoercedTypeKvp[1])
+          this._txb.setCoercedType(
+            nodeToCoercedTypeKvp[0],
+            nodeToCoercedTypeKvp[1]
+          )
         }
       }
       return
@@ -5615,7 +6471,13 @@ export class Visitor implements TexlVisitor {
     if (someFunc == null) {
       const minArity = Math.min(...overloads.map((func) => func.minArity))
       const maxArity = Math.max(...overloads.map((func) => func.maxArity))
-      Visitor.ArityError(minArity, maxArity, node, carg, this._txb.errorContainer)
+      Visitor.ArityError(
+        minArity,
+        maxArity,
+        node,
+        carg,
+        this._txb.errorContainer
+      )
 
       this._txb.setInfoForCall(node, new CallInfo(node, overloads[0]))
       this._txb.setType(node, DType.Error)
@@ -5623,10 +6485,19 @@ export class Visitor implements TexlVisitor {
     }
     // We exhausted the overloads without finding an exact match, so post a document error.
     if (!someFunc.hasPreciseErrors) {
-      this._txb.errorContainer.error(node, TexlStrings.ErrInvalidArgs_Func, someFunc.name)
+      this._txb.errorContainer.error(
+        node,
+        TexlStrings.ErrInvalidArgs_Func,
+        someFunc.name
+      )
     }
     // The final CheckInvocation call will post all the necessary document errors.
-    const rst = someFunc.checkInvocation(args, argTypes, this._txb.errorContainer, this._txb)
+    const rst = someFunc.checkInvocation(
+      args,
+      argTypes,
+      this._txb.errorContainer,
+      this._txb
+    )
     returnType = rst[1].returnType
     this._txb.setInfoForCall(node, new CallInfo(node, someFunc))
     this._txb.setType(node, returnType)
@@ -5642,7 +6513,11 @@ export class Visitor implements TexlVisitor {
   private isRecordScopeFieldName(name: DName): [boolean, Scope] {
     // Contracts.AssertValid(name);
     let scope: Scope
-    if (this._txb.document == null || !this._txb.document.properties.enabledFeatures.isUseDisplayNameMetadataEnabled) {
+    if (
+      this._txb.document == null ||
+      !this._txb.document.properties.enabledFeatures
+        .isUseDisplayNameMetadataEnabled
+    ) {
       scope = undefined
       return [false, scope]
     }
@@ -5656,7 +6531,10 @@ export class Visitor implements TexlVisitor {
       let maybeLogicalName: string
       let tmp: string
       if (!scope.skipForInlineRecords) {
-        const rst = DType.TryGetConvertedDisplayNameAndLogicalNameForColumn(scope.type, name.value)
+        const rst = DType.TryGetConvertedDisplayNameAndLogicalNameForColumn(
+          scope.type,
+          name.value
+        )
         maybeLogicalName = rst[1].logicalName
         tmp = rst[1].newDisplayName
         if (rst[0]) {
@@ -5687,7 +6565,10 @@ export class Visitor implements TexlVisitor {
     let nodeType = DType.EmptyRecord
 
     let dataSourceBoundType = DType.Invalid
-    if (node.sourceRestriction != null && node.sourceRestriction.kind == NodeKind.FirstName) {
+    if (
+      node.sourceRestriction != null &&
+      node.sourceRestriction.kind == NodeKind.FirstName
+    ) {
       let sourceRestrictionNode = node.sourceRestriction.asFirstName()
 
       let info = this._txb.getInfo(sourceRestrictionNode) as FirstNameInfo
@@ -5696,14 +6577,14 @@ export class Visitor implements TexlVisitor {
         this._txb.errorContainer.ensureErrorWithSeverity(
           DocumentErrorSeverity.Severe,
           sourceRestrictionNode,
-          TexlStrings.ErrExpectedDataSourceRestriction,
+          TexlStrings.ErrExpectedDataSourceRestriction
         )
         nodeType = DType.Error
       } else {
         dataSourceBoundType = dataSourceInfo.schema
         nodeType = DType.CreateDTypeWithConnectedDataSourceInfoMetadata(
           nodeType,
-          dataSourceBoundType.associatedDataSources,
+          dataSourceBoundType.associatedDataSources
         )
       }
     }
@@ -5714,10 +6595,15 @@ export class Visitor implements TexlVisitor {
       let fieldName = node.ids[i].name
       let fieldType: DType
 
-      isSelfContainedConstant &&= this._txb.isSelfContainedConstant(node.children[i])
+      isSelfContainedConstant &&= this._txb.isSelfContainedConstant(
+        node.children[i]
+      )
 
       if (dataSourceBoundType != DType.Invalid) {
-        const displayNameRst = this.getLogicalNodeNameAndUpdateDisplayNamesOut(dataSourceBoundType, node.ids[i])
+        const displayNameRst = this.getLogicalNodeNameAndUpdateDisplayNamesOut(
+          dataSourceBoundType,
+          node.ids[i]
+        )
         displayName = displayNameRst[1]
         fieldName = displayNameRst[0]
         // fieldName = this.getLogicalNodeNameAndUpdateDisplayNames(dataSourceBoundType, node.ids[i], out displayName);
@@ -5728,7 +6614,7 @@ export class Visitor implements TexlVisitor {
             FieldNameKind.Display,
             this._txb.errorContainer,
             fieldName,
-            node.children[i],
+            node.children[i]
           )
           nodeType = DType.Error
         } else if (!fieldType.accepts(this._txb.getType(node.children[i]))) {
@@ -5738,7 +6624,7 @@ export class Visitor implements TexlVisitor {
             TexlStrings.ErrColumnTypeMismatch_ColName_ExpectedType_ActualType,
             displayName,
             fieldType.getKindString(),
-            this._txb.getType(node.children[i]).getKindString(),
+            this._txb.getType(node.children[i]).getKindString()
           )
           nodeType = DType.Error
         }
@@ -5748,7 +6634,10 @@ export class Visitor implements TexlVisitor {
         const fieldNamerst = this.isRecordScopeFieldName(fieldName)
         maybeScope = fieldNamerst[1]
         if (fieldNamerst[0]) {
-          const rst = this.getLogicalNodeNameAndUpdateDisplayNamesOut(maybeScope.type, node.ids[i])
+          const rst = this.getLogicalNodeNameAndUpdateDisplayNamesOut(
+            maybeScope.type,
+            node.ids[i]
+          )
           displayName = rst[1]
           fieldName = rst[0]
         }
@@ -5762,10 +6651,13 @@ export class Visitor implements TexlVisitor {
             DocumentErrorSeverity.Severe,
             node.children[i],
             TexlStrings.ErrMultipleValuesForField_Name,
-            displayName,
+            displayName
           )
         } else {
-          nodeType = nodeType.add(fieldName, this._txb.getType(node.children[i]))
+          nodeType = nodeType.add(
+            fieldName,
+            this._txb.getType(node.children[i])
+          )
         }
       }
     }
@@ -5796,14 +6688,16 @@ export class Visitor implements TexlVisitor {
         this._txb.errorContainer.ensureErrorWithSeverity(
           DocumentErrorSeverity.Severe,
           child,
-          TexlStrings.ErrTableDoesNotAcceptThisType,
+          TexlStrings.ErrTableDoesNotAcceptThisType
         )
       }
     }
 
     this._txb.setType(
       node,
-      exprType.isValid ? DType.CreateTable(new TypedName(exprType, new DName('Value'))) : DType.EmptyTable,
+      exprType.isValid
+        ? DType.CreateTable(new TypedName(exprType, new DName('Value')))
+        : DType.EmptyTable
     )
     this.setVariadicNodePurity(node)
     this._txb.setScopeUseSet(node, this.joinScopeUseSets(...node.children))
@@ -5838,7 +6732,7 @@ class Scope {
     requireScopeIdentifier = false,
     data: any = null,
     createsRowScope = true,
-    skipForInlineRecords = false,
+    skipForInlineRecords = false
   ) {
     // Contracts.Assert(type.IsValid);
     // Contracts.AssertValueOrNull(data);
@@ -5871,13 +6765,20 @@ class Scope {
 }
 
 export class BinderNodesMetadataArgTypeVisitor extends Visitor {
-  constructor(binding: TexlBinding, resolver: INameResolver, topScope: DType, useThisRecordForRuleScope: boolean) {
+  constructor(
+    binding: TexlBinding,
+    resolver: INameResolver,
+    topScope: DType,
+    useThisRecordForRuleScope: boolean
+  ) {
     // Contracts.AssertValue(binding);
     super(binding, resolver, topScope, useThisRecordForRuleScope)
     this._txb = binding
   }
 
-  private isColumnMultiChoice(columnMetadata: IExternalColumnMetadata): boolean {
+  private isColumnMultiChoice(
+    columnMetadata: IExternalColumnMetadata
+  ): boolean {
     // Contracts.AssertValue(columnMetadata);
 
     return columnMetadata?.dataFormat == DataFormat.Lookup
@@ -5894,7 +6795,10 @@ export class BinderNodesMetadataArgTypeVisitor extends Visitor {
     let tableMetadata: IExternalTableMetadata
     let nodeType: DType = DType.Unknown
 
-    if (node.left.kind != NodeKind.FirstName && node.left.kind != NodeKind.DottedName) {
+    if (
+      node.left.kind != NodeKind.FirstName &&
+      node.left.kind != NodeKind.DottedName
+    ) {
       this.setDottedNameError(node, TexlStrings.ErrInvalidName)
       return
     }
@@ -5920,20 +6824,32 @@ export class BinderNodesMetadataArgTypeVisitor extends Visitor {
       // Contracts.AssertValue(entityInfo);
 
       let entityPath: string = ''
-      if (lhsType.hasExpandInfo) entityPath = lhsType.expandInfo.expandPath.toString()
+      if (lhsType.hasExpandInfo)
+        entityPath = lhsType.expandInfo.expandPath.toString()
 
-      let expandedEntityType: DType = this.getExpandedEntityType(typeRhs, entityPath)
+      let expandedEntityType: DType = this.getExpandedEntityType(
+        typeRhs,
+        entityPath
+      )
 
       let parentDataSource = entityInfo.parentDataSource
-      let metadata = new DataTableMetadata(parentDataSource.name, parentDataSource.name)
+      let metadata = new DataTableMetadata(
+        parentDataSource.name,
+        parentDataSource.name
+      )
       nodeType = DType.CreateMetadataType(
-        new DataColumnMetadata({ name: typeRhs.expandInfo.name, type: expandedEntityType, tableMetadata: metadata }),
+        new DataColumnMetadata({
+          name: typeRhs.expandInfo.name,
+          type: expandedEntityType,
+          tableMetadata: metadata,
+        })
       )
     } else if (
       (firstNameNode = node.left.asFirstName()) != null &&
       (firstNameInfo = this._txb.getInfo(firstNameNode)) != null
     ) {
-      const tabularDataSourceInfo = firstNameInfo.data as IExternalTabularDataSource
+      const tabularDataSourceInfo =
+        firstNameInfo.data as IExternalTabularDataSource
       tableMetadata = tabularDataSourceInfo?.tableMetadata
       if (tableMetadata == null) {
         this.setDottedNameError(node, TexlStrings.ErrInvalidName)
@@ -5946,8 +6862,13 @@ export class BinderNodesMetadataArgTypeVisitor extends Visitor {
         return
       }
 
-      const metadata = new DataTableMetadata(tabularDataSourceInfo.name, tableMetadata.displayName)
-      nodeType = DType.CreateMetadataType(new DataColumnMetadata({ columnMetadata, tableMetadata: metadata }))
+      const metadata = new DataTableMetadata(
+        tabularDataSourceInfo.name,
+        tableMetadata.displayName
+      )
+      nodeType = DType.CreateMetadataType(
+        new DataColumnMetadata({ columnMetadata, tableMetadata: metadata })
+      )
     } else {
       this.setDottedNameError(node, TexlStrings.ErrInvalidName)
       return

@@ -6,7 +6,11 @@ import DisposableBase from '../Disposable/DisposableBase'
 import ICollection from './ICollection'
 import { FiniteIEnumerator } from './Enumeration/IEnumerator'
 import IEnumerateEach from './Enumeration/IEnumerateEach'
-import { ActionWithIndex, EqualityComparison, PredicateWithIndex } from '../FunctionTypes'
+import {
+  ActionWithIndex,
+  EqualityComparison,
+  PredicateWithIndex,
+} from '../FunctionTypes'
 import ArrayLikeWritable from './Array/ArrayLikeWritable'
 import FiniteEnumerableOrEnumerator from './Enumeration/FiniteEnumerableOrEnumerator'
 
@@ -16,10 +20,13 @@ const NAME = 'CollectionBase',
   CMRO = 'Cannot modify a read-only collection.'
 const LINQ_PATH = '../../System.Linq/Linq'
 
-export abstract class CollectionBase<T> extends DisposableBase implements ICollection<T>, IEnumerateEach<T> {
+export abstract class CollectionBase<T>
+  extends DisposableBase
+  implements ICollection<T>, IEnumerateEach<T>
+{
   protected constructor(
     source?: FiniteEnumerableOrEnumerator<T>,
-    protected _equalityComparer: EqualityComparison<T> = areEqual,
+    protected _equalityComparer: EqualityComparison<T> = areEqual
   ) {
     super(NAME)
     this._importEntries(source)
@@ -56,7 +63,8 @@ export abstract class CollectionBase<T> extends DisposableBase implements IColle
   protected _version: number // Provides an easy means of tracking changes and invalidating enumerables.
 
   protected assertVersion(version: number): true | never {
-    if (version !== this._version) throw new InvalidOperationException('Collection was modified.')
+    if (version !== this._version)
+      throw new InvalidOperationException('Collection was modified.')
 
     return true
   }
@@ -106,7 +114,7 @@ export abstract class CollectionBase<T> extends DisposableBase implements IColle
     const _ = this
     _.assertModifiable()
     _._updateRecursion++
-    let updated: boolean = false
+    let updated = false
 
     try {
       updated = closure()
@@ -156,12 +164,12 @@ export abstract class CollectionBase<T> extends DisposableBase implements IColle
    * @param max Limit of entries to remove.  Will remove all matches if no max specified.
    * @returns {number} The number of entries removed.
    */
-  remove(entry: T, max: number = Infinity): number {
+  remove(entry: T, max = Infinity): number {
     const _ = this
     _.assertModifiable()
     _._updateRecursion++
 
-    let n: number = NaN
+    let n = NaN
     try {
       n = _._removeInternal(entry, max)
       if (n) _._modifiedCount++
@@ -184,7 +192,7 @@ export abstract class CollectionBase<T> extends DisposableBase implements IColle
     _.assertModifiable()
     _._updateRecursion++
 
-    let n: number = NaN
+    let n = NaN
     try {
       n = _._clearInternal()
       if (n) _._modifiedCount++
@@ -205,7 +213,9 @@ export abstract class CollectionBase<T> extends DisposableBase implements IColle
     this._modifiedCount = 0
   }
 
-  protected _importEntries(entries: FiniteEnumerableOrEnumerator<T> | null | undefined): number {
+  protected _importEntries(
+    entries: FiniteEnumerableOrEnumerator<T> | null | undefined
+  ): number {
     let added = 0
     if (entries) {
       if (entries instanceof Array) {
@@ -228,12 +238,13 @@ export abstract class CollectionBase<T> extends DisposableBase implements IColle
    * @returns {number}
    */
   importEntries(entries: FiniteEnumerableOrEnumerator<T>): number {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const _ = this
     if (!entries) return 0
     _.assertModifiable()
     _._updateRecursion++
 
-    let n: number = NaN
+    let n = NaN
     try {
       n = _._importEntries(entries)
       if (n) _._modifiedCount++
@@ -281,7 +292,7 @@ export abstract class CollectionBase<T> extends DisposableBase implements IColle
     if (!count) return false
     if (!predicate) return Boolean(count)
 
-    let found: boolean = false
+    let found = false
     this.forEach((e, i) => !(found = predicate(e, i)))
     return found
   }
@@ -313,7 +324,10 @@ export abstract class CollectionBase<T> extends DisposableBase implements IColle
    */
   forEach(action: ActionWithIndex<T>, useCopy?: boolean): number
   forEach(action: PredicateWithIndex<T>, useCopy?: boolean): number
-  forEach(action: ActionWithIndex<T> | PredicateWithIndex<T>, useCopy?: boolean): number {
+  forEach(
+    action: ActionWithIndex<T> | PredicateWithIndex<T>,
+    useCopy?: boolean
+  ): number {
     if (this.wasDisposed) return 0
 
     if (useCopy) {
@@ -334,7 +348,10 @@ export abstract class CollectionBase<T> extends DisposableBase implements IColle
    * @param index
    * @returns {TTarget}
    */
-  copyTo<TTarget extends ArrayLikeWritable<T>>(target: TTarget, index: number = 0): TTarget {
+  copyTo<TTarget extends ArrayLikeWritable<T>>(
+    target: TTarget,
+    index = 0
+  ): TTarget {
     if (!target) throw new ArgumentNullException('target')
 
     const count = this.getCount()

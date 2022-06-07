@@ -11,16 +11,16 @@ export class DTypeHelper {
     columnName: string,
     columnType: DType,
     skipIfNotInSchema = false,
-    skipExpands = false,
+    skipExpands = false
   ): boolean {
     // Contracts.AssertValue(dataSourceToQueryOptionsMap);
     // Contracts.AssertNonEmpty(columnName);
     // Contracts.AssertValue(columnType);
 
-    var retval = false
+    let retval = false
     if (self.hasExpandInfo && self.expandInfo != null && !skipExpands) {
-      var qOptions = dataSourceToQueryOptionsMap.getOrCreateQueryOptions(
-        self.expandInfo.parentDataSource as IExternalTabularDataSource,
+      let qOptions = dataSourceToQueryOptionsMap.getOrCreateQueryOptions(
+        self.expandInfo.parentDataSource as IExternalTabularDataSource
       )
       let AddExpand = qOptions.addExpand(self.expandInfo)
       let expandQueryOptions = AddExpand[1]
@@ -31,18 +31,28 @@ export class DTypeHelper {
     } else {
       for (let tabularDataSource of self.associatedDataSources) {
         // Skip if this column doesn't belong to this datasource.
-        if (skipIfNotInSchema && !tabularDataSource.schema.contains(new DName(columnName))) {
+        if (
+          skipIfNotInSchema &&
+          !tabularDataSource.schema.contains(new DName(columnName))
+        ) {
           continue
         }
 
         retval =
           retval ||
-          dataSourceToQueryOptionsMap.addSelect(<IExternalTabularDataSource>tabularDataSource, new DName(columnName))
+          dataSourceToQueryOptionsMap.addSelect(
+            <IExternalTabularDataSource>tabularDataSource,
+            new DName(columnName)
+          )
 
-        if (columnType.isExpandEntity && columnType.expandInfo != null && !skipExpands) {
-          var scopedExpandInfo = columnType.expandInfo
-          var qOptions = dataSourceToQueryOptionsMap.getOrCreateQueryOptions(
-            scopedExpandInfo.parentDataSource as IExternalTabularDataSource,
+        if (
+          columnType.isExpandEntity &&
+          columnType.expandInfo != null &&
+          !skipExpands
+        ) {
+          let scopedExpandInfo = columnType.expandInfo
+          let qOptions = dataSourceToQueryOptionsMap.getOrCreateQueryOptions(
+            scopedExpandInfo.parentDataSource as IExternalTabularDataSource
           )
           let AddExpand2 = qOptions.addExpand(scopedExpandInfo)
           retval = retval || AddExpand2[0] //qOptions.AddExpand(scopedExpandInfo, out _);

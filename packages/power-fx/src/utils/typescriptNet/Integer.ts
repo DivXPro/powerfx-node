@@ -6,9 +6,9 @@ function Integer(n: number): number {
   return Math.floor(n)
 }
 
-module Integer {
-  export const MAX_32_BIT: number = 2147483647
-  export const MAX_VALUE: number = 9007199254740991
+namespace Integer {
+  export const MAX_32_BIT = 2147483647
+  export const MAX_VALUE = 9007199254740991
   const NUMBER = TypeValue.Number
 
   /**
@@ -20,7 +20,8 @@ module Integer {
   export function as32Bit(n: number): number {
     const result = n | 0
     if (isNaN(n)) throw "'n' is not a number."
-    if (n !== -1 && result === -1) throw "'n' is too large to be a 32 bit integer."
+    if (n !== -1 && result === -1)
+      throw "'n' is too large to be a 32 bit integer."
     return result
   }
 
@@ -50,7 +51,8 @@ module Integer {
    */
   export function assert(n: number, argumentName?: string): true | never {
     let i = is(n)
-    if (!i) throw new ArgumentException(argumentName || 'n', 'Must be a integer.')
+    if (!i)
+      throw new ArgumentException(argumentName || 'n', 'Must be a integer.')
     return i
   }
 
@@ -60,13 +62,16 @@ module Integer {
    * @param argumentName
    * @returns {boolean}
    */
-  export function assertZeroOrGreater(n: number, argumentName?: string): true | never {
+  export function assertZeroOrGreater(
+    n: number,
+    argumentName?: string
+  ): true | never {
     let i = assert(n, argumentName) && n >= 0
     if (!i)
       throw new ArgumentOutOfRangeException(
         argumentName || 'n',
         n,
-        'Must be a valid integer greater than or equal to zero.',
+        'Must be a valid integer greater than or equal to zero.'
       )
     return i
   }
@@ -77,9 +82,17 @@ module Integer {
    * @param argumentName
    * @returns {boolean}
    */
-  export function assertPositive(n: number, argumentName?: string): true | never {
+  export function assertPositive(
+    n: number,
+    argumentName?: string
+  ): true | never {
     let i = assert(n, argumentName) && n > 0
-    if (!i) throw new ArgumentOutOfRangeException(argumentName || 'n', n, 'Must be greater than zero.')
+    if (!i)
+      throw new ArgumentOutOfRangeException(
+        argumentName || 'n',
+        n,
+        'Must be greater than zero.'
+      )
     return i
   }
 }

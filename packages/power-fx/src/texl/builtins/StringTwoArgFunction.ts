@@ -21,7 +21,11 @@ export abstract class StringTwoArgFunction extends BuiltinFunction {
     return true
   }
 
-  constructor(name: string, description: StringGetter, returnType: DType = DType.Boolean) {
+  constructor(
+    name: string,
+    description: StringGetter,
+    returnType: DType = DType.Boolean
+  ) {
     super(
       undefined,
       name,
@@ -33,14 +37,14 @@ export abstract class StringTwoArgFunction extends BuiltinFunction {
       2,
       2,
       DType.String,
-      DType.String,
+      DType.String
     )
   }
 
   protected isRowScopedServerDelegatableHelper(
     callNode: CallNode,
     binding: TexlBinding,
-    metadata: OperationCapabilityMetadata,
+    metadata: OperationCapabilityMetadata
   ): boolean {
     // Contracts.AssertValue(callNode);
     // Contracts.AssertValue(binding);
@@ -62,7 +66,7 @@ export abstract class StringTwoArgFunction extends BuiltinFunction {
         DocumentErrorSeverity.Warning,
         args[1],
         TexlStrings.SuggestRemoteExecutionHint_StringMatchSecondParam,
-        this.name,
+        this.name
       )
       return false
     }
@@ -71,18 +75,28 @@ export abstract class StringTwoArgFunction extends BuiltinFunction {
       const argKind = arg.kind
       switch (argKind) {
         case NodeKind.FirstName:
-          var firstNameStrategy = this.getFirstNameNodeDelegationStrategy()
-          if (!firstNameStrategy.isValidFirstNameNode(arg.asFirstName(), binding, null)) {
+          let firstNameStrategy = this.getFirstNameNodeDelegationStrategy()
+          if (
+            !firstNameStrategy.isValidFirstNameNode(
+              arg.asFirstName(),
+              binding,
+              null
+            )
+          ) {
             return false
           }
 
           break
         case NodeKind.Call:
-          if (!metadata.isDelegationSupportedByTable(this.functionDelegationCapability)) {
+          if (
+            !metadata.isDelegationSupportedByTable(
+              this.functionDelegationCapability
+            )
+          ) {
             return false
           }
 
-          var cNodeStrategy = this.getCallNodeDelegationStrategy()
+          let cNodeStrategy = this.getCallNodeDelegationStrategy()
           if (!cNodeStrategy.isValidCallNode(arg.asCall(), binding, metadata)) {
             return false
           }
@@ -91,8 +105,13 @@ export abstract class StringTwoArgFunction extends BuiltinFunction {
         case NodeKind.StrLit:
           break
         case NodeKind.DottedName: {
-          var dottedStrategy = this.getDottedNameNodeDelegationStrategy()
-          return dottedStrategy.isValidDottedNameNode(arg.asDottedName(), binding, metadata, null)
+          let dottedStrategy = this.getDottedNameNodeDelegationStrategy()
+          return dottedStrategy.isValidDottedNameNode(
+            arg.asDottedName(),
+            binding,
+            metadata,
+            null
+          )
         }
 
         default:

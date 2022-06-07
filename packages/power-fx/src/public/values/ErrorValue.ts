@@ -6,7 +6,10 @@ import { IValueVisitor } from './IValueVisitor'
 export class ErrorValue extends FormulaValue {
   private _errors: ExpressionError[] = []
 
-  constructor(irContext: IRContext, error?: ExpressionError | ExpressionError[]) {
+  constructor(
+    irContext: IRContext,
+    error?: ExpressionError | ExpressionError[]
+  ) {
     super(irContext)
     if (error instanceof ExpressionError) {
       this.Add(error)
@@ -39,14 +42,17 @@ export class ErrorValue extends FormulaValue {
     return new ErrorValue(value.irContext, [])
   }
 
-  public static Combine(irContext: IRContext, values: ErrorValue[]): ErrorValue {
+  public static Combine(
+    irContext: IRContext,
+    values: ErrorValue[]
+  ): ErrorValue {
     return new ErrorValue(irContext, ErrorValue.CombineErrors(values))
   }
 
   private static CombineErrors(values: ErrorValue[]): ExpressionError[] {
     let arr: ExpressionError[] = []
     for (let v in values) {
-      for (var error in values[v]._errors) {
+      for (let error in values[v]._errors) {
         arr.push(values[v]._errors[error])
       }
     }

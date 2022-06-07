@@ -32,7 +32,7 @@ export abstract class ConcatenateFunctionBase extends BuiltinFunction {
       DType.String,
       0,
       1,
-      Number.MAX_SAFE_INTEGER,
+      Number.MAX_SAFE_INTEGER
     )
   }
 
@@ -40,7 +40,11 @@ export abstract class ConcatenateFunctionBase extends BuiltinFunction {
     return [
       [TexlStrings.ConcatenateArg1],
       [TexlStrings.ConcatenateArg1, TexlStrings.ConcatenateArg1],
-      [TexlStrings.ConcatenateArg1, TexlStrings.ConcatenateArg1, TexlStrings.ConcatenateArg1],
+      [
+        TexlStrings.ConcatenateArg1,
+        TexlStrings.ConcatenateArg1,
+        TexlStrings.ConcatenateArg1,
+      ],
       [
         TexlStrings.ConcatenateArg1,
         TexlStrings.ConcatenateArg1,
@@ -52,7 +56,11 @@ export abstract class ConcatenateFunctionBase extends BuiltinFunction {
 
   public getSignaturesAtArity(arity: number) {
     if (arity > 2) {
-      return this.getGenericSignatures(arity, TexlStrings.ConcatenateArg1, TexlStrings.ConcatenateArg1)
+      return this.getGenericSignatures(
+        arity,
+        TexlStrings.ConcatenateArg1,
+        TexlStrings.ConcatenateArg1
+      )
     }
 
     return super.getSignaturesAtArity(arity)
@@ -62,8 +70,11 @@ export abstract class ConcatenateFunctionBase extends BuiltinFunction {
     args: TexlNode[],
     argTypes: DType[],
     errors: IErrorContainer,
-    binding: TexlBinding,
-  ): [boolean, { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }] {
+    binding: TexlBinding
+  ): [
+    boolean,
+    { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }
+  ] {
     // Contracts.AssertValue(args);
     // Contracts.AssertValue(argTypes);
     // Contracts.Assert(args.Length == argTypes.Length);
@@ -75,11 +86,21 @@ export abstract class ConcatenateFunctionBase extends BuiltinFunction {
     let nodeToCoercedTypeMap: Dictionary<TexlNode, DType>
 
     for (let i = 0; i < count; i++) {
-      const typeResult = this.checkTypeWithCoerce(args[i], argTypes[i], DType.String, errors, true)
+      const typeResult = this.checkTypeWithCoerce(
+        args[i],
+        argTypes[i],
+        DType.String,
+        errors,
+        true
+      )
       const coercionType = typeResult[1]
       const typeChecks = typeResult[0]
       if (typeChecks && coercionType != null) {
-        nodeToCoercedTypeMap = CollectionUtils.AddDictionary(nodeToCoercedTypeMap, args[i], coercionType)
+        nodeToCoercedTypeMap = CollectionUtils.AddDictionary(
+          nodeToCoercedTypeMap,
+          args[i],
+          coercionType
+        )
       }
 
       fArgsValid &&= typeChecks
@@ -119,14 +140,18 @@ export class ConcatenateTableFunction extends BuiltinFunction {
       DType.EmptyTable,
       0,
       1,
-      Number.MAX_SAFE_INTEGER,
+      Number.MAX_SAFE_INTEGER
     )
   }
 
   public getSignatures() {
     return [
       [TexlStrings.ConcatenateTArg1, TexlStrings.ConcatenateTArg1],
-      [TexlStrings.ConcatenateTArg1, TexlStrings.ConcatenateTArg1, TexlStrings.ConcatenateTArg1],
+      [
+        TexlStrings.ConcatenateTArg1,
+        TexlStrings.ConcatenateTArg1,
+        TexlStrings.ConcatenateTArg1,
+      ],
       [
         TexlStrings.ConcatenateTArg1,
         TexlStrings.ConcatenateTArg1,
@@ -138,7 +163,11 @@ export class ConcatenateTableFunction extends BuiltinFunction {
 
   public getSignaturesAtArity(arity: number) {
     if (arity > 2) {
-      return this.getGenericSignatures(arity, TexlStrings.ConcatenateArg1, TexlStrings.ConcatenateArg1)
+      return this.getGenericSignatures(
+        arity,
+        TexlStrings.ConcatenateArg1,
+        TexlStrings.ConcatenateArg1
+      )
     }
 
     return super.getSignaturesAtArity(arity)
@@ -152,8 +181,11 @@ export class ConcatenateTableFunction extends BuiltinFunction {
     args: TexlNode[],
     argTypes: DType[],
     errors: IErrorContainer,
-    binding: TexlBinding,
-  ): [boolean, { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }] {
+    binding: TexlBinding
+  ): [
+    boolean,
+    { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }
+  ] {
     // Contracts.AssertValue(args);
     // Contracts.AssertValue(argTypes);
     // Contracts.Assert(args.Length == argTypes.Length);
@@ -173,11 +205,11 @@ export class ConcatenateTableFunction extends BuiltinFunction {
         args[i],
         argTypes[i],
         errors,
-        nodeToCoercedTypeMap,
+        nodeToCoercedTypeMap
       )
       nodeToCoercedTypeMap = rst[1].nodeToCoercedTypeMap
       fArgsValid &&= rst[0]
-      // fArgsValid &= CheckParamIsTypeOrSingleColumnTable(DType.String, args[i], argTypes[i], errors, out var isTable, ref nodeToCoercedTypeMap);
+      // fArgsValid &= CheckParamIsTypeOrSingleColumnTable(DType.String, args[i], argTypes[i], errors, out let isTable, ref nodeToCoercedTypeMap);
       hasTableArg ||= rst[1].isTable
     }
 
@@ -187,7 +219,9 @@ export class ConcatenateTableFunction extends BuiltinFunction {
       nodeToCoercedTypeMap = null
     }
 
-    const returnType = DType.CreateTable(new TypedName(DType.String, BuiltinFunction.OneColumnTableResultName))
+    const returnType = DType.CreateTable(
+      new TypedName(DType.String, BuiltinFunction.OneColumnTableResultName)
+    )
 
     return [hasTableArg && fArgsValid, { returnType, nodeToCoercedTypeMap }]
   }

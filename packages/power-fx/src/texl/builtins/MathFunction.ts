@@ -16,7 +16,18 @@ export abstract class MathOneArgFunction extends BuiltinFunction {
   }
 
   constructor(name: string, description: StringGetter, fc: FunctionCategories) {
-    super(undefined, name, undefined, description, fc, DType.Number, 0, 1, 1, DType.Number)
+    super(
+      undefined,
+      name,
+      undefined,
+      description,
+      fc,
+      DType.Number,
+      0,
+      1,
+      1,
+      DType.Number
+    )
   }
 
   public getSignatures(): Array<StringGetter[]> {
@@ -34,7 +45,18 @@ export abstract class MathOneArgTableFunction extends BuiltinFunction {
   }
 
   constructor(name: string, description: StringGetter, fc: FunctionCategories) {
-    super(undefined, name, undefined, description, fc, DType.EmptyTable, 0, 1, 1, DType.EmptyTable)
+    super(
+      undefined,
+      name,
+      undefined,
+      description,
+      fc,
+      DType.EmptyTable,
+      0,
+      1,
+      1,
+      DType.EmptyTable
+    )
   }
 
   public getSignatures(): Array<StringGetter[]> {
@@ -50,8 +72,11 @@ export abstract class MathOneArgTableFunction extends BuiltinFunction {
   public checkInvocation(
     args: TexlNode[],
     argTypes: DType[],
-    errors: IErrorContainer,
-  ): [boolean, { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }] {
+    errors: IErrorContainer
+  ): [
+    boolean,
+    { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }
+  ] {
     // Contracts.AssertValue(args);
     // Contracts.AssertAllValues(args);
     // Contracts.AssertValue(argTypes);
@@ -61,20 +86,16 @@ export abstract class MathOneArgTableFunction extends BuiltinFunction {
 
     // , out DType returnType, out Dictionary < TexlNode, DType > nodeToCoercedTypeMap
 
-    var res = super.checkInvocation(args, argTypes, errors)
+    let res = super.checkInvocation(args, argTypes, errors)
     let fValid: boolean = res[0]
     let returnType = res[1].returnType
     let nodeToCoercedTypeMap = res[1].nodeToCoercedTypeMap
     // Contracts.Assert(returnType.IsTable);
 
-    var arg = args[0]
-    var argType = argTypes[0]
-    let checkNumeric: [boolean, Dictionary<TexlNode, DType>] = super.checkNumericColumnType(
-      argType,
-      arg,
-      errors,
-      nodeToCoercedTypeMap,
-    )
+    let arg = args[0]
+    let argType = argTypes[0]
+    let checkNumeric: [boolean, Dictionary<TexlNode, DType>] =
+      super.checkNumericColumnType(argType, arg, errors, nodeToCoercedTypeMap)
     //  ref nodeToCoercedTypeMap
     fValid = fValid && checkNumeric[0]
 

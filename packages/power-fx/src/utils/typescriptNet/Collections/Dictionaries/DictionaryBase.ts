@@ -13,25 +13,33 @@ import { Action } from '../../FunctionTypes'
 import FiniteEnumerableOrArrayLike from '../FiniteEnumerableOrArrayLike'
 import FiniteEnumerableOrEnumerator from '../Enumeration/FiniteEnumerableOrEnumerator'
 
-const VOID0: undefined = void 0
+const VOID0 = void 0
 
 // Design Note: Should DictionaryAbstractBase be IDisposable?
 export abstract class DictionaryBase<TKey, TValue>
   extends CollectionBase<KeyValuePair<TKey, TValue>>
   implements IDictionary<TKey, TValue>
 {
-  protected constructor(source?: FiniteEnumerableOrArrayLike<KeyValuePair<TKey, TValue>>) {
+  protected constructor(
+    source?: FiniteEnumerableOrArrayLike<KeyValuePair<TKey, TValue>>
+  ) {
     super(source)
   }
 
   //noinspection JSUnusedLocalSymbols
-  protected _onValueModified(key: TKey, value: TValue | undefined, old: TValue | undefined): void {}
+  protected _onValueModified(
+    key: TKey,
+    value: TValue | undefined,
+    old: TValue | undefined
+  ): void {}
 
   protected _addInternal(item: KeyValuePairOrTuple<TKey, TValue>): boolean {
     if (!item)
       throw new ArgumentNullException(
         'item',
-        "Dictionaries must use a valid key/value pair. '" + item + "' is not allowed.",
+        "Dictionaries must use a valid key/value pair. '" +
+          item +
+          "' is not allowed."
       )
 
     return extractKeyValue(item, (key, value) => this.addByKeyValue(key, value))
@@ -59,7 +67,9 @@ export abstract class DictionaryBase<TKey, TValue>
     })
   }
 
-  protected _removeInternal(item: KeyValuePair<TKey, TValue> | [TKey, TValue]): number {
+  protected _removeInternal(
+    item: KeyValuePair<TKey, TValue> | [TKey, TValue]
+  ): number {
     if (!item) return 0
 
     return extractKeyValue(item, (key, value) => {
@@ -86,11 +96,14 @@ export abstract class DictionaryBase<TKey, TValue>
   }
 
   addByKeyValue(key: TKey, value: TValue): boolean {
-    if (value === VOID0) throw new InvalidOperationException("Cannot add 'undefined' as a value.")
+    if (value === VOID0)
+      throw new InvalidOperationException("Cannot add 'undefined' as a value.")
 
     const _ = this
     if (_.containsKey(key)) {
-      const ex = new InvalidOperationException('Adding a key/value when the key already exists.')
+      const ex = new InvalidOperationException(
+        'Adding a key/value when the key already exists.'
+      )
       ex.data['key'] = key
       ex.data['value'] = value
       throw ex
@@ -99,13 +112,16 @@ export abstract class DictionaryBase<TKey, TValue>
     return _.setValue(key, value)
   }
 
-  protected abstract _getEntry(key: TKey): KeyValuePair<TKey, TValue> | undefined
+  protected abstract _getEntry(
+    key: TKey
+  ): KeyValuePair<TKey, TValue> | undefined
 
   abstract getValue(key: TKey): TValue | undefined
 
   getAssuredValue(key: TKey): TValue {
     const value = this.getValue(key)
-    if (value === VOID0) throw new KeyNotFoundException(`Key '${key}' not found.`)
+    if (value === VOID0)
+      throw new KeyNotFoundException(`Key '${key}' not found.`)
     return value
   }
 
@@ -118,7 +134,10 @@ export abstract class DictionaryBase<TKey, TValue>
     return false
   }
 
-  protected abstract _setValueInternal(key: TKey, value: TValue | undefined): boolean
+  protected abstract _setValueInternal(
+    key: TKey,
+    value: TValue | undefined
+  ): boolean
 
   /**
    * Sets the value of an entry.
@@ -179,22 +198,25 @@ export abstract class DictionaryBase<TKey, TValue>
       | FiniteEnumerableOrArrayLike<KeyValuePairOrTuple<TKey, TValue>>
       | IEnumerator<KeyValuePairOrTuple<TKey, TValue>>
       | null
-      | undefined,
+      | undefined
   ): number {
     // Allow piping through to trigger onModified properly.
     return super.importEntries(<any>pairs)
   }
 
   protected _importEntries(
-    pairs: FiniteEnumerableOrEnumerator<KeyValuePairOrTuple<TKey, TValue>> | null | undefined,
+    pairs:
+      | FiniteEnumerableOrEnumerator<KeyValuePairOrTuple<TKey, TValue>>
+      | null
+      | undefined
   ): number {
     const _ = this
     if (!pairs) return 0
-    let changed: number = 0
+    let changed = 0
     forEach(pairs, (pair) =>
       extractKeyValue(pair, (key, value) => {
         if (_._setValueInternal(key, value)) changed++
-      }),
+      })
     )
     return changed
   }
@@ -228,7 +250,7 @@ export abstract class DictionaryBase<TKey, TValue>
         }
 
         return yielder.yieldBreak()
-      },
+      }
     )
   }
 }

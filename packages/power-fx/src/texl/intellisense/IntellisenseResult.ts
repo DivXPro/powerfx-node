@@ -42,7 +42,11 @@ export class IntellisenseResult implements IIntellisenseResult {
   /// </summary>
   private readonly _currentArgumentIndex: number
 
-  constructor(data: IIntellisenseData, suggestions: IntellisenseSuggestion[], exception: Exception = null) {
+  constructor(
+    data: IIntellisenseData,
+    suggestions: IntellisenseSuggestion[],
+    exception: Exception = null
+  ) {
     // Contracts.AssertValue(suggestions);
 
     this._script = data.Script
@@ -81,7 +85,8 @@ export class IntellisenseResult implements IIntellisenseResult {
         let signatureIndex: number = 0
         let argumentSeparator: string = ''
         let highlightedFuncParamDescription: string = ''
-        let listSep: string = TexlLexer.LocalizedInstance.localizedPunctuatorListSeparator + ' '
+        let listSep: string =
+          TexlLexer.LocalizedInstance.localizedPunctuatorListSeparator + ' '
         let funcDisplayString: StringBuilder = new StringBuilder(func.name)
         funcDisplayString.append('(')
 
@@ -104,7 +109,7 @@ export class IntellisenseResult implements IIntellisenseResult {
             data,
             unalteredParamName,
             invariantParamName,
-            funcDisplayString,
+            funcDisplayString
           )
 
           parameters.push({
@@ -112,7 +117,15 @@ export class IntellisenseResult implements IIntellisenseResult {
             Label: paramName,
           })
 
-          if (this.ArgNeedsHighlight(func, argCount, argIndex, signature.length, signatureIndex)) {
+          if (
+            this.ArgNeedsHighlight(
+              func,
+              argCount,
+              argIndex,
+              signature.length,
+              signatureIndex
+            )
+          ) {
             highlightStart = parameterHighlightStart
             highlightEnd = parameterHighlightEnd
             highlightedFuncParamDescription = funcParamDescription
@@ -124,7 +137,13 @@ export class IntellisenseResult implements IIntellisenseResult {
           if (
             func.signatureConstraint != null &&
             argCount > func.signatureConstraint.repeatTopLength &&
-            this.canParamOmit(func, argCount, argIndex, signature.length, signatureIndex)
+            this.canParamOmit(
+              func,
+              argCount,
+              argIndex,
+              signature.length,
+              signatureIndex
+            )
           ) {
             funcDisplayString.append('...')
             signatureIndex += func.signatureConstraint.repeatSpan
@@ -141,7 +160,10 @@ export class IntellisenseResult implements IIntellisenseResult {
         funcDisplayString.append(')')
         let signatureInformation = new SignatureInformation()
         signatureInformation.Documentation = func.description
-        signatureInformation.Label = this.CreateFunctionSignature(func.name, parameters)
+        signatureInformation.Label = this.CreateFunctionSignature(
+          func.name,
+          parameters
+        )
         signatureInformation.Parameters = parameters
         // {
         //   Documentation = func.description,
@@ -151,20 +173,25 @@ export class IntellisenseResult implements IIntellisenseResult {
         this._functionSignatures.push(signatureInformation)
         this._functionOverloads.push(
           IntellisenseSuggestion.newInstance(
-            new UIString(funcDisplayString.toString(), highlightStart, highlightEnd),
+            new UIString(
+              funcDisplayString.toString(),
+              highlightStart,
+              highlightEnd
+            ),
             SuggestionKind.Function,
             SuggestionIconKind.Function,
             func.returnType,
             signatureIndex,
             func.description,
             func.name,
-            highlightedFuncParamDescription,
-          ),
+            highlightedFuncParamDescription
+          )
         )
 
         if (
           (signatureIndex >= argCount ||
-            (func.signatureConstraint != null && argCount > func.signatureConstraint.repeatTopLength)) &&
+            (func.signatureConstraint != null &&
+              argCount > func.signatureConstraint.repeatTopLength)) &&
           minMatchingArgCount > signatureIndex
         ) {
           // _functionOverloads has at least one item at this point.
@@ -175,7 +202,7 @@ export class IntellisenseResult implements IIntellisenseResult {
 
       // Handling of case where the function does not take any arguments.
       if (this._functionOverloads.length == 0 && func.minArity == 0) {
-        // var signatureInformation = new SignatureInformation()
+        // let signatureInformation = new SignatureInformation()
         // {
         //   Documentation = func.description,
         //     Label = this.CreateFunctionSignature(func.name),
@@ -183,7 +210,8 @@ export class IntellisenseResult implements IIntellisenseResult {
         // };
         let signatureInformation = new SignatureInformation()
         signatureInformation.Documentation = func.description
-        ;(signatureInformation.Label = this.CreateFunctionSignature(func.name)), (signatureInformation.Parameters = [])
+        ;(signatureInformation.Label = this.CreateFunctionSignature(func.name)),
+          (signatureInformation.Parameters = [])
 
         this._functionSignatures.push(signatureInformation)
         this._functionOverloads.push(
@@ -195,8 +223,8 @@ export class IntellisenseResult implements IIntellisenseResult {
             '',
             0,
             func.description,
-            func.name,
-          ),
+            func.name
+          )
         )
         this.CurrentFunctionOverloadIndex = 0
       }
@@ -212,7 +240,10 @@ export class IntellisenseResult implements IIntellisenseResult {
   public get SignatureHelp(): SignatureHelp {
     let instance = new SignatureHelp()
     instance.Signatures = this._functionSignatures //.ToArray(),
-    instance.ActiveSignature = this.CurrentFunctionOverloadIndex > 0 ? this.CurrentFunctionOverloadIndex : 0
+    instance.ActiveSignature =
+      this.CurrentFunctionOverloadIndex > 0
+        ? this.CurrentFunctionOverloadIndex
+        : 0
     instance.ActiveParameter = this._currentArgumentIndex
     return instance
   }
@@ -228,7 +259,10 @@ export class IntellisenseResult implements IIntellisenseResult {
   /// <returns>
   /// A label that represents the call signature; e.g. <code>Set(variable, lambda)</code>
   /// </returns>
-  private CreateFunctionSignature(functionName: string, parameters: ParameterInformation[] = null): string {
+  private CreateFunctionSignature(
+    functionName: string,
+    parameters: ParameterInformation[] = null
+  ): string {
     // Contracts.AssertValue(functionName);
     // Contracts.AssertValue(functionName);
 
@@ -259,7 +293,7 @@ export class IntellisenseResult implements IIntellisenseResult {
     data: IIntellisenseData,
     paramName: string,
     invariantParamName: string,
-    funcDisplayString: StringBuilder,
+    funcDisplayString: StringBuilder
   ): {
     paramName: string
     highlightStart: number
@@ -283,7 +317,12 @@ export class IntellisenseResult implements IIntellisenseResult {
 
     // By calling this we provide the caller the ability to augment the highlight and parameter
     // details amidst the iteration
-    let TryAugmentSignatureRes = data.TryAugmentSignature(func, argIndex, paramName, highlightStart)
+    let TryAugmentSignatureRes = data.TryAugmentSignature(
+      func,
+      argIndex,
+      paramName,
+      highlightStart
+    )
     if (TryAugmentSignatureRes[0]) {
       highlightStart = TryAugmentSignatureRes[1]
       highlightEnd = TryAugmentSignatureRes[2]
@@ -293,12 +332,15 @@ export class IntellisenseResult implements IIntellisenseResult {
     }
 
     // MUST use the invariant parameter name here
-    let tryGetParamDescriptionRes = func.tryGetParamDescription(invariantParamName)
+    let tryGetParamDescriptionRes =
+      func.tryGetParamDescription(invariantParamName)
     funcParamDescription = tryGetParamDescriptionRes[1]
     // func.tryGetParamDescription(invariantParamName, out funcParamDescription);
 
     // Apply optional suffix provided via argument
-    funcParamDescription = funcParamDescription + data.GenerateParameterDescriptionSuffix(func, paramName)
+    funcParamDescription =
+      funcParamDescription +
+      data.GenerateParameterDescriptionSuffix(func, paramName)
     return {
       paramName: paramName,
       highlightStart: highlightStart,
@@ -315,7 +357,7 @@ export class IntellisenseResult implements IIntellisenseResult {
     argCount: number,
     argIndex: number,
     signatureCount: number,
-    signatureIndex: number,
+    signatureIndex: number
   ): boolean {
     // Contracts.AssertValue(func);
     // Contracts.Assert(func.MaxArity == number.MaxValue);
@@ -323,7 +365,12 @@ export class IntellisenseResult implements IIntellisenseResult {
 
     if (func.signatureConstraint == null) return false
 
-    return func.signatureConstraint.canParamOmit(argCount, argIndex, signatureCount, signatureIndex)
+    return func.signatureConstraint.canParamOmit(
+      argCount,
+      argIndex,
+      signatureCount,
+      signatureIndex
+    )
   }
 
   // 1. For a function with limited MaxArity, The first time the count becomes equal to the argIndex, that's the arg we want to highlight
@@ -333,7 +380,7 @@ export class IntellisenseResult implements IIntellisenseResult {
     argCount: number,
     argIndex: number,
     signatureCount: number,
-    signatureIndex: number,
+    signatureIndex: number
   ): boolean {
     // Contracts.AssertValue(func);
 
@@ -344,7 +391,12 @@ export class IntellisenseResult implements IIntellisenseResult {
     )
       return signatureIndex == argIndex
 
-    return func.signatureConstraint.argNeedsHighlight(argCount, argIndex, signatureCount, signatureIndex)
+    return func.signatureConstraint.argNeedsHighlight(
+      argCount,
+      argIndex,
+      signatureCount,
+      signatureIndex
+    )
   }
 
   /// <summary>

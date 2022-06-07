@@ -14,7 +14,7 @@ function ensureArray<T>(value: T | T[]): T[] {
  *
  * <h4>Example</h4>
  * ```typescript
- * var myArray = [{a:1:b:2},{a:3,b:4},{a:1,b:3}];
+ * let myArray = [{a:1:b:2},{a:3,b:4},{a:1,b:3}];
  *
  * // First sort by a, then by b.
  * myArray.sort(
@@ -35,7 +35,7 @@ function ensureArray<T>(value: T | T[]): T[] {
 export default function createComparer<TSource, TSelect extends Primitive>(
   selector: Selector<TSource, TSelect | TSelect[]>,
   order: Order | Order[] = Order.Ascending,
-  equivalentToNaN: any = NaN,
+  equivalentToNaN: any = NaN
 ): Comparison<TSource> {
   const nanHasEquivalent = !Type.isTrueNaN(equivalentToNaN)
 
@@ -49,7 +49,11 @@ export default function createComparer<TSource, TSelect extends Primitive>(
     for (let i = 0; i < len; i++) {
       let vA = aValue[i],
         vB = bValue[i]
-      const o = oArray ? (i < oArray.length ? oArray[i] : Order.Ascending) : <Order>order
+      const o = oArray
+        ? i < oArray.length
+          ? oArray[i]
+          : Order.Ascending
+        : <Order>order
 
       if (nanHasEquivalent) {
         if (Type.isTrueNaN(vA)) vA = equivalentToNaN

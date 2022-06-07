@@ -40,7 +40,7 @@ export class SwitchFunction extends BuiltinFunction {
       DType.Unknown,
       0,
       3,
-      Number.MAX_SAFE_INTEGER,
+      Number.MAX_SAFE_INTEGER
     )
     // If(cond1, value1, cond2, value2, ..., condN, valueN, [valueFalse], ...)
     // Switch(switch_value, match_value1, match_result1, match_value2, match_result2, ..., match_valueN, match_resultN, [default_result], ...)
@@ -50,7 +50,11 @@ export class SwitchFunction extends BuiltinFunction {
   // Return all signatures for switch function.
   public getSignatures(): Array<StringGetter[]> {
     return [
-      [TexlStrings.SwitchExpression, TexlStrings.SwitchCaseExpr, TexlStrings.SwitchCaseArg],
+      [
+        TexlStrings.SwitchExpression,
+        TexlStrings.SwitchCaseExpr,
+        TexlStrings.SwitchCaseArg,
+      ],
       [
         TexlStrings.SwitchExpression,
         TexlStrings.SwitchCaseExpr,
@@ -98,8 +102,11 @@ export class SwitchFunction extends BuiltinFunction {
     args: TexlNode[],
     argTypes: DType[],
     errors: IErrorContainer,
-    binding: TexlBinding,
-  ): [boolean, { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }] {
+    binding: TexlBinding
+  ): [
+    boolean,
+    { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }
+  ] {
     // Contracts.AssertValue(binding);
     // Contracts.AssertValue(args);
     // Contracts.AssertAllValues(args);
@@ -112,12 +119,27 @@ export class SwitchFunction extends BuiltinFunction {
     // Check the switch expression type matches all case expression types in list.
     let fArgsValid = true
     for (let i = 1; i < count - 1; i += 2) {
-      if (!argTypes[0].accepts(argTypes[i]) && !argTypes[i].accepts(argTypes[0])) {
+      if (
+        !argTypes[0].accepts(argTypes[i]) &&
+        !argTypes[i].accepts(argTypes[0])
+      ) {
         // Type mismatch; using CheckType to fill the errors collection
-        let validExpectedType = this.checkType(args[i], argTypes[i], argTypes[0], errors, false)[0]
+        let validExpectedType = this.checkType(
+          args[i],
+          argTypes[i],
+          argTypes[0],
+          errors,
+          false
+        )[0]
         if (validExpectedType) {
           // Check on the opposite direction
-          validExpectedType = this.checkType(args[0], argTypes[0], argTypes[i], errors, false)[0]
+          validExpectedType = this.checkType(
+            args[0],
+            argTypes[0],
+            argTypes[i],
+            errors,
+            false
+          )[0]
         }
 
         fArgsValid &&= validExpectedType
@@ -140,7 +162,7 @@ export class SwitchFunction extends BuiltinFunction {
         errors.ensureError(args[i], TexlStrings.ErrTypeError)
       }
 
-      var typeSuper = DType.Supertype(type, typeArg)
+      let typeSuper = DType.Supertype(type, typeArg)
 
       if (!typeSuper.isError) {
         type = typeSuper
@@ -149,14 +171,18 @@ export class SwitchFunction extends BuiltinFunction {
         fArgsValid = false
       } else if (!type.isError) {
         if (typeArg.coercesTo(type)) {
-          nodeToCoercedTypeMap = CollectionUtils.AddDictionary(nodeToCoercedTypeMap, nodeArg, type)
+          nodeToCoercedTypeMap = CollectionUtils.AddDictionary(
+            nodeToCoercedTypeMap,
+            nodeArg,
+            type
+          )
         } else if (!isBehavior) {
           errors.ensureErrorWithSeverity(
             DocumentErrorSeverity.Severe,
             nodeArg,
             TexlStrings.ErrBadType_ExpectedType_ProvidedType,
             type.getKindString(),
-            typeArg.getKindString(),
+            typeArg.getKindString()
           )
           fArgsValid = false
         }
@@ -177,13 +203,19 @@ export class SwitchFunction extends BuiltinFunction {
     return [fArgsValid, { returnType, nodeToCoercedTypeMap }]
   }
 
-  private tryGetDSNodes(binding: TexlBinding, args: TexlNode[]): [boolean, Array<FirstNameNode>] {
+  private tryGetDSNodes(
+    binding: TexlBinding,
+    args: TexlNode[]
+  ): [boolean, Array<FirstNameNode>] {
     let dsNodes: Array<FirstNameNode> = []
 
     const count = args.length
     for (let i = 2; i < count; ) {
       const nodeArg = args[i]
-      const result = ArgValidators.DataSourceArgNodeValidator.tryGetValidValue(nodeArg, binding)
+      const result = ArgValidators.DataSourceArgNodeValidator.tryGetValidValue(
+        nodeArg,
+        binding
+      )
       const tmpDsNodes = result[1]
       if (result[0]) {
         for (const node of tmpDsNodes) {
@@ -201,7 +233,10 @@ export class SwitchFunction extends BuiltinFunction {
     return [dsNodes.length > 0, dsNodes]
   }
 
-  public tryGetDataSourceNodes(callNode: CallNode, binding: TexlBinding): [boolean, Array<FirstNameNode>] {
+  public tryGetDataSourceNodes(
+    callNode: CallNode,
+    binding: TexlBinding
+  ): [boolean, Array<FirstNameNode>] {
     // Contracts.AssertValue(callNode);
     // Contracts.AssertValue(binding);
 

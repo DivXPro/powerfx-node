@@ -58,7 +58,7 @@ export class FunctionScopeInfo {
     acceptsLiteralPredicates = true,
     iteratesOverScope = true,
     scopeType?: DType,
-    appliesToArgument?: (arg: number) => boolean,
+    appliesToArgument?: (arg: number) => boolean
   ) {
     this.usesAllFieldsInScope = usesAllFieldsInScope
     this.supportsAsyncLambdas = supportsAsyncLambdas
@@ -78,7 +78,7 @@ export class FunctionScopeInfo {
   public checkInput(
     inputNode: TexlNode,
     inputSchema: DType,
-    errors: IErrorContainer = TexlFunction.DefaultErrorContainer,
+    errors: IErrorContainer = TexlFunction.DefaultErrorContainer
   ): [boolean, DType] {
     // Contracts.AssertValue(inputNode);
     // Contracts.Assert(inputSchema.IsValid);
@@ -105,7 +105,11 @@ export class FunctionScopeInfo {
       }
     } else if (this._function.paramTypes[0].isTable) {
       if (!typeScope.isTable) {
-        errors.error(callNode, TexlStrings.ErrNeedTable_Func, this._function.name)
+        errors.error(
+          callNode,
+          TexlStrings.ErrNeedTable_Func,
+          this._function.name
+        )
         fArgsValid = false
       }
 
@@ -120,7 +124,11 @@ export class FunctionScopeInfo {
     } else {
       // Contracts.Assert(_function.ParamTypes[0].IsRecord);
       if (!typeScope.isRecord) {
-        errors.error(callNode, TexlStrings.ErrNeedRecord_Func, this._function.name)
+        errors.error(
+          callNode,
+          TexlStrings.ErrNeedRecord_Func,
+          this._function.name
+        )
         let fError = false
         const rst = typeScope.toRecordWithError()
         typeScope = rst[0]
@@ -137,10 +145,18 @@ export class FunctionScopeInfo {
     // Contracts.AssertValue(errors)
 
     if (!this.acceptsLiteralPredicates) {
-      for (var i = 0; i < args.length; i++) {
+      for (let i = 0; i < args.length; i++) {
         if (this._function.isLambdaParam(i)) {
-          if (args[i].kind == NodeKind.BoolLit || args[i].kind == NodeKind.NumLit || args[i].kind == NodeKind.StrLit) {
-            errors.ensureErrorWithSeverity(DocumentErrorSeverity.Warning, args[i], TexlStrings.WarnLiteralPredicate)
+          if (
+            args[i].kind == NodeKind.BoolLit ||
+            args[i].kind == NodeKind.NumLit ||
+            args[i].kind == NodeKind.StrLit
+          ) {
+            errors.ensureErrorWithSeverity(
+              DocumentErrorSeverity.Warning,
+              args[i],
+              TexlStrings.WarnLiteralPredicate
+            )
           }
         }
       }

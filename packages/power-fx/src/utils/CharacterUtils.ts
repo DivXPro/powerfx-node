@@ -155,11 +155,19 @@ export class CharacterUtils {
     }
 
     const length = input.length
-    const lengthForBuilder = CharacterUtils.EstimateEscapedStringLength(length) + 2 /* for the quotes */
+    const lengthForBuilder =
+      CharacterUtils.EstimateEscapedStringLength(length) +
+      2 /* for the quotes */
     let sb = StringBuilderCache.Acquire(lengthForBuilder)
 
     sb.append('"')
-    const rst = CharacterUtils.InternalEscapeString(input, length, /* lengthForBuilder */ 0, sb, false) // 'lengthForBuilder' will not be used.
+    const rst = CharacterUtils.InternalEscapeString(
+      input,
+      length,
+      /* lengthForBuilder */ 0,
+      sb,
+      false
+    ) // 'lengthForBuilder' will not be used.
     sb = rst[1]
     sb.append('"')
 
@@ -181,12 +189,26 @@ export class CharacterUtils {
       if (CharacterUtils.IsLatinAlpha(ch)) {
         charsToAdd++
       } else if (ch == '_') {
-        const rst = CharacterUtils.UpdateEscapeInternals('__', name, estimatedLength, i, charsToAdd, sb)
+        const rst = CharacterUtils.UpdateEscapeInternals(
+          '__',
+          name,
+          estimatedLength,
+          i,
+          charsToAdd,
+          sb
+        )
         charsToAdd = rst[0]
         sb = rst[1]
       } else if (CharacterUtils.IsDigit(ch)) {
         if (i == 0) {
-          const rst = CharacterUtils.UpdateEscapeInternals('_' + ch, name, estimatedLength, i, charsToAdd, sb)
+          const rst = CharacterUtils.UpdateEscapeInternals(
+            '_' + ch,
+            name,
+            estimatedLength,
+            i,
+            charsToAdd,
+            sb
+          )
           charsToAdd = rst[0]
           sb = rst[1]
         } else {
@@ -199,7 +221,7 @@ export class CharacterUtils {
           estimatedLength,
           i,
           charsToAdd,
-          sb,
+          sb
         )
         charsToAdd = rst[0]
         sb = rst[1]
@@ -223,11 +245,17 @@ export class CharacterUtils {
   public static EscapeString(value: string) {
     // Contracts.AssertValue(value);
 
-    var length = value.length
-    var lengthForBuilder = CharacterUtils.EstimateEscapedStringLength(length)
+    let length = value.length
+    let lengthForBuilder = CharacterUtils.EstimateEscapedStringLength(length)
     let sb: StringBuilder
 
-    return CharacterUtils.InternalEscapeString(value, length, lengthForBuilder, sb, true)
+    return CharacterUtils.InternalEscapeString(
+      value,
+      length,
+      lengthForBuilder,
+      sb,
+      true
+    )
   }
 
   public static ExcelEscapeString(value: string): string {
@@ -241,7 +269,14 @@ export class CharacterUtils {
     for (let i = 0; i < length; i++) {
       switch (value[i]) {
         case '"':
-          const rst = CharacterUtils.UpdateEscapeInternals('""', value, lengthForBuilder, i, charsToAdd, sb)
+          const rst = CharacterUtils.UpdateEscapeInternals(
+            '""',
+            value,
+            lengthForBuilder,
+            i,
+            charsToAdd,
+            sb
+          )
           charsToAdd = rst[0]
           sb = rst[1]
           break
@@ -269,12 +304,17 @@ export class CharacterUtils {
       return diff <= 9 && diff >= 0
     }
 
-    return (CharacterUtils.GetUniCatFlags(ch) & UniCatFlags.DecimalDigitNumber) != 0
+    return (
+      (CharacterUtils.GetUniCatFlags(ch) & UniCatFlags.DecimalDigitNumber) != 0
+    )
   }
 
   // [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static IsFormatCh(ch: string): boolean {
-    return ch.charCodeAt(0) >= 128 && (CharacterUtils.GetUniCatFlags(ch) & UniCatFlags.Format) != 0
+    return (
+      ch.charCodeAt(0) >= 128 &&
+      (CharacterUtils.GetUniCatFlags(ch) & UniCatFlags.Format) != 0
+    )
   }
 
   // [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -291,7 +331,9 @@ export class CharacterUtils {
   // [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public static IsSpace(ch: string): boolean {
     if (ch.charCodeAt(0) >= 128) {
-      return (CharacterUtils.GetUniCatFlags(ch) & UniCatFlags.SpaceSeparator) != 0
+      return (
+        (CharacterUtils.GetUniCatFlags(ch) & UniCatFlags.SpaceSeparator) != 0
+      )
     }
     switch (ch) {
       case ' ':
@@ -349,74 +391,165 @@ export class CharacterUtils {
     length: number,
     lengthForBuilder: number,
     sb: StringBuilder,
-    finalizeBuilder: boolean,
+    finalizeBuilder: boolean
   ): [string, StringBuilder] {
     let charsToAdd = 0
 
     for (let i = 0; i < length; i++) {
       switch (value[i]) {
         case '\\':
-          let rst = CharacterUtils.UpdateEscapeInternals('\\\\', value, lengthForBuilder, i, charsToAdd, sb)
+          let rst = CharacterUtils.UpdateEscapeInternals(
+            '\\\\',
+            value,
+            lengthForBuilder,
+            i,
+            charsToAdd,
+            sb
+          )
           charsToAdd = rst[0]
           sb = rst[1]
           break
         case '"':
-          rst = CharacterUtils.UpdateEscapeInternals('\\"', value, lengthForBuilder, i, charsToAdd, sb)
+          rst = CharacterUtils.UpdateEscapeInternals(
+            '\\"',
+            value,
+            lengthForBuilder,
+            i,
+            charsToAdd,
+            sb
+          )
           charsToAdd = rst[0]
           sb = rst[1]
           break
         case "'":
-          rst = CharacterUtils.UpdateEscapeInternals("\\'", value, lengthForBuilder, i, charsToAdd, sb)
+          rst = CharacterUtils.UpdateEscapeInternals(
+            "\\'",
+            value,
+            lengthForBuilder,
+            i,
+            charsToAdd,
+            sb
+          )
           charsToAdd = rst[0]
           sb = rst[1]
           break
         case '\0':
-          rst = CharacterUtils.UpdateEscapeInternals('\\0', value, lengthForBuilder, i, charsToAdd, sb)
+          rst = CharacterUtils.UpdateEscapeInternals(
+            '\\0',
+            value,
+            lengthForBuilder,
+            i,
+            charsToAdd,
+            sb
+          )
           charsToAdd = rst[0]
           sb = rst[1]
           break
         case '\b':
-          rst = CharacterUtils.UpdateEscapeInternals('\\b', value, lengthForBuilder, i, charsToAdd, sb)
+          rst = CharacterUtils.UpdateEscapeInternals(
+            '\\b',
+            value,
+            lengthForBuilder,
+            i,
+            charsToAdd,
+            sb
+          )
           charsToAdd = rst[0]
           sb = rst[1]
           break
         case '\t':
-          rst = CharacterUtils.UpdateEscapeInternals('\\t', value, lengthForBuilder, i, charsToAdd, sb)
+          rst = CharacterUtils.UpdateEscapeInternals(
+            '\\t',
+            value,
+            lengthForBuilder,
+            i,
+            charsToAdd,
+            sb
+          )
           charsToAdd = rst[0]
           sb = rst[1]
           break
         case '\n':
-          rst = CharacterUtils.UpdateEscapeInternals('\\n', value, lengthForBuilder, i, charsToAdd, sb)
+          rst = CharacterUtils.UpdateEscapeInternals(
+            '\\n',
+            value,
+            lengthForBuilder,
+            i,
+            charsToAdd,
+            sb
+          )
           charsToAdd = rst[0]
           sb = rst[1]
           break
         case '\v':
-          rst = CharacterUtils.UpdateEscapeInternals('\\v', value, lengthForBuilder, i, charsToAdd, sb)
+          rst = CharacterUtils.UpdateEscapeInternals(
+            '\\v',
+            value,
+            lengthForBuilder,
+            i,
+            charsToAdd,
+            sb
+          )
           charsToAdd = rst[0]
           sb = rst[1]
           break
         case '\f':
-          rst = CharacterUtils.UpdateEscapeInternals('\\f', value, lengthForBuilder, i, charsToAdd, sb)
+          rst = CharacterUtils.UpdateEscapeInternals(
+            '\\f',
+            value,
+            lengthForBuilder,
+            i,
+            charsToAdd,
+            sb
+          )
           charsToAdd = rst[0]
           sb = rst[1]
           break
         case '\r':
-          rst = CharacterUtils.UpdateEscapeInternals('\\r', value, lengthForBuilder, i, charsToAdd, sb)
+          rst = CharacterUtils.UpdateEscapeInternals(
+            '\\r',
+            value,
+            lengthForBuilder,
+            i,
+            charsToAdd,
+            sb
+          )
           charsToAdd = rst[0]
           sb = rst[1]
           break
         case '\u0085':
-          rst = CharacterUtils.UpdateEscapeInternals('\\u0085', value, lengthForBuilder, i, charsToAdd, sb)
+          rst = CharacterUtils.UpdateEscapeInternals(
+            '\\u0085',
+            value,
+            lengthForBuilder,
+            i,
+            charsToAdd,
+            sb
+          )
           charsToAdd = rst[0]
           sb = rst[1]
           break
         case '\u2028':
-          rst = CharacterUtils.UpdateEscapeInternals('\\u2028', value, lengthForBuilder, i, charsToAdd, sb)
+          rst = CharacterUtils.UpdateEscapeInternals(
+            '\\u2028',
+            value,
+            lengthForBuilder,
+            i,
+            charsToAdd,
+            sb
+          )
           charsToAdd = rst[0]
           sb = rst[1]
           break
         case '\u2029':
-          rst = CharacterUtils.UpdateEscapeInternals('\\u2029', value, lengthForBuilder, i, charsToAdd, sb)
+          rst = CharacterUtils.UpdateEscapeInternals(
+            '\\u2029',
+            value,
+            lengthForBuilder,
+            i,
+            charsToAdd,
+            sb
+          )
           charsToAdd = rst[0]
           sb = rst[1]
           break
@@ -435,7 +568,10 @@ export class CharacterUtils {
       sb.append(value, length - charsToAdd, charsToAdd)
     }
 
-    return [finalizeBuilder ? StringBuilderCache.GetStringAndRelease(sb) : '', sb]
+    return [
+      finalizeBuilder ? StringBuilderCache.GetStringAndRelease(sb) : '',
+      sb,
+    ]
   }
 
   // [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -445,7 +581,7 @@ export class CharacterUtils {
     estimatedLength: number,
     currentPosition: number,
     charsToAdd: number,
-    sb: StringBuilder,
+    sb: StringBuilder
   ): [charsToAdd: number, sb: StringBuilder] {
     if (sb == null) {
       sb = StringBuilderCache.Acquire(estimatedLength)

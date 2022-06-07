@@ -35,7 +35,7 @@ export class Stack<T> {
   }
 
   public push(o: T) {
-    var len = this.elements.length
+    let len = this.elements.length
     if (this._size >= len) {
       let temp = new Array<T>(len)
       this.elements = this.elements.concat(temp)

@@ -11,21 +11,31 @@ export class TableNodeSuggestionHandler extends NodeKindSuggestionHandler {
     super(NodeKind.Table)
   }
 
-  public TryAddSuggestionsForNodeKind(intellisenseData: IntellisenseData): boolean {
+  public TryAddSuggestionsForNodeKind(
+    intellisenseData: IntellisenseData
+  ): boolean {
     // Contracts.AssertValue(intellisenseData);
 
     let curNode: TexlNode = intellisenseData.CurNode
     let cursorPos: number = intellisenseData.CursorPos
 
-    var tokenSpan = curNode.token.Span
+    let tokenSpan = curNode.token.Span
 
     // Only suggest after table nodes
     if (cursorPos <= tokenSpan.lim) return true
 
-    if (IntellisenseHelper.CanSuggestAfterValue(cursorPos, intellisenseData.Script)) {
+    if (
+      IntellisenseHelper.CanSuggestAfterValue(
+        cursorPos,
+        intellisenseData.Script
+      )
+    ) {
       // Verify that cursor is after a space after the current node's token.
       // Suggest binary keywords.
-      IntellisenseHelper.AddSuggestionsForAfterValue(intellisenseData, DType.EmptyTable)
+      IntellisenseHelper.AddSuggestionsForAfterValue(
+        intellisenseData,
+        DType.EmptyTable
+      )
     }
 
     return true

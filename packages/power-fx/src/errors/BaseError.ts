@@ -1,4 +1,10 @@
-import { ErrorResource, ErrorResourceKey, Span, StringResources, TexlStrings } from '../localization'
+import {
+  ErrorResource,
+  ErrorResourceKey,
+  Span,
+  StringResources,
+  TexlStrings,
+} from '../localization'
 import { StringBuilder } from '../utils/StringBuilder'
 import { DocumentErrorKind } from './DocumentErrorKind'
 import { DocumentErrorSeverity } from './DocumentErrorSeverity'
@@ -81,8 +87,11 @@ export abstract class BaseError {
 
     this.shortMessage = this.formatMessage(shortMessage, ...args)
     this.longMessage = this.formatMessage(longMessage, ...args)
-    this.howToFixMessages = errorResource?.getValues(ErrorResource.HowToFixTag) ?? BaseError.GetHowToFix(errKey.key)
-    this.whyToFixMessage = errorResource?.getSingleValue(ErrorResource.WhyToFixTag) ?? ''
+    this.howToFixMessages =
+      errorResource?.getValues(ErrorResource.HowToFixTag) ??
+      BaseError.GetHowToFix(errKey.key)
+    this.whyToFixMessage =
+      errorResource?.getSingleValue(ErrorResource.WhyToFixTag) ?? ''
     this.links = errorResource?.helpLinks
   }
 
@@ -132,7 +141,10 @@ export abstract class BaseError {
     let howToFixMessage: string
     for (
       let messageIndex = 1;
-      (howToFixMessage = StringResources.TryGet(howToFixSingularKey + messageIndex, locale)[1]);
+      (howToFixMessage = StringResources.TryGet(
+        howToFixSingularKey + messageIndex,
+        locale
+      )[1]);
       messageIndex++
     ) {
       messages.push(howToFixMessage)
@@ -143,7 +155,7 @@ export abstract class BaseError {
 
   private format(sb: StringBuilder) {
     // #if DEBUG
-    //       var lenStart = sb.Length;
+    //       let lenStart = sb.Length;
     // #endif
     this.formatCore(sb)
     // #if DEBUG

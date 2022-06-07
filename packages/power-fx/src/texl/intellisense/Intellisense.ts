@@ -21,7 +21,7 @@ import { ISuggestionHandler } from './SuggestionHandlers/ISuggestionHandler'
 
 export declare type IsValidSuggestion = (
   intellisenseData: IntellisenseData,
-  suggestion: IntellisenseSuggestion,
+  suggestion: IntellisenseSuggestion
 ) => boolean
 
 // internal partial class Intellisense : IIntellisense
@@ -29,14 +29,21 @@ export class Intellisense implements IIntellisense {
   protected readonly _suggestionHandlers: Array<ISuggestionHandler>
   protected readonly _enumStore: EnumStore
 
-  constructor(enumStore: EnumStore, suggestionHandlers: Array<ISuggestionHandler>) {
+  constructor(
+    enumStore: EnumStore,
+    suggestionHandlers: Array<ISuggestionHandler>
+  ) {
     // Contracts.AssertValue(suggestionHandlers);
 
     this._enumStore = enumStore
     this._suggestionHandlers = suggestionHandlers
   }
 
-  public Suggest(context: IntellisenseContext, binding: TexlBinding, formula: Formula): IIntellisenseResult {
+  public Suggest(
+    context: IntellisenseContext,
+    binding: TexlBinding,
+    formula: Formula
+  ): IIntellisenseResult {
     // Contracts.CheckValue(context, "context");
     // Contracts.CheckValue(binding, "binding");
     // Contracts.CheckValue(formula, "formula");
@@ -46,7 +53,8 @@ export class Intellisense implements IIntellisense {
 
     try {
       let intellisenseData: IntellisenseData
-      let TryInitializeIntellisenseContextRes = this.TryInitializeIntellisenseContext(context, binding, formula)
+      let TryInitializeIntellisenseContextRes =
+        this.TryInitializeIntellisenseContext(context, binding, formula)
       intellisenseData = TryInitializeIntellisenseContextRes[1]
       if (!TryInitializeIntellisenseContextRes[0]) {
         return new IntellisenseResult(new DefaultIntellisenseData(), [], null)
@@ -58,10 +66,14 @@ export class Intellisense implements IIntellisense {
 
       return this.Finalize(context, intellisenseData)
     } catch (error) {
-      console.log('Intellisense.Suggest方法出现异常', error)
+      console.error('Intellisense.Suggest方法出现异常', error)
       // If there is any exception, we don't need to crash. Instead, Suggest() will simply
       // return an empty result set along with exception for client use.
-      return new IntellisenseResult(new DefaultIntellisenseData(), [], new Exception(error.toString()))
+      return new IntellisenseResult(
+        new DefaultIntellisenseData(),
+        [],
+        new Exception(error.toString())
+      )
     }
     // TODO: Hoist scenario tracking out of language module.
     // finally
@@ -73,11 +85,15 @@ export class Intellisense implements IIntellisense {
   public static TryGetExpectedTypeForBinaryOp(
     binding: TexlBinding,
     curNode: TexlNode,
-    cursorPos: number,
+    cursorPos: number
   ): [boolean, DType] {
     let expectedType: DType
     // If we are in a binary operation context, the expected type is relative to the binary operation.
-    if (curNode != null && curNode.parent != null && curNode.parent.kind == NodeKind.BinaryOp) {
+    if (
+      curNode != null &&
+      curNode.parent != null &&
+      curNode.parent.kind == NodeKind.BinaryOp
+    ) {
       let binaryOpNode: BinaryOpNode = curNode.parent.castBinaryOp()
       let coercedType: DType
       let expectedNode: TexlNode = null
@@ -91,7 +107,9 @@ export class Intellisense implements IIntellisense {
       if (expectedNode != null) {
         let tryGetCoercedTypeRes = binding.tryGetCoercedType(expectedNode)
         coercedType = tryGetCoercedTypeRes[1]
-        expectedType = tryGetCoercedTypeRes[0] ? coercedType : binding.getType(expectedNode)
+        expectedType = tryGetCoercedTypeRes[0]
+          ? coercedType
+          : binding.getType(expectedNode)
         return [true, expectedType]
       }
     }
@@ -103,7 +121,7 @@ export class Intellisense implements IIntellisense {
   public static FindCurFuncAndArgs(
     curNode: TexlNode,
     cursorPos: number,
-    binding: TexlBinding,
+    binding: TexlBinding
   ): [boolean, TexlFunction, number, number, DType] {
     // Contracts.AssertValue(curNode);
     // Contracts.AssertValue(binding);
@@ -124,19 +142,26 @@ export class Intellisense implements IIntellisense {
           curFunc = info.function
           argIndex = 0
           argCount = callNode.args.count
-          expectedType = curFunc.paramTypes.length > 0 ? curFunc.paramTypes[0] : DType.Error
+          expectedType =
+            curFunc.paramTypes.length > 0 ? curFunc.paramTypes[0] : DType.Error
 
           return [true, curFunc, argIndex, argCount, expectedType]
         }
       }
     }
 
-    let TryGetInnerMostFunctionRes = IntellisenseHelper.TryGetInnerMostFunction(curNode, binding)
+    let TryGetInnerMostFunctionRes = IntellisenseHelper.TryGetInnerMostFunction(
+      curNode,
+      binding
+    )
     curFunc = TryGetInnerMostFunctionRes[1]
     argIndex = TryGetInnerMostFunctionRes[2]
     argCount = TryGetInnerMostFunctionRes[3]
     if (TryGetInnerMostFunctionRes[0]) {
-      expectedType = curFunc.paramTypes.length > argIndex ? curFunc.paramTypes[argIndex] : DType.Error
+      expectedType =
+        curFunc.paramTypes.length > argIndex
+          ? curFunc.paramTypes[argIndex]
+          : DType.Error
       return [true, curFunc, argIndex, argCount, expectedType]
     }
 
@@ -148,12 +173,15 @@ export class Intellisense implements IIntellisense {
   public static TypeFilter(
     type: DType,
     matchingStr: string,
-    suggestions: IntellisenseSuggestion[],
+    suggestions: IntellisenseSuggestion[]
   ): IntellisenseSuggestion[] {
     // Contracts.Assert(type.IsValid);
     // Contracts.AssertValue(suggestions);
 
-    if (matchingStr == '' || (matchingStr == null && type != DType.Error && type != DType.Unknown)) {
+    if (
+      matchingStr == '' ||
+      (matchingStr == null && type != DType.Error && type != DType.Unknown)
+    ) {
       // Determine a safe start for suggestions whose types match the specified type.
       // Non-zero sort priorities take precedence over type filtering.
       let j = 0
@@ -176,10 +204,12 @@ export class Intellisense implements IIntellisense {
     return suggestions
   }
 
-  protected static TryGetFunctionCategory(category: string): [boolean, FunctionCategories] {
+  protected static TryGetFunctionCategory(
+    category: string
+  ): [boolean, FunctionCategories] {
     // Contracts.AssertNonEmpty(category);
     let mask: FunctionCategories
-    // foreach(var cat in Enum.GetValues(typeof (FunctionCategories)).Cast<FunctionCategories>())
+    // foreach(let cat in Enum.GetValues(typeof (FunctionCategories)).Cast<FunctionCategories>())
     // {
     //   if (category.Equals(cat.ToString(), StringComparison.OrdinalIgnoreCase)) {
     //     mask = cat;
@@ -190,12 +220,16 @@ export class Intellisense implements IIntellisense {
     return [false, mask]
   }
 
-  protected static TypeMatchPriority(type: DType, suggestions: IntellisenseSuggestion[]): void {
+  protected static TypeMatchPriority(
+    type: DType,
+    suggestions: IntellisenseSuggestion[]
+  ): void {
     // Contracts.Assert(type.IsValid);
     // Contracts.AssertValue(suggestions);
 
     // The string type is too nebulous to push all matching string values to the top of the suggestion list
-    if (type == DType.Unknown || type == DType.Error || type == DType.String) return
+    if (type == DType.Unknown || type == DType.Error || type == DType.String)
+      return
 
     for (let suggestion of suggestions) {
       if (!suggestion.Type.isUnknown && type.accepts(suggestion.Type)) {
@@ -207,18 +241,25 @@ export class Intellisense implements IIntellisense {
   private TryInitializeIntellisenseContext(
     context: IIntellisenseContext,
     binding: TexlBinding,
-    formula: Formula,
+    formula: Formula
   ): [boolean, IntellisenseData] {
     // Contracts.AssertValue(context);
     let data: IntellisenseData
 
-    let currentNode: TexlNode = TexlNode.FindNode(formula.parseTree, context.CursorPosition)
+    let currentNode: TexlNode = TexlNode.FindNode(
+      formula.parseTree,
+      context.CursorPosition
+    )
     let curFunc: TexlFunction
     let argIndex, argCount: number
     let expectedType: DType
     let isValidSuggestionFunc: IsValidSuggestion
 
-    let GetFunctionAndTypeInformationRes = this.GetFunctionAndTypeInformation(context, currentNode, binding)
+    let GetFunctionAndTypeInformationRes = this.GetFunctionAndTypeInformation(
+      context,
+      currentNode,
+      binding
+    )
     curFunc = GetFunctionAndTypeInformationRes[0]
     argIndex = GetFunctionAndTypeInformationRes[1]
     argCount = GetFunctionAndTypeInformationRes[2]
@@ -235,7 +276,7 @@ export class Intellisense implements IIntellisense {
       argCount,
       isValidSuggestionFunc,
       binding.getExpandEntitiesMissingMetadata(),
-      formula.comments,
+      formula.comments
     )
     return [true, data]
   }
@@ -250,7 +291,7 @@ export class Intellisense implements IIntellisense {
     argCount: number,
     isValidSuggestionFunc: IsValidSuggestion,
     missingTypes: DType[],
-    comments: CommentToken[],
+    comments: CommentToken[]
   ): IntellisenseData {
     return new IntellisenseData(
       this._enumStore,
@@ -263,14 +304,14 @@ export class Intellisense implements IIntellisense {
       argCount,
       isValidSuggestionFunc,
       missingTypes,
-      comments,
+      comments
     )
   }
 
   private GetFunctionAndTypeInformation(
     context: IIntellisenseContext,
     curNode: TexlNode,
-    binding: TexlBinding,
+    binding: TexlBinding
   ): [TexlFunction, number, number, DType, IsValidSuggestion] {
     // Contracts.AssertValue(context);
     // Contracts.AssertValue(curNode);
@@ -282,7 +323,11 @@ export class Intellisense implements IIntellisense {
     let expectedType: DType
     let isValidSuggestionFunc: IsValidSuggestion
 
-    let FindCurFuncAndArgsRes = Intellisense.FindCurFuncAndArgs(curNode, context.CursorPosition, binding)
+    let FindCurFuncAndArgsRes = Intellisense.FindCurFuncAndArgs(
+      curNode,
+      context.CursorPosition,
+      binding
+    )
     if (!FindCurFuncAndArgsRes[0]) {
       curFunc = null
       argIndex = 0
@@ -296,36 +341,58 @@ export class Intellisense implements IIntellisense {
     }
 
     // let binaryOpExpectedType: DType;
-    let TryGetExpectedTypeForBinaryOpRes = Intellisense.TryGetExpectedTypeForBinaryOp(
-      binding,
-      curNode,
-      context.CursorPosition,
-    )
-    if (TryGetExpectedTypeForBinaryOpRes[0]) expectedType = TryGetExpectedTypeForBinaryOpRes[1]
+    let TryGetExpectedTypeForBinaryOpRes =
+      Intellisense.TryGetExpectedTypeForBinaryOp(
+        binding,
+        curNode,
+        context.CursorPosition
+      )
+    if (TryGetExpectedTypeForBinaryOpRes[0])
+      expectedType = TryGetExpectedTypeForBinaryOpRes[1]
 
     if (curFunc != null)
       isValidSuggestionFunc = (intellisenseData, suggestion) =>
-        intellisenseData.CurFunc.isSuggestionTypeValid(intellisenseData.ArgIndex, suggestion.Type)
+        intellisenseData.CurFunc.isSuggestionTypeValid(
+          intellisenseData.ArgIndex,
+          suggestion.Type
+        )
     else isValidSuggestionFunc = Helper.DefaultIsValidSuggestionFunc
 
     return [curFunc, argIndex, argCount, expectedType, isValidSuggestionFunc]
   }
 
-  private Finalize(context: IIntellisenseContext, intellisenseData: IntellisenseData): IIntellisenseResult {
+  private Finalize(
+    context: IIntellisenseContext,
+    intellisenseData: IntellisenseData
+  ): IIntellisenseResult {
     // Contracts.AssertValue(context);
     // Contracts.AssertValue(intellisenseData);
 
     let expectedType: DType = intellisenseData.ExpectedType
 
-    Intellisense.TypeMatchPriority(expectedType, intellisenseData.Suggestions.list)
-    Intellisense.TypeMatchPriority(expectedType, intellisenseData.SubstringSuggestions.list)
+    Intellisense.TypeMatchPriority(
+      expectedType,
+      intellisenseData.Suggestions.list
+    )
+    Intellisense.TypeMatchPriority(
+      expectedType,
+      intellisenseData.SubstringSuggestions.list
+    )
     intellisenseData.Suggestions.Sort()
     intellisenseData.SubstringSuggestions.Sort()
-    let resultSuggestions: IntellisenseSuggestion[] = distinct(intellisenseData.Suggestions.list) //.Distinct().ToList();
-    let resultSubstringSuggestions: IntellisenseSuggestion[] = distinct(intellisenseData.SubstringSuggestions.list) //.Distinct();
+    let resultSuggestions: IntellisenseSuggestion[] = distinct(
+      intellisenseData.Suggestions.list
+    ) //.Distinct().ToList();
+    let resultSubstringSuggestions: IntellisenseSuggestion[] = distinct(
+      intellisenseData.SubstringSuggestions.list
+    ) //.Distinct();
     resultSuggestions.push(...resultSubstringSuggestions)
 
-    resultSuggestions = Intellisense.TypeFilter(expectedType, intellisenseData.MatchingStr, resultSuggestions)
+    resultSuggestions = Intellisense.TypeFilter(
+      expectedType,
+      intellisenseData.MatchingStr,
+      resultSuggestions
+    )
 
     for (let handler of intellisenseData.CleanupHandlers) {
       handler.Run(context, intellisenseData, resultSuggestions)
@@ -336,7 +403,10 @@ export class Intellisense implements IIntellisense {
 }
 
 export class Helper {
-  public static DefaultIsValidSuggestionFunc(intellisenseData: IntellisenseData, suggestion: IntellisenseSuggestion) {
+  public static DefaultIsValidSuggestionFunc(
+    intellisenseData: IntellisenseData,
+    suggestion: IntellisenseSuggestion
+  ) {
     //return intellisenseData.ExpectedType.Accepts(suggestion.Type);
     return true
   }

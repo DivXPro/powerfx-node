@@ -1,7 +1,10 @@
 import { IErrorContainer } from '../../app/errorContainers'
 import { TexlBinding } from '../../binding'
 import { BuiltinFunction } from '../../functions/BuiltinFunction'
-import { DelegationCapability, OperationCapabilityMetadata } from '../../functions/delegation'
+import {
+  DelegationCapability,
+  OperationCapabilityMetadata,
+} from '../../functions/delegation'
 import { TexlStrings } from '../../localization'
 import { CallNode, TexlNode } from '../../syntax'
 import { DType } from '../../types/DType'
@@ -31,7 +34,11 @@ export class LenFunction extends StringOneArgFunction {
     return new DelegationCapability(DelegationCapability.Length)
   }
 
-  public isRowScopedServerDelegatable(callNode: CallNode, binding: TexlBinding, metadata: OperationCapabilityMetadata) {
+  public isRowScopedServerDelegatable(
+    callNode: CallNode,
+    binding: TexlBinding,
+    metadata: OperationCapabilityMetadata
+  ) {
     return super.isRowScopedServerDelegatable(callNode, binding, metadata)
   }
 }
@@ -57,7 +64,7 @@ export class LenTFunction extends BuiltinFunction {
       0,
       1,
       1,
-      DType.EmptyTable,
+      DType.EmptyTable
     )
   }
 
@@ -73,8 +80,11 @@ export class LenTFunction extends BuiltinFunction {
     args: TexlNode[],
     argTypes: DType[],
     errors: IErrorContainer,
-    binding: TexlBinding,
-  ): [boolean, { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }] {
+    binding: TexlBinding
+  ): [
+    boolean,
+    { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }
+  ] {
     // Contracts.AssertValue(args);
     // Contracts.AssertAllValues(args);
     // Contracts.AssertValue(argTypes);
@@ -87,17 +97,24 @@ export class LenTFunction extends BuiltinFunction {
     let returnType = baseResult[1].returnType
     let nodeToCoercedTypeMap = baseResult[1].nodeToCoercedTypeMap
 
-    // var fValid = CheckInvocation(args, argTypes, errors, out returnType, out nodeToCoercedTypeMap);
+    // let fValid = CheckInvocation(args, argTypes, errors, out returnType, out nodeToCoercedTypeMap);
     // Contracts.Assert(returnType.IsTable);
 
     // Typecheck the input table
-    let checkNumericColumnType = super.checkStringColumnType(argTypes[0], args[0], errors, nodeToCoercedTypeMap)
+    let checkNumericColumnType = super.checkStringColumnType(
+      argTypes[0],
+      args[0],
+      errors,
+      nodeToCoercedTypeMap
+    )
     nodeToCoercedTypeMap = checkNumericColumnType[1]
     fValid = fValid && checkNumericColumnType[0]
 
     // fValid &= CheckStringColumnType(argTypes[0], args[0], errors, ref nodeToCoercedTypeMap);
 
-    returnType = DType.CreateTable(new TypedName(DType.Number, LenTFunction.OneColumnTableResultName))
+    returnType = DType.CreateTable(
+      new TypedName(DType.Number, LenTFunction.OneColumnTableResultName)
+    )
 
     return [fValid, { returnType, nodeToCoercedTypeMap }]
 

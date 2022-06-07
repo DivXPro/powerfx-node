@@ -11,12 +11,18 @@ export class CompositeMetaParser extends MetaParser {
     this._metaParsers = []
   }
 
-  public parse(dataServiceCapabilitiesJsonObject: Record<string, any>, schema: DType): OperationCapabilityMetadata {
+  public parse(
+    dataServiceCapabilitiesJsonObject: Record<string, any>,
+    schema: DType
+  ): OperationCapabilityMetadata {
     // Contracts.AssertValid(schema);
 
     const capabilities: Array<OperationCapabilityMetadata> = []
     for (const parser of this._metaParsers) {
-      var capabilityMetadata = parser.parse(dataServiceCapabilitiesJsonObject, schema)
+      let capabilityMetadata = parser.parse(
+        dataServiceCapabilitiesJsonObject,
+        schema
+      )
       if (capabilityMetadata != null) {
         capabilities.push(capabilityMetadata)
       }

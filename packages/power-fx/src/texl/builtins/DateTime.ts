@@ -5,7 +5,10 @@ import { IErrorContainer } from '../../app/errorContainers'
 import { TexlBinding } from '../../binding'
 import { DocumentErrorSeverity } from '../../errors'
 import { BuiltinFunction } from '../../functions/BuiltinFunction'
-import { DelegationCapability, OperationCapabilityMetadata } from '../../functions/delegation'
+import {
+  DelegationCapability,
+  OperationCapabilityMetadata,
+} from '../../functions/delegation'
 import { StringGetter, TexlStrings } from '../../localization'
 import { CallNode, TexlNode } from '../../syntax'
 import { DKind } from '../../types/DKind'
@@ -47,7 +50,7 @@ export class DateFunction extends BuiltinFunction {
       3,
       DType.Number,
       DType.Number,
-      DType.Number,
+      DType.Number
     )
   }
 
@@ -87,10 +90,25 @@ export abstract class ExtractDateTimeFunctionBase extends BuiltinFunction {
     // Contracts.Assert(arityMin == 1);
     // Contracts.Assert(arityMax == 1);
     // Contracts.Assert(paramTypes[0] == DType.DateTime);
-    super(undefined, name, undefined, description, fc, returnType, maskLambdas, arityMin, arityMax, ...paramTypes)
+    super(
+      undefined,
+      name,
+      undefined,
+      description,
+      fc,
+      returnType,
+      maskLambdas,
+      arityMin,
+      arityMax,
+      ...paramTypes
+    )
   }
 
-  public isRowScopedServerDelegatable(callNode: CallNode, binding: TexlBinding, metadata: OperationCapabilityMetadata) {
+  public isRowScopedServerDelegatable(
+    callNode: CallNode,
+    binding: TexlBinding,
+    metadata: OperationCapabilityMetadata
+  ) {
     // Contracts.AssertValue(callNode);
     // Contracts.AssertValue(binding);
     // Contracts.AssertValue(metadata);
@@ -132,14 +150,19 @@ export class TimeFunction extends BuiltinFunction {
       DType.Number,
       DType.Number,
       DType.Number,
-      DType.Number,
+      DType.Number
     )
   }
 
   public getSignatures() {
     return [
       [TexlStrings.TimeArg1, TexlStrings.TimeArg2, TexlStrings.TimeArg3],
-      [TexlStrings.TimeArg1, TexlStrings.TimeArg2, TexlStrings.TimeArg3, TexlStrings.TimeArg4],
+      [
+        TexlStrings.TimeArg1,
+        TexlStrings.TimeArg2,
+        TexlStrings.TimeArg3,
+        TexlStrings.TimeArg4,
+      ],
     ]
   }
 }
@@ -148,11 +171,22 @@ export class TimeFunction extends BuiltinFunction {
 // Equivalent DAX/Excel function: Year
 export class YearFunction extends ExtractDateTimeFunctionBase {
   constructor() {
-    super('Year', TexlStrings.AboutYear, FunctionCategories.DateTime, DType.Number, 0, 1, 1, DType.DateTime)
+    super(
+      'Year',
+      TexlStrings.AboutYear,
+      FunctionCategories.DateTime,
+      DType.Number,
+      0,
+      1,
+      1,
+      DType.DateTime
+    )
   }
 
   public get functionDelegationCapability() {
-    return new DelegationCapability(DelegationCapability.Year | DelegationCapability.Add)
+    return new DelegationCapability(
+      DelegationCapability.Year | DelegationCapability.Add
+    )
   }
 
   public getSignatures() {
@@ -164,11 +198,22 @@ export class YearFunction extends ExtractDateTimeFunctionBase {
 // Equivalent DAX/Excel function: Month
 export class MonthFunction extends ExtractDateTimeFunctionBase {
   constructor() {
-    super('Month', TexlStrings.AboutMonth, FunctionCategories.DateTime, DType.Number, 0, 1, 1, DType.DateTime)
+    super(
+      'Month',
+      TexlStrings.AboutMonth,
+      FunctionCategories.DateTime,
+      DType.Number,
+      0,
+      1,
+      1,
+      DType.DateTime
+    )
   }
 
   public get functionDelegationCapability() {
-    return new DelegationCapability(DelegationCapability.Month | DelegationCapability.Add)
+    return new DelegationCapability(
+      DelegationCapability.Month | DelegationCapability.Add
+    )
   }
 
   public getSignatures() {
@@ -180,11 +225,22 @@ export class MonthFunction extends ExtractDateTimeFunctionBase {
 // Equivalent DAX/Excel function: Day
 export class DayFunction extends ExtractDateTimeFunctionBase {
   constructor() {
-    super('Day', TexlStrings.AboutDay, FunctionCategories.DateTime, DType.Number, 0, 1, 1, DType.DateTime)
+    super(
+      'Day',
+      TexlStrings.AboutDay,
+      FunctionCategories.DateTime,
+      DType.Number,
+      0,
+      1,
+      1,
+      DType.DateTime
+    )
   }
 
   public get functionDelegationCapability() {
-    return new DelegationCapability(DelegationCapability.Day | DelegationCapability.Add)
+    return new DelegationCapability(
+      DelegationCapability.Day | DelegationCapability.Add
+    )
   }
 
   public getSignatures() {
@@ -196,11 +252,22 @@ export class DayFunction extends ExtractDateTimeFunctionBase {
 // Equivalent DAX/Excel function: Hour
 export class HourFunction extends ExtractDateTimeFunctionBase {
   constructor() {
-    super('Hour', TexlStrings.AboutHour, FunctionCategories.DateTime, DType.Number, 0, 1, 1, DType.DateTime)
+    super(
+      'Hour',
+      TexlStrings.AboutHour,
+      FunctionCategories.DateTime,
+      DType.Number,
+      0,
+      1,
+      1,
+      DType.DateTime
+    )
   }
 
   public get functionDelegationCapability() {
-    return new DelegationCapability(DelegationCapability.Hour | DelegationCapability.Add)
+    return new DelegationCapability(
+      DelegationCapability.Hour | DelegationCapability.Add
+    )
   }
 
   public getSignatures() {
@@ -212,11 +279,22 @@ export class HourFunction extends ExtractDateTimeFunctionBase {
 // Equivalent DAX/Excel function: Minute
 export class MinuteFunction extends ExtractDateTimeFunctionBase {
   constructor() {
-    super('Minute', TexlStrings.AboutMinute, FunctionCategories.DateTime, DType.Number, 0, 1, 1, DType.DateTime)
+    super(
+      'Minute',
+      TexlStrings.AboutMinute,
+      FunctionCategories.DateTime,
+      DType.Number,
+      0,
+      1,
+      1,
+      DType.DateTime
+    )
   }
 
   public get functionDelegationCapability() {
-    return new DelegationCapability(DelegationCapability.Minute | DelegationCapability.Add)
+    return new DelegationCapability(
+      DelegationCapability.Minute | DelegationCapability.Add
+    )
   }
 
   public getSignatures() {
@@ -228,11 +306,22 @@ export class MinuteFunction extends ExtractDateTimeFunctionBase {
 // Equivalent DAX/Excel function: Second
 export class SecondFunction extends ExtractDateTimeFunctionBase {
   constructor() {
-    super('Second', TexlStrings.AboutSecond, FunctionCategories.DateTime, DType.Number, 0, 1, 1, DType.DateTime)
+    super(
+      'Second',
+      TexlStrings.AboutSecond,
+      FunctionCategories.DateTime,
+      DType.Number,
+      0,
+      1,
+      1,
+      DType.DateTime
+    )
   }
 
   public get functionDelegationCapability() {
-    return new DelegationCapability(DelegationCapability.Second | DelegationCapability.Add)
+    return new DelegationCapability(
+      DelegationCapability.Second | DelegationCapability.Add
+    )
   }
 
   public getSignatures() {
@@ -271,12 +360,15 @@ export class WeekdayFunction extends BuiltinFunction {
       1,
       2,
       DType.DateTime,
-      DType.Number,
+      DType.Number
     )
   }
 
   public getSignatures() {
-    return [[TexlStrings.WeekdayArg1], [TexlStrings.WeekdayArg1, TexlStrings.WeekdayArg2]]
+    return [
+      [TexlStrings.WeekdayArg1],
+      [TexlStrings.WeekdayArg1, TexlStrings.WeekdayArg2],
+    ]
   }
 }
 
@@ -311,12 +403,15 @@ export class WeekNumFunction extends BuiltinFunction {
       1,
       2,
       DType.DateTime,
-      DType.Number,
+      DType.Number
     )
   }
 
   public getSignatures() {
-    return [[TexlStrings.WeekNumArg1], [TexlStrings.WeekNumArg1, TexlStrings.WeekNumArg2]]
+    return [
+      [TexlStrings.WeekNumArg1],
+      [TexlStrings.WeekNumArg1, TexlStrings.WeekNumArg2],
+    ]
   }
 }
 
@@ -342,7 +437,7 @@ export class ISOWeekNumFunction extends BuiltinFunction {
       0,
       1,
       1,
-      DType.DateTime,
+      DType.DateTime
     )
   }
 
@@ -376,7 +471,7 @@ export abstract class DateTimeGenericFunction extends BuiltinFunction {
       1,
       2,
       DType.String,
-      DType.String,
+      DType.String
     )
   }
 
@@ -400,7 +495,10 @@ export class DateValueFunction extends DateTimeGenericFunction {
   }
 
   public getSignatures() {
-    return [[TexlStrings.DateValueArg1], [TexlStrings.DateValueArg1, TexlStrings.DateValueArg2]]
+    return [
+      [TexlStrings.DateValueArg1],
+      [TexlStrings.DateValueArg1, TexlStrings.DateValueArg2],
+    ]
   }
 }
 
@@ -418,7 +516,10 @@ export class TimeValueFunction extends DateTimeGenericFunction {
   }
 
   public getSignatures() {
-    return [[TexlStrings.TimeValueArg1], [TexlStrings.TimeValueArg1, TexlStrings.TimeValueArg2]]
+    return [
+      [TexlStrings.TimeValueArg1],
+      [TexlStrings.TimeValueArg1, TexlStrings.TimeValueArg2],
+    ]
   }
 }
 
@@ -436,7 +537,10 @@ export class DateTimeValueFunction extends DateTimeGenericFunction {
   }
 
   public getSignatures() {
-    return [[TexlStrings.DateTimeValueArg1], [TexlStrings.DateTimeValueArg1, TexlStrings.DateTimeValueArg2]]
+    return [
+      [TexlStrings.DateTimeValueArg1],
+      [TexlStrings.DateTimeValueArg1, TexlStrings.DateTimeValueArg2],
+    ]
   }
 }
 
@@ -452,7 +556,12 @@ export class DateAddFunction extends BuiltinFunction {
     return true
   }
 
-  static readonly SubDayStringList: string[] = ['Hours', 'Minutes', 'Seconds', 'Milliseconds']
+  static readonly SubDayStringList: string[] = [
+    'Hours',
+    'Minutes',
+    'Seconds',
+    'Milliseconds',
+  ]
 
   constructor() {
     super(
@@ -467,14 +576,18 @@ export class DateAddFunction extends BuiltinFunction {
       3,
       DType.DateTime,
       DType.Number,
-      DType.String,
+      DType.String
     )
   }
 
   public getSignatures() {
     return [
       [TexlStrings.DateAddArg1, TexlStrings.DateAddArg2],
-      [TexlStrings.DateAddArg1, TexlStrings.DateAddArg2, TexlStrings.DateAddArg3],
+      [
+        TexlStrings.DateAddArg1,
+        TexlStrings.DateAddArg2,
+        TexlStrings.DateAddArg3,
+      ],
     ]
   }
 
@@ -489,8 +602,11 @@ export class DateAddFunction extends BuiltinFunction {
     args: TexlNode[],
     argTypes: DType[],
     errors: IErrorContainer,
-    binding?: TexlBinding,
-  ): [boolean, { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }] {
+    binding?: TexlBinding
+  ): [
+    boolean,
+    { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }
+  ] {
     // Contracts.AssertValue(args);
     // Contracts.AssertAllValues(args);
     // Contracts.AssertValue(argTypes);
@@ -515,7 +631,11 @@ export class DateAddFunction extends BuiltinFunction {
         returnType = this.returnType
       } else {
         fValid = false
-        errors.ensureErrorWithSeverity(DocumentErrorSeverity.Severe, args[0], TexlStrings.ErrDateExpected)
+        errors.ensureErrorWithSeverity(
+          DocumentErrorSeverity.Severe,
+          args[0],
+          TexlStrings.ErrDateExpected
+        )
         returnType = this.returnType
       }
     }
@@ -546,14 +666,18 @@ export class DateAddTFunction extends BuiltinFunction {
       DType.EmptyTable,
       0,
       2,
-      3,
+      3
     )
   }
 
   public getSignatures() {
     return [
       [TexlStrings.DateAddTArg1, TexlStrings.DateAddTArg2],
-      [TexlStrings.DateAddTArg1, TexlStrings.DateAddTArg2, TexlStrings.DateAddTArg3],
+      [
+        TexlStrings.DateAddTArg1,
+        TexlStrings.DateAddTArg2,
+        TexlStrings.DateAddTArg3,
+      ],
     ]
   }
 
@@ -565,8 +689,11 @@ export class DateAddTFunction extends BuiltinFunction {
     args: TexlNode[],
     argTypes: DType[],
     errors: IErrorContainer,
-    binding: TexlBinding,
-  ): [boolean, { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }] {
+    binding: TexlBinding
+  ): [
+    boolean,
+    { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }
+  ] {
     // Contracts.AssertValue(args);
     // Contracts.AssertAllValues(args);
     // Contracts.AssertValue(argTypes);
@@ -585,7 +712,12 @@ export class DateAddTFunction extends BuiltinFunction {
     if (type0.isTable) {
       // Ensure we have a one-column table of dates/dateTimes. Since dateTime is the supertype, checking
       // for DateTime alone is sufficient.
-      const rst = this.checkDateColumnType(type0, args[0], errors, nodeToCoercedTypeMap)
+      const rst = this.checkDateColumnType(
+        type0,
+        args[0],
+        errors,
+        nodeToCoercedTypeMap
+      )
       nodeToCoercedTypeMap = rst[1]
       fValid &&= rst[0]
 
@@ -593,28 +725,56 @@ export class DateAddTFunction extends BuiltinFunction {
       returnType = type0
     } else {
       if (type0.kind == DKind.DateTime) {
-        returnType = DType.CreateTable(new TypedName(DType.DateTime, BuiltinFunction.OneColumnTableResultName))
+        returnType = DType.CreateTable(
+          new TypedName(
+            DType.DateTime,
+            BuiltinFunction.OneColumnTableResultName
+          )
+        )
       } else if (type0.kind == DKind.Date) {
-        returnType = DType.CreateTable(new TypedName(DType.Date, BuiltinFunction.OneColumnTableResultName))
+        returnType = DType.CreateTable(
+          new TypedName(DType.Date, BuiltinFunction.OneColumnTableResultName)
+        )
       } else if (type0.coercesTo(DType.DateTime)) {
-        nodeToCoercedTypeMap = CollectionUtils.AddDictionary(nodeToCoercedTypeMap, args[0], DType.DateTime)
+        nodeToCoercedTypeMap = CollectionUtils.AddDictionary(
+          nodeToCoercedTypeMap,
+          args[0],
+          DType.DateTime
+        )
       } else {
         fValid = false
-        errors.ensureErrorWithSeverity(DocumentErrorSeverity.Severe, args[0], TexlStrings.ErrDateExpected)
+        errors.ensureErrorWithSeverity(
+          DocumentErrorSeverity.Severe,
+          args[0],
+          TexlStrings.ErrDateExpected
+        )
       }
     }
 
     // Arg1 should be either a number or a column of numbers.
     if (type1.isTable) {
-      const rst = this.checkNumericColumnType(type1, args[1], errors, nodeToCoercedTypeMap)
+      const rst = this.checkNumericColumnType(
+        type1,
+        args[1],
+        errors,
+        nodeToCoercedTypeMap
+      )
       nodeToCoercedTypeMap = rst[1]
       fValid &&= rst[0]
     } else if (!DType.Number.accepts(type1)) {
       if (type1.coercesTo(DType.Number)) {
-        nodeToCoercedTypeMap = CollectionUtils.AddDictionary(nodeToCoercedTypeMap, args[1], DType.Number)
+        nodeToCoercedTypeMap = CollectionUtils.AddDictionary(
+          nodeToCoercedTypeMap,
+          args[1],
+          DType.Number
+        )
       } else {
         fValid = false
-        errors.ensureErrorWithSeverity(DocumentErrorSeverity.Severe, args[1], TexlStrings.ErrNumberExpected)
+        errors.ensureErrorWithSeverity(
+          DocumentErrorSeverity.Severe,
+          args[1],
+          TexlStrings.ErrNumberExpected
+        )
       }
     }
 
@@ -622,14 +782,26 @@ export class DateAddTFunction extends BuiltinFunction {
     if (hasUnits && !DType.String.accepts(argTypes[2])) {
       // Arg2 should be a string
       fValid = false
-      errors.ensureErrorWithSeverity(DocumentErrorSeverity.Severe, args[2], TexlStrings.ErrStringExpected)
+      errors.ensureErrorWithSeverity(
+        DocumentErrorSeverity.Severe,
+        args[2],
+        TexlStrings.ErrStringExpected
+      )
     }
 
     // At least one arg has to be a table.
     if (!(type0.isTable || type1.isTable)) {
       fValid = false
-      errors.ensureErrorWithSeverity(DocumentErrorSeverity.Severe, args[0], TexlStrings.ErrTypeError)
-      errors.ensureErrorWithSeverity(DocumentErrorSeverity.Severe, args[1], TexlStrings.ErrTypeError)
+      errors.ensureErrorWithSeverity(
+        DocumentErrorSeverity.Severe,
+        args[0],
+        TexlStrings.ErrTypeError
+      )
+      errors.ensureErrorWithSeverity(
+        DocumentErrorSeverity.Severe,
+        args[1],
+        TexlStrings.ErrTypeError
+      )
     }
 
     return [fValid, { returnType, nodeToCoercedTypeMap }]
@@ -664,14 +836,18 @@ export class DateDiffFunction extends BuiltinFunction {
       3,
       DType.DateTime,
       DType.DateTime,
-      DType.String,
+      DType.String
     )
   }
 
   public getSignatures() {
     return [
       [TexlStrings.DateDiffArg1, TexlStrings.DateDiffArg2],
-      [TexlStrings.DateDiffArg1, TexlStrings.DateDiffArg2, TexlStrings.DateDiffArg3],
+      [
+        TexlStrings.DateDiffArg1,
+        TexlStrings.DateDiffArg2,
+        TexlStrings.DateDiffArg3,
+      ],
     ]
   }
 
@@ -705,14 +881,18 @@ export class DateDiffTFunction extends BuiltinFunction {
       DType.EmptyTable,
       0,
       2,
-      3,
+      3
     )
   }
 
   public getSignatures() {
     return [
       [TexlStrings.DateDiffTArg1, TexlStrings.DateDiffTArg2],
-      [TexlStrings.DateDiffTArg1, TexlStrings.DateDiffTArg2, TexlStrings.DateDiffTArg3],
+      [
+        TexlStrings.DateDiffTArg1,
+        TexlStrings.DateDiffTArg2,
+        TexlStrings.DateDiffTArg3,
+      ],
     ]
   }
 
@@ -724,8 +904,11 @@ export class DateDiffTFunction extends BuiltinFunction {
     args: TexlNode[],
     argTypes: DType[],
     errors: IErrorContainer,
-    binding?: TexlBinding,
-  ): [boolean, { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }] {
+    binding?: TexlBinding
+  ): [
+    boolean,
+    { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }
+  ] {
     // Contracts.AssertValue(args);
     // Contracts.AssertAllValues(args);
     // Contracts.AssertValue(argTypes);
@@ -740,51 +923,91 @@ export class DateDiffTFunction extends BuiltinFunction {
     const type0 = argTypes[0]
     const type1 = argTypes[1]
 
-    returnType = DType.CreateTable(new TypedName(DType.Number, BuiltinFunction.OneColumnTableResultName))
+    returnType = DType.CreateTable(
+      new TypedName(DType.Number, BuiltinFunction.OneColumnTableResultName)
+    )
 
     // Arg0 should be either a date or a column of dates.
     if (type0.isTable) {
       // Ensure we have a one-column table of dates
-      const rst = this.checkDateColumnType(type0, args[0], errors, nodeToCoercedTypeMap)
+      const rst = this.checkDateColumnType(
+        type0,
+        args[0],
+        errors,
+        nodeToCoercedTypeMap
+      )
       nodeToCoercedTypeMap = rst[1]
       fValid &&= rst[0]
     } else if (!DType.DateTime.accepts(type0)) {
       if (type0.coercesTo(DType.DateTime)) {
-        nodeToCoercedTypeMap = CollectionUtils.AddDictionary(nodeToCoercedTypeMap, args[0], DType.DateTime)
+        nodeToCoercedTypeMap = CollectionUtils.AddDictionary(
+          nodeToCoercedTypeMap,
+          args[0],
+          DType.DateTime
+        )
       } else {
         fValid = false
-        errors.ensureErrorWithSeverity(DocumentErrorSeverity.Severe, args[0], TexlStrings.ErrDateExpected)
+        errors.ensureErrorWithSeverity(
+          DocumentErrorSeverity.Severe,
+          args[0],
+          TexlStrings.ErrDateExpected
+        )
       }
     }
 
     // Arg1 should be either a a date or a column of dates.
     if (type1.isTable) {
       // Ensure we have a one-column table of dates
-      const rst = this.checkDateColumnType(type1, args[1], errors, nodeToCoercedTypeMap)
+      const rst = this.checkDateColumnType(
+        type1,
+        args[1],
+        errors,
+        nodeToCoercedTypeMap
+      )
       nodeToCoercedTypeMap = rst[1]
 
       fValid &&= rst[0]
     } else if (!DType.DateTime.accepts(type1)) {
       if (type1.coercesTo(DType.DateTime)) {
-        nodeToCoercedTypeMap = CollectionUtils.AddDictionary(nodeToCoercedTypeMap, args[1], DType.DateTime)
+        nodeToCoercedTypeMap = CollectionUtils.AddDictionary(
+          nodeToCoercedTypeMap,
+          args[1],
+          DType.DateTime
+        )
       } else {
         fValid = false
-        errors.ensureErrorWithSeverity(DocumentErrorSeverity.Severe, args[1], TexlStrings.ErrDateExpected)
+        errors.ensureErrorWithSeverity(
+          DocumentErrorSeverity.Severe,
+          args[1],
+          TexlStrings.ErrDateExpected
+        )
       }
     }
 
-    var hasUnits = args.length == 3
+    let hasUnits = args.length == 3
     if (hasUnits && !DType.String.accepts(argTypes[2])) {
       // Arg2 should be a string
       fValid = false
-      errors.ensureErrorWithSeverity(DocumentErrorSeverity.Severe, args[2], TexlStrings.ErrStringExpected)
+      errors.ensureErrorWithSeverity(
+        DocumentErrorSeverity.Severe,
+        args[2],
+        TexlStrings.ErrStringExpected
+      )
     }
 
     // At least one arg has to be a table.
     if (!(type0.isTable || type1.isTable)) {
       fValid = false
-      errors.ensureErrorWithSeverity(DocumentErrorSeverity.Severe, args[0], TexlStrings.ErrTypeError)
-      errors.ensureErrorWithSeverity(DocumentErrorSeverity.Severe, args[1], TexlStrings.ErrTypeError)
+      errors.ensureErrorWithSeverity(
+        DocumentErrorSeverity.Severe,
+        args[0],
+        TexlStrings.ErrTypeError
+      )
+      errors.ensureErrorWithSeverity(
+        DocumentErrorSeverity.Severe,
+        args[1],
+        TexlStrings.ErrTypeError
+      )
     }
 
     return [fValid, { returnType, nodeToCoercedTypeMap }]

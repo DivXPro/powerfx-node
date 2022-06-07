@@ -35,7 +35,7 @@ export class PowerFunction extends BuiltinFunction {
       2,
       2,
       DType.Number,
-      DType.Number,
+      DType.Number
     )
   }
 
@@ -69,7 +69,7 @@ export class PowerTFunction extends BuiltinFunction {
       DType.EmptyTable,
       0,
       2,
-      2,
+      2
     )
   }
 
@@ -85,8 +85,11 @@ export class PowerTFunction extends BuiltinFunction {
     args: TexlNode[],
     argTypes: DType[],
     errors: IErrorContainer,
-    binding: TexlBinding | undefined,
-  ): [boolean, { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }] {
+    binding: TexlBinding | undefined
+  ): [
+    boolean,
+    { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }
+  ] {
     // Contracts.AssertValue(args);
     // Contracts.AssertAllValues(args);
     // Contracts.AssertValue(argTypes);
@@ -96,8 +99,13 @@ export class PowerTFunction extends BuiltinFunction {
     const result = super.checkInvocation(args, argTypes, errors)
     let fValid = result[0]
     let { returnType, nodeToCoercedTypeMap } = result[1]
-    // var fValid = base.CheckInvocation(args, argTypes, errors, out returnType, out nodeToCoercedTypeMap);
-    const result2 = this.checkAllParamsAreTypeOrSingleColumnTable(DType.Number, args, argTypes, errors)
+    // let fValid = base.CheckInvocation(args, argTypes, errors, out returnType, out nodeToCoercedTypeMap);
+    const result2 = this.checkAllParamsAreTypeOrSingleColumnTable(
+      DType.Number,
+      args,
+      argTypes,
+      errors
+    )
     returnType = result2[1].returnType
     nodeToCoercedTypeMap = result2[1].nodeToCoercedTypeMap
 

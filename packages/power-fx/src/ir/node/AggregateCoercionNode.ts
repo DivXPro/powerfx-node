@@ -18,11 +18,13 @@ export class AggregateCoercionNode extends IntermediateNode {
     op: UnaryOpKind,
     scope: ScopeSymbol,
     child: IntermediateNode,
-    fieldCoercions: Map<DName, IntermediateNode>,
+    fieldCoercions: Map<DName, IntermediateNode>
   ) {
     super(irContext)
     Contracts.AssertValue(child)
-    Contracts.Assert(op == UnaryOpKind.RecordToRecord || op == UnaryOpKind.TableToTable)
+    Contracts.Assert(
+      op == UnaryOpKind.RecordToRecord || op == UnaryOpKind.TableToTable
+    )
 
     this.Op = op
     this.Scope = scope
@@ -30,7 +32,10 @@ export class AggregateCoercionNode extends IntermediateNode {
     this.FieldCoercions = fieldCoercions
   }
 
-  public accept<TResult, TContext>(visitor: IRNodeVisitor<TResult, TContext>, context: TContext): Promise<TResult> {
+  public accept<TResult, TContext>(
+    visitor: IRNodeVisitor<TResult, TContext>,
+    context: TContext
+  ): Promise<TResult> {
     return visitor.visit(this, context)
   }
 
@@ -39,7 +44,7 @@ export class AggregateCoercionNode extends IntermediateNode {
     this.FieldCoercions.forEach((value, key) => {
       f.push(`${key} <- ${value}`)
     })
-    var sb = new StringBuilder()
+    let sb = new StringBuilder()
     sb.append(`AggregateCoercion(${this.Op}, `)
     sb.append(f.join(','))
     sb.append(')')

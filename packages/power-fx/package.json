@@ -1,6 +1,6 @@
 {
-  "name": "@toy-box/power-fx",
-  "version": "0.0.1-alpha",
+  "name": "power-fx-node",
+  "version": "0.0.1-alpha.0",
   "license": "MIT",
   "main": "lib",
   "module": "esm",

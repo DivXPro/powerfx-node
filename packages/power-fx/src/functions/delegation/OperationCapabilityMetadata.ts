@@ -25,7 +25,9 @@ export abstract class OperationCapabilityMetadata {
 
   public abstract get tableCapabilities(): DelegationCapability
 
-  protected tryGetColumnRestrictions(columnPath: DPath): [boolean, DelegationCapability] {
+  protected tryGetColumnRestrictions(
+    columnPath: DPath
+  ): [boolean, DelegationCapability] {
     // Contracts.AssertValid(columnPath);
     let restrictions: DelegationCapability
     const result = this.columnRestrictions.tryGetValue(columnPath)
@@ -38,7 +40,9 @@ export abstract class OperationCapabilityMetadata {
     return [false, restrictions]
   }
 
-  public tryGetColumnCapabilities(columnPath: DPath): [boolean, DelegationCapability] {
+  public tryGetColumnCapabilities(
+    columnPath: DPath
+  ): [boolean, DelegationCapability] {
     // Contracts.AssertValid(columnPath);
     let capabilities: DelegationCapability
     // Check if it's a valid column name. As capabilities are not defined for all columns, we need to do this check.
@@ -54,34 +58,49 @@ export abstract class OperationCapabilityMetadata {
     restrictions = result[1]
     if (result[0]) {
       // capabilities &= ~restrictions;
-      capabilities = DelegationCapability.LogicAnd(capabilities, DelegationCapability.BitwiseComplement(restrictions))
+      capabilities = DelegationCapability.LogicAnd(
+        capabilities,
+        DelegationCapability.BitwiseComplement(restrictions)
+      )
     }
 
     return [true, capabilities]
   }
 
-  public isDelegationSupportedByColumn(columnPath: DPath, delegationCapability: DelegationCapability) {
+  public isDelegationSupportedByColumn(
+    columnPath: DPath,
+    delegationCapability: DelegationCapability
+  ) {
     // Contracts.AssertValid(columnPath);
 
     // Only the first part of the path can have been renamed
-    const result = DType.TryGetLogicalNameForColumn(this.schema, columnPath.at(0).toString())
+    const result = DType.TryGetLogicalNameForColumn(
+      this.schema,
+      columnPath.at(0).toString()
+    )
     const logicalName = result[1]
     if (result[0]) {
-      var renamedColumnPath = DPath.Root
+      let renamedColumnPath = DPath.Root
       renamedColumnPath = renamedColumnPath.append(new DName(logicalName))
       for (let i = 1; i < columnPath.length; ++i) {
-        renamedColumnPath = renamedColumnPath.append(new DName(columnPath.at(i).toString()))
+        renamedColumnPath = renamedColumnPath.append(
+          new DName(columnPath.at(i).toString())
+        )
       }
 
       columnPath = renamedColumnPath
     }
     const rst = this.tryGetColumnCapabilities(columnPath)
     return rst[0] && rst[1].hasCapability(delegationCapability.capabilities)
-    // return this.tryGetColumnCapabilities(columnPath, out var columnCapabilities) && columnCapabilities.HasCapability(delegationCapability.Capabilities);
+    // return this.tryGetColumnCapabilities(columnPath, out let columnCapabilities) && columnCapabilities.HasCapability(delegationCapability.Capabilities);
   }
 
-  public isDelegationSupportedByTable(delegationCapability: DelegationCapability) {
-    return this.defaultColumnCapabilities.hasCapability(delegationCapability.capabilities)
+  public isDelegationSupportedByTable(
+    delegationCapability: DelegationCapability
+  ) {
+    return this.defaultColumnCapabilities.hasCapability(
+      delegationCapability.capabilities
+    )
   }
 
   public isUnaryOpSupportedByTable(op: UnaryOp) {
@@ -91,7 +110,9 @@ export abstract class OperationCapabilityMetadata {
 
     // Contracts.Assert(DelegationCapability.UnaryOpToDelegationCapabilityMap.ContainsKey(op));
 
-    return this.isDelegationSupportedByTable(DelegationCapability.UnaryOpToDelegationCapabilityMap.get(op))
+    return this.isDelegationSupportedByTable(
+      DelegationCapability.UnaryOpToDelegationCapabilityMap.get(op)
+    )
   }
 
   public isBinaryOpSupportedByTable(op: BinaryOp) {
@@ -101,7 +122,9 @@ export abstract class OperationCapabilityMetadata {
 
     // Contracts.Assert(DelegationCapability.BinaryOpToDelegationCapabilityMap.ContainsKey(op));
 
-    return this.isDelegationSupportedByTable(DelegationCapability.BinaryOpToDelegationCapabilityMap.get(op))
+    return this.isDelegationSupportedByTable(
+      DelegationCapability.BinaryOpToDelegationCapabilityMap.get(op)
+    )
   }
 
   public isUnaryOpInDelegationSupported(op: UnaryOp) {
@@ -140,7 +163,10 @@ export abstract class OperationCapabilityMetadata {
     return true
   }
 
-  public isBinaryOpInDelegationSupportedByColumn(op: BinaryOp, columnPath: DPath) {
+  public isBinaryOpInDelegationSupportedByColumn(
+    op: BinaryOp,
+    columnPath: DPath
+  ) {
     // Contracts.AssertValid(columnPath);
 
     if (!this.isBinaryOpInDelegationSupported(op)) {
@@ -151,11 +177,14 @@ export abstract class OperationCapabilityMetadata {
 
     return this.isDelegationSupportedByColumn(
       columnPath,
-      DelegationCapability.BinaryOpToDelegationCapabilityMap.get(op),
+      DelegationCapability.BinaryOpToDelegationCapabilityMap.get(op)
     )
   }
 
-  public isUnaryOpInDelegationSupportedByColumn(op: UnaryOp, columnPath: DPath) {
+  public isUnaryOpInDelegationSupportedByColumn(
+    op: UnaryOp,
+    columnPath: DPath
+  ) {
     // Contracts.AssertValid(columnPath)
 
     if (!this.isUnaryOpInDelegationSupported(op)) {
@@ -164,6 +193,9 @@ export abstract class OperationCapabilityMetadata {
 
     // Contracts.Assert(DelegationCapability.UnaryOpToDelegationCapabilityMap.ContainsKey(op))
 
-    return this.isDelegationSupportedByColumn(columnPath, DelegationCapability.UnaryOpToDelegationCapabilityMap.get(op))
+    return this.isDelegationSupportedByColumn(
+      columnPath,
+      DelegationCapability.UnaryOpToDelegationCapabilityMap.get(op)
+    )
   }
 }

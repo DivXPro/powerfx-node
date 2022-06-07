@@ -9,14 +9,14 @@ export class PowerFxScopeFactory implements IPowerFxScopeFactory {
   public GetEngine(): RecalcEngine {
     // If the engine requires additional symbols to load, server
     // should find a way to safely cache it.
-    var engine = new RecalcEngine()
+    let engine = new RecalcEngine()
 
     return engine
   }
 
   // A scope wraps the engine and provides parameters used for intellisense.
   public GetScope(contextJson: string): RecalcEngineScope {
-    var engine = this.GetEngine()
+    let engine = this.GetEngine()
 
     return RecalcEngineScope.FromJson(engine, contextJson)
   }
@@ -28,13 +28,13 @@ export class PowerFxScopeFactory implements IPowerFxScopeFactory {
     // initialize a formula bar or distinguish between multiple formula bars.
 
     // The context is additional symbols passed by the host.
-    // var uriObj = new Uri(documentUri);
-    // var contextJson = HttpUtility.ParseQueryString(uriObj.Query).Get("context");
+    // let uriObj = new Uri(documentUri);
+    // let contextJson = HttpUtility.ParseQueryString(uriObj.Query).Get("context");
     // if (contextJson == null) {
     //   contextJson = "{}";
     // }
     let contextJson = documentUri.context // JSON.parse(documentUri).context;
-    var scope = this.GetScope(contextJson)
+    let scope = this.GetScope(contextJson)
     return scope
   }
 }

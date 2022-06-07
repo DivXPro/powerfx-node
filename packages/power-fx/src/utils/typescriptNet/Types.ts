@@ -204,7 +204,10 @@ namespace Type {
    * @param type
    * @returns {T|null}
    */
-  export function is<T>(target: Object, type: { new (...params: any[]): T }): target is T {
+  export function is<T>(
+    target: Object,
+    type: { new (...params: any[]): T }
+  ): target is T {
     return target instanceof type
   }
 
@@ -215,7 +218,10 @@ namespace Type {
    * @param type
    * @returns {T|null}
    */
-  export function as<T>(target: Object, type: { new (...params: any[]): T }): T | null {
+  export function as<T>(
+    target: Object,
+    type: { new (...params: any[]): T }
+  ): T | null {
     return target instanceof type ? target : null
   }
 
@@ -243,7 +249,7 @@ namespace Type {
    * @param ignoreNaN Default is false. When true, NaN is not considered a number and will return false.
    * @returns {boolean}
    */
-  export function isNumber(value: any, ignoreNaN: boolean = false): value is number {
+  export function isNumber(value: any, ignoreNaN = false): value is number {
     return typeof value === _NUMBER && (!ignoreNaN || !isNaN(value))
   }
 
@@ -271,7 +277,10 @@ namespace Type {
    * @param allowUndefined if set to true will return true if the value is undefined.
    * @returns {boolean}
    */
-  export function isPrimitive(value: any, allowUndefined: boolean = false): value is Primitive {
+  export function isPrimitive(
+    value: any,
+    allowUndefined = false
+  ): value is Primitive {
     const t = typeof value
     switch (t) {
       case _BOOLEAN:
@@ -292,7 +301,10 @@ namespace Type {
    * @param allowUndefined
    * @returns {boolean|boolean}
    */
-  export function isPrimitiveOrSymbol(value: any, allowUndefined: boolean = false): value is Primitive | symbol {
+  export function isPrimitiveOrSymbol(
+    value: any,
+    allowUndefined = false
+  ): value is Primitive | symbol {
     return typeof value === _SYMBOL ? true : isPrimitive(value, allowUndefined)
   }
 
@@ -327,7 +339,7 @@ namespace Type {
    * @param allowNull If false (default) null is not considered an object.
    * @returns {boolean}
    */
-  export function isObject(value: any, allowNull: boolean = false): boolean {
+  export function isObject(value: any, allowNull = false): boolean {
     return typeof value === _OBJECT && (allowNull || value !== null)
   }
 
@@ -357,9 +369,16 @@ namespace Type {
    * @param ignoreUndefined When ignoreUndefined is true, if the member exists but is undefined, it will return false.
    * @returns {boolean}
    */
-  export function hasMember(instance: any, property: string, ignoreUndefined: boolean = true): boolean {
+  export function hasMember(
+    instance: any,
+    property: string,
+    ignoreUndefined = true
+  ): boolean {
     return (
-      instance && !isPrimitive(instance) && property in instance && (ignoreUndefined || instance[property] !== VOID0)
+      instance &&
+      !isPrimitive(instance) &&
+      property in instance &&
+      (ignoreUndefined || instance[property] !== VOID0)
     )
   }
 
@@ -370,7 +389,11 @@ namespace Type {
    * @param type
    * @returns {boolean}
    */
-  export function hasMemberOfType<T>(instance: any, property: string, type: TypeValue): instance is T {
+  export function hasMemberOfType<T>(
+    instance: any,
+    property: string,
+    type: TypeValue
+  ): instance is T {
     return hasMember(instance, property) && typeof instance[property] === type
   }
 
@@ -378,7 +401,9 @@ namespace Type {
     return hasMemberOfType<T>(instance, property, _FUNCTION)
   }
 
-  export function isArrayLike<T>(instance: any): instance is ArrayLikeWritable<T> {
+  export function isArrayLike<T>(
+    instance: any
+  ): instance is ArrayLikeWritable<T> {
     /*
      * NOTE:
      *

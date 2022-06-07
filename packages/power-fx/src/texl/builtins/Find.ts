@@ -36,7 +36,7 @@ export class FindFunction extends BuiltinFunction {
       3,
       DType.String,
       DType.String,
-      DType.Number,
+      DType.Number
     )
   }
 
@@ -63,7 +63,17 @@ export class FindTFunction extends BuiltinFunction {
   }
 
   constructor() {
-    super(undefined, 'Find', undefined, TexlStrings.AboutFindT, FunctionCategories.Table, DType.EmptyTable, 0, 2, 3)
+    super(
+      undefined,
+      'Find',
+      undefined,
+      TexlStrings.AboutFindT,
+      FunctionCategories.Table,
+      DType.EmptyTable,
+      0,
+      2,
+      3
+    )
   }
 
   public getSignatures() {
@@ -81,8 +91,11 @@ export class FindTFunction extends BuiltinFunction {
     args: TexlNode[],
     argTypes: DType[],
     errors: IErrorContainer,
-    binding: TexlBinding,
-  ): [boolean, { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }] {
+    binding: TexlBinding
+  ): [
+    boolean,
+    { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }
+  ] {
     // Contracts.AssertValue(args);
     // Contracts.AssertAllValues(args);
     // Contracts.AssertValue(argTypes);
@@ -95,69 +108,113 @@ export class FindTFunction extends BuiltinFunction {
     let returnType = baseResult[1].returnType
     let nodeToCoercedTypeMap = baseResult[1].nodeToCoercedTypeMap
 
-    // var fValid = CheckInvocation(args, argTypes, errors, out returnType, out nodeToCoercedTypeMap);
+    // let fValid = CheckInvocation(args, argTypes, errors, out returnType, out nodeToCoercedTypeMap);
 
-    var type0 = argTypes[0]
-    var type1 = argTypes[1]
+    let type0 = argTypes[0]
+    let type1 = argTypes[1]
 
     // Arg0 should be either a string or a column of strings.
     if (type0.isTable) {
       // Ensure we have a one-column table of strings.
-      let checkNumericColumnType = super.checkStringColumnType(type0, args[0], errors, nodeToCoercedTypeMap)
+      let checkNumericColumnType = super.checkStringColumnType(
+        type0,
+        args[0],
+        errors,
+        nodeToCoercedTypeMap
+      )
       nodeToCoercedTypeMap = checkNumericColumnType[1]
       fValid = fValid && checkNumericColumnType[0]
       // fValid &= CheckStringColumnType(type0, args[0], errors, ref nodeToCoercedTypeMap);
     } else if (!DType.String.accepts(type0)) {
       if (type0.coercesTo(DType.String)) {
-        nodeToCoercedTypeMap = CollectionUtils.AddDictionary(nodeToCoercedTypeMap, args[0], DType.String)
+        nodeToCoercedTypeMap = CollectionUtils.AddDictionary(
+          nodeToCoercedTypeMap,
+          args[0],
+          DType.String
+        )
       } else {
         fValid = false
-        errors.ensureErrorWithSeverity(DocumentErrorSeverity.Severe, args[0], TexlStrings.ErrStringExpected)
+        errors.ensureErrorWithSeverity(
+          DocumentErrorSeverity.Severe,
+          args[0],
+          TexlStrings.ErrStringExpected
+        )
       }
     }
 
     // Arg1 should be either a string or a column of strings.
     if (type1.isTable) {
-      let checkNumericColumnType = super.checkStringColumnType(type1, args[1], errors, nodeToCoercedTypeMap)
+      let checkNumericColumnType = super.checkStringColumnType(
+        type1,
+        args[1],
+        errors,
+        nodeToCoercedTypeMap
+      )
       nodeToCoercedTypeMap = checkNumericColumnType[1]
       fValid = fValid && checkNumericColumnType[0]
 
       // fValid &= CheckStringColumnType(type1, args[1], errors, ref nodeToCoercedTypeMap);
     } else if (!DType.String.accepts(type1)) {
       if (type1.coercesTo(DType.String)) {
-        nodeToCoercedTypeMap = CollectionUtils.AddDictionary(nodeToCoercedTypeMap, args[1], DType.String)
+        nodeToCoercedTypeMap = CollectionUtils.AddDictionary(
+          nodeToCoercedTypeMap,
+          args[1],
+          DType.String
+        )
       } else {
         fValid = false
-        errors.ensureErrorWithSeverity(DocumentErrorSeverity.Severe, args[1], TexlStrings.ErrStringExpected)
+        errors.ensureErrorWithSeverity(
+          DocumentErrorSeverity.Severe,
+          args[1],
+          TexlStrings.ErrStringExpected
+        )
       }
     }
 
-    returnType = DType.CreateTable(new TypedName(DType.Number, FindTFunction.OneColumnTableResultName))
+    returnType = DType.CreateTable(
+      new TypedName(DType.Number, FindTFunction.OneColumnTableResultName)
+    )
 
-    var hasStartIndex = argTypes.length == 3
+    let hasStartIndex = argTypes.length == 3
 
     if (hasStartIndex) {
-      var type2 = argTypes[2]
+      let type2 = argTypes[2]
 
       // Arg2 should be either a number or a column of numbers.
       if (argTypes[2].isTable) {
-        let checkNumericColumnType = super.checkNumericColumnType(type2, args[2], errors, nodeToCoercedTypeMap)
+        let checkNumericColumnType = super.checkNumericColumnType(
+          type2,
+          args[2],
+          errors,
+          nodeToCoercedTypeMap
+        )
         nodeToCoercedTypeMap = checkNumericColumnType[1]
         fValid = fValid && checkNumericColumnType[0]
 
         // fValid &= CheckNumericColumnType(type2, args[2], errors, ref nodeToCoercedTypeMap);
       } else if (!DType.Number.accepts(type2)) {
         if (type2.coercesTo(DType.Number)) {
-          nodeToCoercedTypeMap = CollectionUtils.AddDictionary(nodeToCoercedTypeMap, args[2], DType.Number)
+          nodeToCoercedTypeMap = CollectionUtils.AddDictionary(
+            nodeToCoercedTypeMap,
+            args[2],
+            DType.Number
+          )
         } else {
           fValid = false
-          errors.ensureErrorWithSeverity(DocumentErrorSeverity.Severe, args[2], TexlStrings.ErrNumberExpected)
+          errors.ensureErrorWithSeverity(
+            DocumentErrorSeverity.Severe,
+            args[2],
+            TexlStrings.ErrNumberExpected
+          )
         }
       }
     }
 
     // At least one arg has to be a table.
-    if (!(type0.isTable || type1.isTable) && (!hasStartIndex || !argTypes[2].isTable)) {
+    if (
+      !(type0.isTable || type1.isTable) &&
+      (!hasStartIndex || !argTypes[2].isTable)
+    ) {
       fValid = false
     }
     return [fValid, { returnType, nodeToCoercedTypeMap }]

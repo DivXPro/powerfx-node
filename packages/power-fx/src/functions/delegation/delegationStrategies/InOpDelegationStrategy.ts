@@ -23,7 +23,7 @@ export class InOpDelegationStrategy extends BinaryOpDelegationStrategy {
 
   constructor(
     node: BinaryOpNode,
-    fn: TexlFunction, // : base(BinaryOp.In, function)
+    fn: TexlFunction // : base(BinaryOp.In, function)
   ) {
     // Contracts.AssertValue(node);
     // Contracts.Assert(node.Op == BinaryOp.In);
@@ -32,7 +32,11 @@ export class InOpDelegationStrategy extends BinaryOpDelegationStrategy {
     this._binaryOpNode = node
   }
 
-  public isSupportedOpNode(node: TexlNode, metadata: OperationCapabilityMetadata, binding: TexlBinding): boolean {
+  public isSupportedOpNode(
+    node: TexlNode,
+    metadata: OperationCapabilityMetadata,
+    binding: TexlBinding
+  ): boolean {
     // Contracts.AssertValue(node);
     // Contracts.AssertValue(metadata);
     // Contracts.AssertValue(binding);
@@ -42,7 +46,11 @@ export class InOpDelegationStrategy extends BinaryOpDelegationStrategy {
       return false
     }
 
-    const isRHSDelegableTable = this.IsRHSDelegableTable(binding, binaryOpNode, metadata)
+    const isRHSDelegableTable = this.IsRHSDelegableTable(
+      binding,
+      binaryOpNode,
+      metadata
+    )
 
     let columnName: DName = null
     let info: FirstNameInfo = null
@@ -53,17 +61,23 @@ export class InOpDelegationStrategy extends BinaryOpDelegationStrategy {
       binding,
       node,
       columnName,
-      info,
+      info
     )
     columnName = fieldAccessResult[1].columnName
     info = fieldAccessResult[1].info
     const isFullyQualifiedFieldAccess = fieldAccessResult[0]
-    // var isFullyQualifiedFieldAccess = CheckForFullyQualifiedFieldAccess(isRHSDelegableTable, binaryOpNode, binding, node, ref columnName, ref info);
+    // let isFullyQualifiedFieldAccess = CheckForFullyQualifiedFieldAccess(isRHSDelegableTable, binaryOpNode, binding, node, ref columnName, ref info);
     if (!isFullyQualifiedFieldAccess) {
       return false
     }
 
-    var isRowScopedOrLambda = this.IsRowScopedOrLambda(binding, node, info, columnName, metadata)
+    let isRowScopedOrLambda = this.IsRowScopedOrLambda(
+      binding,
+      node,
+      info,
+      columnName,
+      metadata
+    )
     if (!isRowScopedOrLambda) {
       return false
     }
@@ -74,7 +88,7 @@ export class InOpDelegationStrategy extends BinaryOpDelegationStrategy {
   public IsRHSDelegableTable(
     binding: TexlBinding,
     binaryOpNode: BinaryOpNode,
-    metadata: OperationCapabilityMetadata,
+    metadata: OperationCapabilityMetadata
   ): boolean {
     // Contracts.AssertValue(binding);
     // Contracts.AssertValue(binaryOpNode);
@@ -82,13 +96,15 @@ export class InOpDelegationStrategy extends BinaryOpDelegationStrategy {
 
     const rightNodeType = binding.getType(binaryOpNode.right)
 
-    const hasEnhancedDelegation = binding.document.properties.enabledFeatures.isEnhancedDelegationEnabled
+    const hasEnhancedDelegation =
+      binding.document.properties.enabledFeatures.isEnhancedDelegationEnabled
     const isColumn = rightNodeType?.isColumn == true
     const isDelegationSupportedByTable = metadata.isDelegationSupportedByTable(
-      new DelegationCapability(DelegationCapability.CdsIn),
+      new DelegationCapability(DelegationCapability.CdsIn)
     )
     const hasLeftFirstNameNodeOrIsFullRecordRowScopeAccess =
-      binaryOpNode.left?.asFirstName() != null || binding.isFullRecordRowScopeAccess(binaryOpNode.left)
+      binaryOpNode.left?.asFirstName() != null ||
+      binding.isFullRecordRowScopeAccess(binaryOpNode.left)
 
     return (
       hasEnhancedDelegation &&
@@ -104,39 +120,54 @@ export class InOpDelegationStrategy extends BinaryOpDelegationStrategy {
     binding: TexlBinding,
     node: TexlNode,
     columnName: DName,
-    info: FirstNameInfo,
+    info: FirstNameInfo
   ): [boolean, { columnName: DName; info: FirstNameInfo }] {
     // Contracts.AssertValue(binaryOpNode);
     // Contracts.AssertValue(binding);
     // Contracts.AssertValue(node);
 
     // Check for fully qualified field access
-    var firstNameNode = isRHSDelegableTable ? binaryOpNode.left?.asFirstName() : binaryOpNode.right?.asFirstName()
-    var dottedNameNode = isRHSDelegableTable ? binaryOpNode.left?.asDottedName() : binaryOpNode.right?.asDottedName()
+    let firstNameNode = isRHSDelegableTable
+      ? binaryOpNode.left?.asFirstName()
+      : binaryOpNode.right?.asFirstName()
+    let dottedNameNode = isRHSDelegableTable
+      ? binaryOpNode.left?.asDottedName()
+      : binaryOpNode.right?.asDottedName()
 
     if (
       dottedNameNode != null &&
       dottedNameNode.left instanceof FirstNameNode &&
-      (info = binding.getInfo(dottedNameNode.left))?.kind == BindKind.LambdaFullRecord
+      (info = binding.getInfo(dottedNameNode.left))?.kind ==
+        BindKind.LambdaFullRecord
     ) {
       columnName = dottedNameNode.right.name
     } else if (firstNameNode == null) {
-      this.suggestDelegationHint(node, binding, TexlStrings.SuggestRemoteExecutionHint_InOpRhs)
+      this.suggestDelegationHint(
+        node,
+        binding,
+        TexlStrings.SuggestRemoteExecutionHint_InOpRhs
+      )
       TrackingProvider.Instance.addSuggestionMessage(
         this.formatTelemetryMessage('RHS not valid delegation target'),
         this._binaryOpNode.right,
-        binding,
+        binding
       )
       return [false, { columnName, info }]
     } else {
       info = binding.getInfo(firstNameNode)
       if (info == null) {
-        this.suggestDelegationHint(node, binding, TexlStrings.SuggestRemoteExecutionHint_InOpRhs)
+        this.suggestDelegationHint(
+          node,
+          binding,
+          TexlStrings.SuggestRemoteExecutionHint_InOpRhs
+        )
         const structure = StructuralPrint.Print(binding.top, binding)
         TrackingProvider.Instance.addSuggestionMessage(
-          this.formatTelemetryMessage(`RHS unbound delegation target in rule: ${structure}`),
+          this.formatTelemetryMessage(
+            `RHS unbound delegation target in rule: ${structure}`
+          ),
           this._binaryOpNode.right,
-          binding,
+          binding
         )
         return [false, { columnName, info }]
       }
@@ -152,7 +183,7 @@ export class InOpDelegationStrategy extends BinaryOpDelegationStrategy {
     node: TexlNode,
     info: FirstNameInfo,
     columnName: DName,
-    metadata: OperationCapabilityMetadata,
+    metadata: OperationCapabilityMetadata
   ): boolean {
     // Contracts.AssertValue(binding);
     // Contracts.AssertValue(node);
@@ -162,12 +193,19 @@ export class InOpDelegationStrategy extends BinaryOpDelegationStrategy {
     // Only rowscoped and lambda scoped nodes are supported on rhs
     // Note: In certain error cases, info may be null.
     const bindKind = info.kind
-    if (bindKind != BindKind.LambdaField && bindKind != BindKind.LambdaFullRecord) {
-      this.suggestDelegationHint(node, binding, TexlStrings.SuggestRemoteExecutionHint_InOpRhs)
+    if (
+      bindKind != BindKind.LambdaField &&
+      bindKind != BindKind.LambdaFullRecord
+    ) {
+      this.suggestDelegationHint(
+        node,
+        binding,
+        TexlStrings.SuggestRemoteExecutionHint_InOpRhs
+      )
       TrackingProvider.Instance.addSuggestionMessage(
         this.formatTelemetryMessage('RHS not RowScope or LambdaParam'),
         this._binaryOpNode.right,
-        binding,
+        binding
       )
       return false
     }
@@ -176,29 +214,37 @@ export class InOpDelegationStrategy extends BinaryOpDelegationStrategy {
 
     // For this to be delegable, rhs needs to be a column that belongs to innermost scoped delegable datasource.
     if (columnMetadata == null || info.upCount != 0) {
-      this.suggestDelegationHint(node, binding, TexlStrings.SuggestRemoteExecutionHint_InOpInvalidColumn)
+      this.suggestDelegationHint(
+        node,
+        binding,
+        TexlStrings.SuggestRemoteExecutionHint_InOpInvalidColumn
+      )
       TrackingProvider.Instance.addSuggestionMessage(
         this.formatTelemetryMessage('RHS not delegable node'),
         this._binaryOpNode.right,
-        binding,
+        binding
       )
       return false
     }
 
-    var columnPath = DPath.Root.append(columnName)
+    let columnPath = DPath.Root.append(columnName)
 
     if (
       !columnMetadata.filterDelegationMetadata.isDelegationSupportedByColumn(
         columnPath,
-        new DelegationCapability(DelegationCapability.Contains),
+        new DelegationCapability(DelegationCapability.Contains)
       ) &&
       !columnMetadata.filterDelegationMetadata.isDelegationSupportedByColumn(
         columnPath,
-        new DelegationCapability(DelegationCapability.IndexOf | DelegationCapability.GreaterThan),
+        new DelegationCapability(
+          DelegationCapability.IndexOf | DelegationCapability.GreaterThan
+        )
       ) &&
       !columnMetadata.filterDelegationMetadata.isDelegationSupportedByColumn(
         columnPath,
-        new DelegationCapability(DelegationCapability.SubStringOf | DelegationCapability.Equal),
+        new DelegationCapability(
+          DelegationCapability.SubStringOf | DelegationCapability.Equal
+        )
       )
     ) {
       this.suggestDelegationHintAndAddTelemetryMessage(
@@ -206,7 +252,7 @@ export class InOpDelegationStrategy extends BinaryOpDelegationStrategy {
         binding,
         this.formatTelemetryMessage('Not supported by column.'),
         TexlStrings.OpNotSupportedByColumnSuggestionMessage_OpNotSupportedByColumn,
-        CharacterUtils.MakeSafeForFormatString(columnName.value),
+        CharacterUtils.MakeSafeForFormatString(columnName.value)
       )
       return false
     }
@@ -218,7 +264,7 @@ export class InOpDelegationStrategy extends BinaryOpDelegationStrategy {
     metadata: OperationCapabilityMetadata,
     column: TexlNode,
     columnPath: DPath,
-    binding: TexlBinding,
+    binding: TexlBinding
   ): boolean {
     // Contracts.AssertValue(metadata);
     // Contracts.AssertValue(binding);
@@ -228,7 +274,7 @@ export class InOpDelegationStrategy extends BinaryOpDelegationStrategy {
         column,
         binding,
         TexlStrings.OpNotSupportedByClientSuggestionMessage_OpNotSupportedByClient,
-        this.op.toString(),
+        this.op.toString()
       )
       return false
     }
@@ -237,7 +283,11 @@ export class InOpDelegationStrategy extends BinaryOpDelegationStrategy {
     return DType.String.accepts(nodeType) || nodeType.coercesTo(DType.String)[0]
   }
 
-  public IsOpSupportedByTable(metadata: OperationCapabilityMetadata, node: TexlNode, binding: TexlBinding): boolean {
+  public IsOpSupportedByTable(
+    metadata: OperationCapabilityMetadata,
+    node: TexlNode,
+    binding: TexlBinding
+  ): boolean {
     // Contracts.AssertValue(metadata)
     // Contracts.AssertValue(node)
     // Contracts.AssertValue(binding)
@@ -247,7 +297,7 @@ export class InOpDelegationStrategy extends BinaryOpDelegationStrategy {
         node,
         binding,
         TexlStrings.OpNotSupportedByClientSuggestionMessage_OpNotSupportedByClient,
-        this.op.toString(),
+        this.op.toString()
       )
       return false
     }
@@ -257,7 +307,9 @@ export class InOpDelegationStrategy extends BinaryOpDelegationStrategy {
       !(
         this._binaryOpNode.right.kind == NodeKind.FirstName ||
         binding.isFullRecordRowScopeAccess(this._binaryOpNode.right) ||
-        (metadata.isDelegationSupportedByTable(new DelegationCapability(DelegationCapability.CdsIn)) &&
+        (metadata.isDelegationSupportedByTable(
+          new DelegationCapability(DelegationCapability.CdsIn)
+        ) &&
           (this._binaryOpNode.left.kind == NodeKind.FirstName ||
             binding.isFullRecordRowScopeAccess(this._binaryOpNode.left)) &&
           (this._binaryOpNode.right.kind == NodeKind.Table ||
@@ -267,14 +319,22 @@ export class InOpDelegationStrategy extends BinaryOpDelegationStrategy {
       return false
     }
 
-    var supported =
-      metadata.isDelegationSupportedByTable(new DelegationCapability(DelegationCapability.Contains)) ||
-      metadata.isDelegationSupportedByTable(new DelegationCapability(DelegationCapability.CdsIn)) ||
+    let supported =
       metadata.isDelegationSupportedByTable(
-        new DelegationCapability(DelegationCapability.IndexOf | DelegationCapability.GreaterThan),
+        new DelegationCapability(DelegationCapability.Contains)
       ) ||
       metadata.isDelegationSupportedByTable(
-        new DelegationCapability(DelegationCapability.SubStringOf | DelegationCapability.Equal),
+        new DelegationCapability(DelegationCapability.CdsIn)
+      ) ||
+      metadata.isDelegationSupportedByTable(
+        new DelegationCapability(
+          DelegationCapability.IndexOf | DelegationCapability.GreaterThan
+        )
+      ) ||
+      metadata.isDelegationSupportedByTable(
+        new DelegationCapability(
+          DelegationCapability.SubStringOf | DelegationCapability.Equal
+        )
       )
 
     if (!supported) {
@@ -282,7 +342,7 @@ export class InOpDelegationStrategy extends BinaryOpDelegationStrategy {
         node,
         binding,
         TexlStrings.OpNotSupportedByServiceSuggestionMessage_OpNotSupportedByService,
-        this.op.toString(),
+        this.op.toString()
       )
       return false
     }

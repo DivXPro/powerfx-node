@@ -31,7 +31,7 @@ export class StringBuilder {
     if (this._capacity < least) {
       const tmpBuffer = this.buffer
       this.buffer = new Uint8Array(least)
-      for (var i = 0; i < this.bufferConsumed; i++) {
+      for (let i = 0; i < this.bufferConsumed; i++) {
         this.buffer[i] = tmpBuffer[i]
       }
       this._capacity = least
@@ -43,13 +43,13 @@ export class StringBuilder {
       this.capacityGrow(length)
       const tmpBuffer = this.buffer
       this.buffer = new Uint8Array(this.capacity)
-      for (var i = 0; i < this.bufferConsumed; i++) {
+      for (let i = 0; i < this.bufferConsumed; i++) {
         this.buffer[i] = tmpBuffer[i]
       }
     } else if (length < this.bufferConsumed) {
       const tmpBuffer = this.buffer
       this.buffer = new Uint8Array(this.capacity)
-      for (var i = 0; i < length; i++) {
+      for (let i = 0; i < length; i++) {
         this.buffer[i] = tmpBuffer[i]
       }
       this.bufferConsumed = length
@@ -76,14 +76,20 @@ export class StringBuilder {
     this.append(`${strToAdd}\n`)
   }
 
-  public append(strToAdd: string | number, startIndex?: number, count?: number): StringBuilder {
+  public append(
+    strToAdd: string | number,
+    startIndex?: number,
+    count?: number
+  ): StringBuilder {
     // O(N) copy but ammortized to O(1) over all concats
-    const encodedStr = this.utf8Encoder.encode(strToAdd.toString().substr(startIndex, count))
+    const encodedStr = this.utf8Encoder.encode(
+      strToAdd.toString().substr(startIndex, count)
+    )
     this.capacityGrow(encodedStr.length)
     if (this.buffer.length < this.capacity) {
       const tmpBuffer = this.buffer
       this.buffer = new Uint8Array(this.capacity)
-      for (var i = 0; i < this.bufferConsumed; i++) {
+      for (let i = 0; i < this.bufferConsumed; i++) {
         this.buffer[i] = tmpBuffer[i]
       }
     }
@@ -100,7 +106,7 @@ export class StringBuilder {
     //   }
     //   this.bufferConsumed += encodedStr.length
     // } else {
-    //   for (var i = 0; i < encodedStr.length; i++) {
+    //   for (let i = 0; i < encodedStr.length; i++) {
     //     this.buffer[i + this.bufferConsumed] = encodedStr[i]
     //   }
     //   this.bufferConsumed += encodedStr.length
@@ -116,7 +122,7 @@ export class StringBuilder {
   //   if (this.buffer.length < this.capacity) {
   //     const tmpBuffer = this.buffer
   //     this.buffer = new Uint8Array(this.capacity)
-  //     for (var i = 0; i < this.bufferConsumed; i++) {
+  //     for (let i = 0; i < this.bufferConsumed; i++) {
   //       this.buffer[i] = tmpBuffer[i]
   //     }
   //   }

@@ -1,8 +1,17 @@
 import { TexlBinding } from '../../../binding/Binder'
 import { BinaryOp } from '../../../lexer/BinaryOp'
 import { TexlStrings } from '../../../localization'
-import { DelegationStatus, DelegationTelemetryInfo, TrackingProvider } from '../../../logging/trackers'
-import { BinaryOpNode, DottedNameNode, FirstNameNode, TexlNode } from '../../../syntax'
+import {
+  DelegationStatus,
+  DelegationTelemetryInfo,
+  TrackingProvider,
+} from '../../../logging/trackers'
+import {
+  BinaryOpNode,
+  DottedNameNode,
+  FirstNameNode,
+  TexlNode,
+} from '../../../syntax'
 import { NodeKind } from '../../../syntax/NodeKind'
 import { DKind } from '../../../types/DKind'
 import { CharacterUtils } from '../../../utils/CharacterUtils'
@@ -14,7 +23,10 @@ import { OperationCapabilityMetadata } from '../OperationCapabilityMetadata'
 import { DelegationValidationStrategy } from './DelegationValidationStrategy'
 import { IOpDelegationStrategy } from './IOpDelegationStrategy'
 
-export abstract class BinaryOpDelegationStrategy extends DelegationValidationStrategy implements IOpDelegationStrategy {
+export abstract class BinaryOpDelegationStrategy
+  extends DelegationValidationStrategy
+  implements IOpDelegationStrategy
+{
   private readonly _function: TexlFunction
   private _op: BinaryOp
 
@@ -38,31 +50,38 @@ export abstract class BinaryOpDelegationStrategy extends DelegationValidationStr
     metadata: OperationCapabilityMetadata,
     column: TexlNode,
     columnPath: DPath,
-    binder: TexlBinding,
+    binder: TexlBinding
   ): boolean {
     // Contracts.AssertValue(metadata);
     // Contracts.AssertValue(column);
     // Contracts.AssertValue(binder);
 
-    const result = metadata.isBinaryOpInDelegationSupportedByColumn(this.op, columnPath)
+    const result = metadata.isBinaryOpInDelegationSupportedByColumn(
+      this.op,
+      columnPath
+    )
     if (!result) {
       TrackingProvider.Instance.addSuggestionMessage(
         this.formatTelemetryMessage('Operator not supported by column.'),
         column,
-        binder,
+        binder
       )
       this.suggestDelegationHint(
         column,
         binder,
         TexlStrings.OpNotSupportedByColumnSuggestionMessage_OpNotSupportedByColumn,
-        CharacterUtils.MakeSafeForFormatString(columnPath.toString()),
+        CharacterUtils.MakeSafeForFormatString(columnPath.toString())
       )
     }
 
     return result
   }
 
-  public isOpSupportedByTable(metadata: OperationCapabilityMetadata, node: TexlNode, binding: TexlBinding): boolean {
+  public isOpSupportedByTable(
+    metadata: OperationCapabilityMetadata,
+    node: TexlNode,
+    binding: TexlBinding
+  ): boolean {
     // Contracts.AssertValue(metadata);
     // Contracts.AssertValue(node);
     // Contracts.AssertValue(binding);
@@ -72,7 +91,7 @@ export abstract class BinaryOpDelegationStrategy extends DelegationValidationStr
         node,
         binding,
         TexlStrings.OpNotSupportedByClientSuggestionMessage_OpNotSupportedByClient,
-        this.op.toString(),
+        this.op.toString()
       )
       return false
     }
@@ -82,7 +101,7 @@ export abstract class BinaryOpDelegationStrategy extends DelegationValidationStr
         node,
         binding,
         TexlStrings.OpNotSupportedByServiceSuggestionMessage_OpNotSupportedByService,
-        this.op.toString(),
+        this.op.toString()
       )
       return false
     }
@@ -95,7 +114,7 @@ export abstract class BinaryOpDelegationStrategy extends DelegationValidationStr
     metadata: OperationCapabilityMetadata,
     binding: TexlBinding,
     opDelStrategy: IOpDelegationStrategy,
-    isRHSNode: boolean,
+    isRHSNode: boolean
   ): boolean {
     // Contracts.AssertValue(node);
     // Contracts.AssertValue(metadata);
@@ -116,13 +135,17 @@ export abstract class BinaryOpDelegationStrategy extends DelegationValidationStr
       // ClearCollect(Names, Accounts); Filter(Accounts, 'Account Name' in Names.'Account Name') - using column from collection.
       // This won't be delegated - Filter(Accounts, 'Account Name' in Accounts.'Account Name') as Accounts.'Account Name' is async.
       if (
-        (binding.document.properties.enabledFeatures.isEnhancedDelegationEnabled &&
+        (binding.document.properties.enabledFeatures
+          .isEnhancedDelegationEnabled &&
           isRHSNode &&
-          (opDelStrategy as unknown as BinaryOpDelegationStrategy)?.op == BinaryOp.In &&
+          (opDelStrategy as unknown as BinaryOpDelegationStrategy)?.op ==
+            BinaryOp.In &&
           !binding.isAsync(node) &&
           binding.getType(node).isTable &&
           binding.getType(node).isColumn &&
-          metadata.isDelegationSupportedByTable(new DelegationCapability(DelegationCapability.CdsIn))) ||
+          metadata.isDelegationSupportedByTable(
+            new DelegationCapability(DelegationCapability.CdsIn)
+          )) ||
         this.isValidNode(node, binding)
       ) {
         return true
@@ -135,8 +158,14 @@ export abstract class BinaryOpDelegationStrategy extends DelegationValidationStr
           return false
         }
 
-        var dottedNodeValStrategy = this._function.getDottedNameNodeDelegationStrategy()
-        return dottedNodeValStrategy.isValidDottedNameNode(node.asDottedName(), binding, metadata, opDelStrategy)
+        let dottedNodeValStrategy =
+          this._function.getDottedNameNodeDelegationStrategy()
+        return dottedNodeValStrategy.isValidDottedNameNode(
+          node.asDottedName(),
+          binding,
+          metadata,
+          opDelStrategy
+        )
       }
 
       case NodeKind.Call: {
@@ -144,13 +173,22 @@ export abstract class BinaryOpDelegationStrategy extends DelegationValidationStr
           return false
         }
 
-        var cNodeValStrategy = this._function.getCallNodeDelegationStrategy()
-        return cNodeValStrategy.isValidCallNode(node.asCall(), binding, metadata)
+        let cNodeValStrategy = this._function.getCallNodeDelegationStrategy()
+        return cNodeValStrategy.isValidCallNode(
+          node.asCall(),
+          binding,
+          metadata
+        )
       }
 
       case NodeKind.FirstName: {
-        var firstNameNodeValStrategy = this._function.getFirstNameNodeDelegationStrategy()
-        return firstNameNodeValStrategy.isValidFirstNameNode(node.asFirstName(), binding, opDelStrategy)
+        let firstNameNodeValStrategy =
+          this._function.getFirstNameNodeDelegationStrategy()
+        return firstNameNodeValStrategy.isValidFirstNameNode(
+          node.asFirstName(),
+          binding,
+          opDelStrategy
+        )
       }
 
       case NodeKind.UnaryOp: {
@@ -159,8 +197,13 @@ export abstract class BinaryOpDelegationStrategy extends DelegationValidationStr
         }
 
         const unaryopNode = node.asUnaryOpLit()
-        const unaryOpNodeDelegationStrategy = this._function.getOpDelegationStrategyOfUnaryOp(unaryopNode.op)
-        return unaryOpNodeDelegationStrategy.isSupportedOpNode(unaryopNode, metadata, binding)
+        const unaryOpNodeDelegationStrategy =
+          this._function.getOpDelegationStrategyOfUnaryOp(unaryopNode.op)
+        return unaryOpNodeDelegationStrategy.isSupportedOpNode(
+          unaryopNode,
+          metadata,
+          binding
+        )
       }
 
       case NodeKind.BinaryOp: {
@@ -169,9 +212,13 @@ export abstract class BinaryOpDelegationStrategy extends DelegationValidationStr
         }
 
         const binaryOpNode = node.asBinaryOp()
-        opDelStrategy = this._function.getOpDelegationStrategy(binaryOpNode.op, binaryOpNode)
+        opDelStrategy = this._function.getOpDelegationStrategy(
+          binaryOpNode.op,
+          binaryOpNode
+        )
 
-        const binaryOpDelStrategy = opDelStrategy as unknown as BinaryOpDelegationStrategy
+        const binaryOpDelStrategy =
+          opDelStrategy as unknown as BinaryOpDelegationStrategy
         // Contracts.Assert(binaryOpNode.op == binaryOpDelStrategy.op);
 
         if (!opDelStrategy.isSupportedOpNode(node, metadata, binding)) {
@@ -184,9 +231,17 @@ export abstract class BinaryOpDelegationStrategy extends DelegationValidationStr
 
       default: {
         const kind = node.kind
-        if (kind != NodeKind.BoolLit && kind != NodeKind.StrLit && kind != NodeKind.NumLit) {
+        if (
+          kind != NodeKind.BoolLit &&
+          kind != NodeKind.StrLit &&
+          kind != NodeKind.NumLit
+        ) {
           const telemetryMessage = `NodeKind ${kind} unsupported.`
-          this.suggestDelegationHintAndAddTelemetryMessage(node, binding, telemetryMessage)
+          this.suggestDelegationHintAndAddTelemetryMessage(
+            node,
+            binding,
+            telemetryMessage
+          )
           return false
         }
 
@@ -207,7 +262,7 @@ export abstract class BinaryOpDelegationStrategy extends DelegationValidationStr
   private doCoercionCheck(
     binaryOpNode: BinaryOpNode,
     metadata: OperationCapabilityMetadata,
-    binding: TexlBinding,
+    binding: TexlBinding
   ): boolean {
     // Contracts.AssertValue(binaryOpNode);
     // Contracts.AssertValue(metadata);
@@ -220,18 +275,26 @@ export abstract class BinaryOpDelegationStrategy extends DelegationValidationStr
       case DKind.Date:
         if (rightType.kind == DKind.DateTime) {
           // If rhs is a column of type DateTime and lhs is row scoped then we will need to apply the coercion on rhs. So check if coercion function date is supported or not.
-          if (this.isColumnNode(binaryOpNode.right, binding) && binding.isRowScope(binaryOpNode.left)) {
+          if (
+            this.isColumnNode(binaryOpNode.right, binding) &&
+            binding.isRowScope(binaryOpNode.left)
+          ) {
             return this.isDelegatableColumnNode(
               binaryOpNode.right.asFirstName(),
               binding,
               null,
-              new DelegationCapability(DelegationCapability.Date),
+              new DelegationCapability(DelegationCapability.Date)
             )
           }
 
           // If lhs is rowscoped but not a field reference and rhs is rowscoped then we need to check if it's supported at table level.
-          if (binding.isRowScope(binaryOpNode.left) && binding.isRowScope(binaryOpNode.right)) {
-            return metadata.isDelegationSupportedByTable(new DelegationCapability(DelegationCapability.Date))
+          if (
+            binding.isRowScope(binaryOpNode.left) &&
+            binding.isRowScope(binaryOpNode.right)
+          ) {
+            return metadata.isDelegationSupportedByTable(
+              new DelegationCapability(DelegationCapability.Date)
+            )
           }
 
           return true
@@ -241,18 +304,26 @@ export abstract class BinaryOpDelegationStrategy extends DelegationValidationStr
       case DKind.DateTime:
         if (rightType.kind == DKind.Date) {
           // If lhs is a column of type DateTime and RHS is also row scoped then check if coercion function date is supported or not.
-          if (this.isColumnNode(binaryOpNode.left, binding) && binding.isRowScope(binaryOpNode.right)) {
+          if (
+            this.isColumnNode(binaryOpNode.left, binding) &&
+            binding.isRowScope(binaryOpNode.right)
+          ) {
             return this.isDelegatableColumnNode(
               binaryOpNode.left.asFirstName(),
               binding,
               null,
-              new DelegationCapability(DelegationCapability.Date),
+              new DelegationCapability(DelegationCapability.Date)
             )
           }
 
           // If lhs is rowscoped but not a field reference and rhs is rowscoped then we need to check if it's supported at table level.
-          if (binding.isRowScope(binaryOpNode.left) && binding.isRowScope(binaryOpNode.right)) {
-            return metadata.isDelegationSupportedByTable(new DelegationCapability(DelegationCapability.Date))
+          if (
+            binding.isRowScope(binaryOpNode.left) &&
+            binding.isRowScope(binaryOpNode.right)
+          ) {
+            return metadata.isDelegationSupportedByTable(
+              new DelegationCapability(DelegationCapability.Date)
+            )
           }
 
           return true
@@ -265,7 +336,11 @@ export abstract class BinaryOpDelegationStrategy extends DelegationValidationStr
     return true
   }
 
-  public isSupportedOpNode(node: TexlNode, metadata: OperationCapabilityMetadata, binding: TexlBinding): boolean {
+  public isSupportedOpNode(
+    node: TexlNode,
+    metadata: OperationCapabilityMetadata,
+    binding: TexlBinding
+  ): boolean {
     // Contracts.AssertValue(node);
     // Contracts.AssertValue(metadata);
     // Contracts.AssertValue(binding);
@@ -275,48 +350,85 @@ export abstract class BinaryOpDelegationStrategy extends DelegationValidationStr
       return false
     }
 
-    const opDelStrategy = this._function.getOpDelegationStrategy(binaryOpNode.op, binaryOpNode)
-    const binaryOpDelStrategy = opDelStrategy as unknown as BinaryOpDelegationStrategy
+    const opDelStrategy = this._function.getOpDelegationStrategy(
+      binaryOpNode.op,
+      binaryOpNode
+    )
+    const binaryOpDelStrategy =
+      opDelStrategy as unknown as BinaryOpDelegationStrategy
     // Contracts.Assert(binaryOpNode.Op == binaryOpDelStrategy.Op);
 
     // Check if binaryOp is supported by datasource in the context of filter operation.
     // If this is not allowed then there is no point in checking lhs and rhs
     // It's only safe to do so if lhs and rhs is first/dotted name node as columns (FirstName/DottedName node) can have additional capabilities defined.
     if (
-      !(binaryOpNode.left instanceof FirstNameNode || binaryOpNode.left instanceof DottedNameNode) &&
-      !(binaryOpNode.right instanceof FirstNameNode || binaryOpNode.right instanceof DottedNameNode) &&
+      !(
+        binaryOpNode.left instanceof FirstNameNode ||
+        binaryOpNode.left instanceof DottedNameNode
+      ) &&
+      !(
+        binaryOpNode.right instanceof FirstNameNode ||
+        binaryOpNode.right instanceof DottedNameNode
+      ) &&
       !opDelStrategy.isOpSupportedByTable(metadata, node, binding)
     ) {
       const telemetryMessage = `${binaryOpNode.op.toString()} operator not supported at table level`
-      this.suggestDelegationHintAndAddTelemetryMessage(node, binding, telemetryMessage)
+      this.suggestDelegationHintAndAddTelemetryMessage(
+        node,
+        binding,
+        telemetryMessage
+      )
       TrackingProvider.Instance.setDelegationTrackerStatus(
         DelegationStatus.BinaryOpNoSupported,
         node,
         binding,
         this._function,
-        DelegationTelemetryInfo.CreateBinaryOpNoSupportedInfoTelemetryInfo(binaryOpNode.op),
+        DelegationTelemetryInfo.CreateBinaryOpNoSupportedInfoTelemetryInfo(
+          binaryOpNode.op
+        )
       )
       return false
     }
 
-    if (!ODataFunctionMappings.BinaryOpToOperatorMap.value.has(binaryOpNode.op)) {
+    if (
+      !ODataFunctionMappings.BinaryOpToOperatorMap.value.has(binaryOpNode.op)
+    ) {
       this.suggestDelegationHint(node, binding)
       return false
     }
 
-    if (!this.isSupportedNode(binaryOpNode.left, metadata, binding, opDelStrategy, false)) {
+    if (
+      !this.isSupportedNode(
+        binaryOpNode.left,
+        metadata,
+        binding,
+        opDelStrategy,
+        false
+      )
+    ) {
       this.suggestDelegationHint(node, binding)
       return false
     }
 
-    if (!this.isSupportedNode(binaryOpNode.right, metadata, binding, opDelStrategy, true)) {
+    if (
+      !this.isSupportedNode(
+        binaryOpNode.right,
+        metadata,
+        binding,
+        opDelStrategy,
+        true
+      )
+    ) {
       this.suggestDelegationHint(node, binding)
       return false
     }
 
     const leftType = binding.getType(binaryOpNode.left)
     const rightType = binding.getType(binaryOpNode.right)
-    if ((leftType.isPolymorphic && rightType.isRecord) || (leftType.isRecord && rightType.isPolymorphic)) {
+    if (
+      (leftType.isPolymorphic && rightType.isRecord) ||
+      (leftType.isRecord && rightType.isPolymorphic)
+    ) {
       return true
     }
 

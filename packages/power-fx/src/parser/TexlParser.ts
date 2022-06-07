@@ -9,7 +9,12 @@ import { StrLitToken } from '../lexer/tokens/StrLitToken'
 import { TokKind } from '../lexer/TokKind'
 import { UnaryOp } from '../lexer/UnaryOp'
 import { VariadicOp } from '../lexer/VariadicOp'
-import { ErrorResourceKey, ILanguageSettings, Span, TexlStrings } from '../localization'
+import {
+  ErrorResourceKey,
+  ILanguageSettings,
+  Span,
+  TexlStrings,
+} from '../localization'
 import {
   AsNode,
   BinaryOpNode,
@@ -98,7 +103,11 @@ export class TexlParser {
   // Parse the script
   // Parsing strips out parens used to establish precedence, but these may be helpful to the
   // caller, so precedenceTokens provide a list of stripped tokens.
-  static ParseScript(script: string, loc: ILanguageSettings = null, flags = TexlParserFlags.None): ParseResult {
+  static ParseScript(
+    script: string,
+    loc: ILanguageSettings = null,
+    flags = TexlParserFlags.None
+  ): ParseResult {
     // Contracts.AssertValue(script);
     // Contracts.AssertValueOrNull(loc);
     const tokens = TexlParser.TokenizeScript(script, loc, flags)
@@ -107,14 +116,28 @@ export class TexlParser {
     const parseTreeResult = parser.parse()
     const parseTree = parseTreeResult[0]
     const errors = parseTreeResult[1]
-    return new ParseResult(parseTree, errors, errors.length > 0, parser._comments, parser._before, parser._after)
+    return new ParseResult(
+      parseTree,
+      errors,
+      errors.length > 0,
+      parser._comments,
+      parser._before,
+      parser._after
+    )
   }
 
-  public static ParseFormulasScript(script: string, loc: ILanguageSettings = null): ParseFormulasResult {
+  public static ParseFormulasScript(
+    script: string,
+    loc: ILanguageSettings = null
+  ): ParseFormulasResult {
     // Contracts.AssertValue(script);
     // Contracts.AssertValueOrNull(loc);
 
-    const formulaTokens = TexlParser.TokenizeScript(script, loc, TexlParserFlags.NamedFormulas)
+    const formulaTokens = TexlParser.TokenizeScript(
+      script,
+      loc,
+      TexlParserFlags.NamedFormulas
+    )
     const parser = new TexlParser(formulaTokens, TexlParserFlags.NamedFormulas)
 
     return parser.parseFormulas(script)
@@ -136,7 +159,10 @@ export class TexlParser {
           while (this._curs.tidCur != TokKind.Semicolon) {
             // Check if we're at EOF before a semicolon is found
             if (this._curs.tidCur == TokKind.Eof) {
-              this.createError(this._curs.tokCur, TexlStrings.ErrNamedFormula_MissingSemicolon)
+              this.createError(
+                this._curs.tokCur,
+                TexlStrings.ErrNamedFormula_MissingSemicolon
+              )
               return new ParseFormulasResult(namedFormulas, this._errors)
             }
 
@@ -157,11 +183,18 @@ export class TexlParser {
     return new ParseFormulasResult(namedFormulas, this._errors)
   }
 
-  private static TokenizeScript(script: string, loc: ILanguageSettings = null, flags = TexlParserFlags.None): Token[] {
+  private static TokenizeScript(
+    script: string,
+    loc: ILanguageSettings = null,
+    flags = TexlParserFlags.None
+  ): Token[] {
     // Contracts.AssertValue(script);
     // Contracts.AssertValueOrNull(loc);
 
-    const lexerFlags = hasFlag(flags, TexlParserFlags.AllowReplaceableExpressions)
+    const lexerFlags = hasFlag(
+      flags,
+      TexlParserFlags.AllowReplaceableExpressions
+    )
       ? TexlLexerFlags.AllowReplaceableTokens
       : TexlLexerFlags.None
     if (loc == null) {
@@ -178,7 +211,10 @@ export class TexlParser {
     let firstToken = this._curs.tokCur
     this._before = new SourceList(this.parseTrivia())
     if (this._curs.tidCur == TokKind.Eof) {
-      if (firstToken.Kind == TokKind.Comment && (firstToken as CommentToken).isOpenBlock) {
+      if (
+        firstToken.Kind == TokKind.Comment &&
+        (firstToken as CommentToken).isOpenBlock
+      ) {
         // This provides an error message for when a block comment missing a closing '*/' is the only token in the formula bar
         this.postBlockCommentMissingClosingError()
         errors = this._errors
@@ -193,7 +229,10 @@ export class TexlParser {
       this._after =
         this._after == null
           ? new SourceList([this.parseTrivia()])
-          : new SourceList([new SpreadSource(...this._after.sources), new SpreadSource(this.parseTrivia())])
+          : new SourceList([
+              new SpreadSource(...this._after.sources),
+              new SpreadSource(this.parseTrivia()),
+            ])
 
       // This checks for and provides an error message for any block comments missing a closing '*/'
       this.postBlockCommentMissingClosingError()
@@ -233,7 +272,7 @@ export class TexlParser {
       }
 
       if (cursor.tidCur == TokKind.Comment) {
-        // var comment = cursor.tokMove().As<CommentToken>();
+        // let comment = cursor.tokMove().As<CommentToken>();
         const comment = cursor.tokMove() as CommentToken
         sources.push(new TokenSource(comment))
 
@@ -273,7 +312,10 @@ export class TexlParser {
       // corresponding parse errors.
       if (node == null) {
         if (++this._depth > TexlParser.MaxAllowedExpressionDepth) {
-          return this.createError(this._curs.tokMove(), TexlStrings.ErrRuleNestedTooDeeply)
+          return this.createError(
+            this._curs.tokMove(),
+            TexlStrings.ErrRuleNestedTooDeeply
+          )
         }
         // Get the left operand.
         node = this.parseOperand()
@@ -295,7 +337,7 @@ export class TexlParser {
               tok,
               new SourceList([new NodeSource(node), new TokenSource(tok)]),
               UnaryOp.Percent,
-              node,
+              node
             )
             break
           case TokKind.Dot:
@@ -312,7 +354,14 @@ export class TexlParser {
               tok = this._curs.tokMove()
               rightTrivia = this.parseTrivia()
               right = this.parseExpr(Precedence.Error)
-              node = this.makeBinary(BinaryOp.Error, node, leftTrivia, tok, rightTrivia, right)
+              node = this.makeBinary(
+                BinaryOp.Error,
+                node,
+                leftTrivia,
+                tok,
+                rightTrivia,
+                right
+              )
               break
             } else {
               tok = this._curs.tokMove()
@@ -330,16 +379,24 @@ export class TexlParser {
                 ]),
                 node,
                 identifier,
-                null,
+                null
               )
               if (node.Depth > TexlParser.MaxAllowedExpressionDepth) {
-                return this.createError(node.token, TexlStrings.ErrRuleNestedTooDeeply)
+                return this.createError(
+                  node.token,
+                  TexlStrings.ErrRuleNestedTooDeeply
+                )
               }
               break
             }
           case TokKind.Caret:
             // Contracts.Assert(precMin <= Precedence.Power);
-            node = this.parseBinary(node, leftTrivia, BinaryOp.Power, Precedence.PrefixUnary)
+            node = this.parseBinary(
+              node,
+              leftTrivia,
+              BinaryOp.Power,
+              Precedence.PrefixUnary
+            )
             break
 
           case TokKind.Mul:
@@ -348,7 +405,12 @@ export class TexlParser {
               this.addExtraTrivia(leftTrivia)
               return node
             } else {
-              node = this.parseBinary(node, leftTrivia, BinaryOp.Mul, Precedence.Mul + 1)
+              node = this.parseBinary(
+                node,
+                leftTrivia,
+                BinaryOp.Mul,
+                Precedence.Mul + 1
+              )
               break
             }
           case TokKind.Div:
@@ -360,7 +422,14 @@ export class TexlParser {
               tok = this._curs.tokMove()
               rightTrivia = this.parseTrivia()
               right = this.parseExpr(Precedence.Mul + 1)
-              node = this.makeBinary(BinaryOp.Div, node, leftTrivia, tok, rightTrivia, right)
+              node = this.makeBinary(
+                BinaryOp.Div,
+                node,
+                leftTrivia,
+                tok,
+                rightTrivia,
+                right
+              )
               break
             }
           case TokKind.Sub:
@@ -372,8 +441,21 @@ export class TexlParser {
               tok = this._curs.tokMove()
               rightTrivia = this.parseTrivia()
               right = this.parseExpr(Precedence.Add + 1)
-              right = new UnaryOpNode(this._idNext++, tok, right.sourceList, UnaryOp.Minus, right)
-              node = this.makeBinary(BinaryOp.Add, node, leftTrivia, tok, rightTrivia, right)
+              right = new UnaryOpNode(
+                this._idNext++,
+                tok,
+                right.sourceList,
+                UnaryOp.Minus,
+                right
+              )
+              node = this.makeBinary(
+                BinaryOp.Add,
+                node,
+                leftTrivia,
+                tok,
+                rightTrivia,
+                right
+              )
               break
             }
           case TokKind.Add:
@@ -382,7 +464,12 @@ export class TexlParser {
               this.addExtraTrivia(leftTrivia)
               return node
             } else {
-              node = this.parseBinary(node, leftTrivia, BinaryOp.Add, Precedence.Add + 1)
+              node = this.parseBinary(
+                node,
+                leftTrivia,
+                BinaryOp.Add,
+                Precedence.Add + 1
+              )
               break
             }
           case TokKind.Ampersand:
@@ -391,7 +478,12 @@ export class TexlParser {
               this.addExtraTrivia(leftTrivia)
               return node
             } else {
-              node = this.parseBinary(node, leftTrivia, BinaryOp.Concat, Precedence.Concat + 1)
+              node = this.parseBinary(
+                node,
+                leftTrivia,
+                BinaryOp.Concat,
+                Precedence.Concat + 1
+              )
               break
             }
           case TokKind.KeyAnd:
@@ -401,7 +493,12 @@ export class TexlParser {
               this.addExtraTrivia(leftTrivia)
               return node
             } else {
-              node = this.parseBinary(node, leftTrivia, BinaryOp.And, Precedence.And + 1)
+              node = this.parseBinary(
+                node,
+                leftTrivia,
+                BinaryOp.And,
+                Precedence.And + 1
+              )
               break
             }
           case TokKind.KeyOr:
@@ -411,7 +508,12 @@ export class TexlParser {
               this.addExtraTrivia(leftTrivia)
               return node
             } else {
-              node = this.parseBinary(node, leftTrivia, BinaryOp.Or, Precedence.Or + 1)
+              node = this.parseBinary(
+                node,
+                leftTrivia,
+                BinaryOp.Or,
+                Precedence.Or + 1
+              )
               break
             }
           // Comparison operators
@@ -423,7 +525,12 @@ export class TexlParser {
               this.addExtraTrivia(leftTrivia)
               return node
             } else {
-              node = this.parseBinary(node, leftTrivia, BinaryOp.Equal, Precedence.Compare + 1)
+              node = this.parseBinary(
+                node,
+                leftTrivia,
+                BinaryOp.Equal,
+                Precedence.Compare + 1
+              )
               break
             }
           case TokKind.LssGrt:
@@ -432,7 +539,12 @@ export class TexlParser {
               this.addExtraTrivia(leftTrivia)
               return node
             } else {
-              node = this.parseBinary(node, leftTrivia, BinaryOp.NotEqual, Precedence.Compare + 1)
+              node = this.parseBinary(
+                node,
+                leftTrivia,
+                BinaryOp.NotEqual,
+                Precedence.Compare + 1
+              )
               break
             }
           // expr < expr
@@ -442,7 +554,12 @@ export class TexlParser {
               this.addExtraTrivia(leftTrivia)
               return node
             } else {
-              node = this.parseBinary(node, leftTrivia, BinaryOp.Less, Precedence.Compare + 1)
+              node = this.parseBinary(
+                node,
+                leftTrivia,
+                BinaryOp.Less,
+                Precedence.Compare + 1
+              )
               break
             }
           // expr <= expr
@@ -452,7 +569,12 @@ export class TexlParser {
               this.addExtraTrivia(leftTrivia)
               return node
             } else {
-              node = this.parseBinary(node, leftTrivia, BinaryOp.LessEqual, Precedence.Compare + 1)
+              node = this.parseBinary(
+                node,
+                leftTrivia,
+                BinaryOp.LessEqual,
+                Precedence.Compare + 1
+              )
               break
             }
 
@@ -463,7 +585,12 @@ export class TexlParser {
               this.addExtraTrivia(leftTrivia)
               return node
             } else {
-              node = this.parseBinary(node, leftTrivia, BinaryOp.Greater, Precedence.Compare + 1)
+              node = this.parseBinary(
+                node,
+                leftTrivia,
+                BinaryOp.Greater,
+                Precedence.Compare + 1
+              )
               break
             }
 
@@ -474,7 +601,12 @@ export class TexlParser {
               this.addExtraTrivia(leftTrivia)
               return node
             } else {
-              node = this.parseBinary(node, leftTrivia, BinaryOp.GreaterEqual, Precedence.Compare + 1)
+              node = this.parseBinary(
+                node,
+                leftTrivia,
+                BinaryOp.GreaterEqual,
+                Precedence.Compare + 1
+              )
               break
             }
 
@@ -487,10 +619,20 @@ export class TexlParser {
             tok = this._curs.tokMove()
             rightTrivia = this.parseTrivia()
             right = this.parseExpr(Precedence.Error)
-            node = this.makeBinary(BinaryOp.Error, node, leftTrivia, tok, rightTrivia, right)
+            node = this.makeBinary(
+              BinaryOp.Error,
+              node,
+              leftTrivia,
+              tok,
+              rightTrivia,
+              right
+            )
             break
           case TokKind.ParenOpen:
-            if (!(node instanceof DottedNameNode) || !node.hasPossibleNamespaceQualifier) {
+            if (
+              !(node instanceof DottedNameNode) ||
+              !node.hasPossibleNamespaceQualifier
+            ) {
               // goto default;
               this.addExtraTrivia(leftTrivia)
               return node
@@ -502,7 +644,12 @@ export class TexlParser {
             if (precMin > Precedence.In) {
               // goto default;
             } else {
-              node = this.parseBinary(node, leftTrivia, BinaryOp.In, Precedence.In + 1)
+              node = this.parseBinary(
+                node,
+                leftTrivia,
+                BinaryOp.In,
+                Precedence.In + 1
+              )
               break
             }
           case TokKind.Exactin:
@@ -511,7 +658,12 @@ export class TexlParser {
               this.addExtraTrivia(leftTrivia)
               return node
             } else {
-              node = this.parseBinary(node, leftTrivia, BinaryOp.Exactin, Precedence.In + 1)
+              node = this.parseBinary(
+                node,
+                leftTrivia,
+                BinaryOp.Exactin,
+                Precedence.In + 1
+              )
               break
             }
 
@@ -529,13 +681,23 @@ export class TexlParser {
               // goto default;
               this.addExtraTrivia(leftTrivia)
               return node
-            } else if ((this._flags & TexlParserFlags.EnableExpressionChaining) == 0) {
+            } else if (
+              (this._flags & TexlParserFlags.EnableExpressionChaining) ==
+              0
+            ) {
               // goto case TokKind.False;
               this.postError(this._curs.tokCur, TexlStrings.ErrOperatorExpected)
               tok = this._curs.tokMove()
               rightTrivia = this.parseTrivia()
               right = this.parseExpr(Precedence.Error)
-              node = this.makeBinary(BinaryOp.Error, node, leftTrivia, tok, rightTrivia, right)
+              node = this.makeBinary(
+                BinaryOp.Error,
+                node,
+                leftTrivia,
+                tok,
+                rightTrivia,
+                right
+              )
               break
             } else if (precMin > Precedence.None) {
               // goto default;
@@ -547,7 +709,11 @@ export class TexlParser {
             }
           case TokKind.BracketOpen:
             // Note we explicitly forbid [@foo][@bar], and also A!B!C[@foo], since these are syntactically nonsensical at the moment.
-            if (!(node instanceof FirstNameNode) || node.ident.atToken != null || this._curs.tidPeek() != TokKind.At) {
+            if (
+              !(node instanceof FirstNameNode) ||
+              node.ident.atToken != null ||
+              this._curs.tidPeek() != TokKind.At
+            ) {
               // goto default;
               this.addExtraTrivia(leftTrivia)
               return node
@@ -565,7 +731,10 @@ export class TexlParser {
             if (this._after == null) {
               this._after = new SourceList(leftTrivia)
             } else {
-              this._after = new SourceList([new SpreadSource(...this._after.sources), new SpreadSource(leftTrivia)])
+              this._after = new SourceList([
+                new SpreadSource(...this._after.sources),
+                new SpreadSource(leftTrivia),
+              ])
             }
             return node
           default:
@@ -578,7 +747,12 @@ export class TexlParser {
     }
   }
 
-  private parseBinary(left: TexlNode, leftTrivia: ITexlSource, op: BinaryOp, precedence: Precedence): TexlNode {
+  private parseBinary(
+    left: TexlNode,
+    leftTrivia: ITexlSource,
+    op: BinaryOp,
+    precedence: Precedence
+  ): TexlNode {
     const opToken = this._curs.tokMove()
     const rightTrivia = this.parseTrivia()
     const right = this.parseExpr(precedence)
@@ -591,7 +765,7 @@ export class TexlParser {
     leftTrivia: ITexlSource,
     opToken: Token,
     rightTrivia: ITexlSource,
-    right: TexlNode,
+    right: TexlNode
   ): TexlNode {
     return new BinaryOpNode(
       // ref _idNext,
@@ -606,7 +780,7 @@ export class TexlParser {
       ]),
       op,
       left,
-      right,
+      right
     )
   }
 
@@ -627,7 +801,7 @@ export class TexlParser {
         new IdentifierSource(rhsIdentifier),
       ]),
       left,
-      rhsIdentifier,
+      rhsIdentifier
     )
   }
 
@@ -662,7 +836,10 @@ export class TexlParser {
 
       // Literals
       case TokKind.NumLit:
-        return new NumLitNode(this._idNext++, this._curs.tokMove() as NumLitToken)
+        return new NumLitNode(
+          this._idNext++,
+          this._curs.tokMove() as NumLitToken
+        )
       case TokKind.True:
       case TokKind.False:
         return new BoolLitNode(this._idNext++, this._curs.tokMove())
@@ -674,7 +851,10 @@ export class TexlParser {
         }
         return this.createError(tokCur, TexlStrings.ErrBadToken)
       case TokKind.StrLit:
-        return new StrLitNode(this._idNext++, this._curs.tokMove() as StrLitToken)
+        return new StrLitNode(
+          this._idNext++,
+          this._curs.tokMove() as StrLitToken
+        )
       // Names
       case TokKind.Ident:
         const ident = this.parseIdentifier()
@@ -687,7 +867,12 @@ export class TexlParser {
           trivia = this.parseTrivia()
           return this.parseRecordExpr(trivia, ident)
         }
-        return new FirstNameNode(this._idNext++, ident.token, new SourceList(ident.token), ident)
+        return new FirstNameNode(
+          this._idNext++,
+          ident.token,
+          new SourceList(ident.token),
+          ident
+        )
 
       // Parent
       case TokKind.Parent:
@@ -702,16 +887,26 @@ export class TexlParser {
         return this.parseReplaceableExpr()
 
       case TokKind.Eof:
-        return this.createError(this._curs.tokCur, TexlStrings.ErrOperandExpected)
+        return this.createError(
+          this._curs.tokCur,
+          TexlStrings.ErrOperandExpected
+        )
 
       case TokKind.Error:
         const errorToken = this._curs.tokMove() as ErrorToken
         const args = errorToken.resourceKeyFormatStringArgs
         if (args == null || args.length == 0) {
-          return this.createError(errorToken, errorToken.detailErrorKey ?? TexlStrings.ErrBadToken)
+          return this.createError(
+            errorToken,
+            errorToken.detailErrorKey ?? TexlStrings.ErrBadToken
+          )
         }
 
-        return this.createError(errorToken, errorToken.detailErrorKey ?? TexlStrings.ErrBadToken, args)
+        return this.createError(
+          errorToken,
+          errorToken.detailErrorKey ?? TexlStrings.ErrBadToken,
+          args
+        )
 
       case TokKind.Comment:
         // Contracts.Assert(false, "A stray comment was found");
@@ -731,22 +926,28 @@ export class TexlParser {
   }
 
   private parseUnary(op: UnaryOp): TexlNode {
-    var tok = this._curs.tokMove()
-    var rightTrivia = this.parseTrivia()
-    var right = this.parseExpr(Precedence.PrefixUnary)
+    let tok = this._curs.tokMove()
+    let rightTrivia = this.parseTrivia()
+    let right = this.parseExpr(Precedence.PrefixUnary)
 
     return new UnaryOpNode(
       // ref _idNext,
       this._idNext++,
       tok,
-      new SourceList([new TokenSource(tok), rightTrivia, new NodeSource(right)]),
+      new SourceList([
+        new TokenSource(tok),
+        rightTrivia,
+        new NodeSource(right),
+      ]),
       op,
-      right,
+      right
     )
   }
 
   // Parses an identifier delimited by brackets, e.g. [@foo]
-  private parseBracketIdentifierAsFirstName(accountForAllPrecedenceTokens = false): FirstNameNode {
+  private parseBracketIdentifierAsFirstName(
+    accountForAllPrecedenceTokens = false
+  ): FirstNameNode {
     // Contracts.Assert(_curs.TidCur == TokKind.BracketOpen);
     // Contracts.Assert(_curs.TidPeek() == TokKind.At);
 
@@ -754,7 +955,7 @@ export class TexlParser {
     const at = this._curs.tokMove()
 
     const ident = this.parseIdentifier(at)
-    var bracketClose = this._curs.tokMove()
+    let bracketClose = this._curs.tokMove()
 
     if (bracketClose.Kind != TokKind.BracketClose) {
       this.errorTid(bracketClose, TokKind.BracketClose)
@@ -770,7 +971,7 @@ export class TexlParser {
         new IdentifierSource(ident),
         new TokenSource(bracketClose),
       ]),
-      ident,
+      ident
     )
   }
 
@@ -793,7 +994,7 @@ export class TexlParser {
       new SourceList([new NodeSource(lhs), new NodeSource(rhs)]),
       lhs,
       rhs.ident,
-      rhs,
+      rhs
     )
   }
 
@@ -810,7 +1011,9 @@ export class TexlParser {
         this.postError(tok, TexlStrings.ErrEmptyInvalidIdentifier)
       }
     } else if (this._curs.tidCur == TokKind.ReplaceableLit) {
-      tok = IdentToken.MakeFromReplaceable(this._curs.tokMove() as ReplaceableToken)
+      tok = IdentToken.MakeFromReplaceable(
+        this._curs.tokMove() as ReplaceableToken
+      )
     } else {
       this.errorTid(this._curs.tokCur, TokKind.Ident)
       const ich = this._curs.tokCur.span.min
@@ -839,7 +1042,10 @@ export class TexlParser {
     // const leftTrivia = headTrivia
 
     const theArguments: TexlNode[] = []
-    const sourceList: ITexlSource[] = [new TokenSource(strInterpStart), strInterpTrvia]
+    const sourceList: ITexlSource[] = [
+      new TokenSource(strInterpStart),
+      strInterpTrvia,
+    ]
 
     if (this._curs.tidCur == TokKind.StrInterpEnd) {
       // const strLitToken = new StrLitToken('', headToken.Span)
@@ -847,7 +1053,13 @@ export class TexlParser {
       // return new StrLitNode(this._idNext++, strLitToken)
       const tokenEnd = this._curs.tokMove()
       sourceList.push(new TokenSource(tokenEnd))
-      return new StrInterpNode(this._idNext++, strInterpStart, new SourceList(sourceList), [], tokenEnd)
+      return new StrInterpNode(
+        this._idNext++,
+        strInterpStart,
+        new SourceList(sourceList),
+        [],
+        tokenEnd
+      )
     }
 
     // const rgtokCommas: Array<Token> = []
@@ -879,7 +1091,10 @@ export class TexlParser {
         sourceList.push(new TokenSource(islandEnd))
         sourceList.push(this.parseTrivia())
       } else if (this._curs.tidCur === TokKind.Eof) {
-        const error = this.createError(this._curs.tokCur, TexlStrings.ErrBadToken)
+        const error = this.createError(
+          this._curs.tokCur,
+          TexlStrings.ErrBadToken
+        )
         theArguments.push(error)
         sourceList.push(new NodeSource(error))
         sourceList.push(this.parseTrivia())
@@ -888,7 +1103,7 @@ export class TexlParser {
           strInterpStart,
           new SourceList(sourceList),
           theArguments,
-          this._curs.tokCur,
+          this._curs.tokCur
         )
       } else if ((this._curs.tidCur as TokKind) === TokKind.StrInterpEnd) {
         break
@@ -917,7 +1132,7 @@ export class TexlParser {
       strInterpStart,
       new SourceList(sourceList),
       theArguments,
-      strInterpEnd,
+      strInterpEnd
     )
   }
 
@@ -936,7 +1151,11 @@ export class TexlParser {
     return this.parseInvocation(head, this.parseTrivia(), dotted)
   }
 
-  private parseInvocation(head: Identifier, headTrivia: ITexlSource, headNode: TexlNode): CallNode {
+  private parseInvocation(
+    head: Identifier,
+    headTrivia: ITexlSource,
+    headNode: TexlNode
+  ): CallNode {
     // Contracts.AssertValue(head);
     // Contracts.AssertValueOrNull(headNode);
     // Contracts.Assert(_curs.TidCur == TokKind.ParenOpen);
@@ -951,7 +1170,11 @@ export class TexlParser {
         this._curs.tokCur,
         [],
         null,
-        new SourceList([new TokenSource(leftParen), leftTrivia, new TokenSource(rightParen)]),
+        new SourceList([
+          new TokenSource(leftParen),
+          leftTrivia,
+          new TokenSource(rightParen),
+        ])
       )
 
       const sources: Array<ITexlSource> = []
@@ -972,13 +1195,16 @@ export class TexlParser {
         head,
         headNode,
         right,
-        rightParen,
+        rightParen
       )
     }
 
     const rgtokCommas: Array<Token> = []
     const args: Array<TexlNode> = []
-    const sourceList: Array<ITexlSource> = [new TokenSource(leftParen), leftTrivia]
+    const sourceList: Array<ITexlSource> = [
+      new TokenSource(leftParen),
+      leftTrivia,
+    ]
     for (;;) {
       while (this._curs.tidCur == TokKind.Comma) {
         const commaToken = this._curs.tokMove()
@@ -1014,7 +1240,7 @@ export class TexlParser {
       leftParen,
       args,
       rgtokCommas,
-      new SourceList(sourceList),
+      new SourceList(sourceList)
     )
 
     let headNodeSource: ITexlSource = new IdentifierSource(head)
@@ -1030,7 +1256,7 @@ export class TexlParser {
       head,
       headNode,
       list,
-      parenClose,
+      parenClose
     )
   }
 
@@ -1058,7 +1284,7 @@ export class TexlParser {
       }
 
       // SingleExpr here means we don't want chains on the RHS, but individual expressions.
-      var expression = this.parseExpr(Precedence.SingleExpr)
+      let expression = this.parseExpr(Precedence.SingleExpr)
       expressions.push(expression)
       sourceList.push(new NodeSource(expression))
       sourceList.push(this.parseTrivia())
@@ -1070,13 +1296,16 @@ export class TexlParser {
       VariadicOp.Chain,
       expressions,
       delimiters,
-      new SourceList(sourceList),
+      new SourceList(sourceList)
     )
   }
 
   // Parse a record expression of the form: {id:expr, id:expr, ...}
   // or of the form ident@{id:expr, id:expr}
-  private parseRecordExpr(sourceRestrictionTrivia: ITexlSource, sourceRestriction: Identifier = null): RecordNode {
+  private parseRecordExpr(
+    sourceRestrictionTrivia: ITexlSource,
+    sourceRestriction: Identifier = null
+  ): RecordNode {
     // Contracts.Assert(_curs.TidCur == TokKind.CurlyOpen || _curs.TidCur == TokKind.At);
     // Contracts.AssertValueOrNull(sourceRestriction);
 
@@ -1098,7 +1327,12 @@ export class TexlParser {
       sourceList.push(this.parseTrivia())
 
       primaryToken = sourceRestriction.token
-      sourceRestrictionNode = new FirstNameNode(this._idNext++, sourceRestriction.token, undefined, sourceRestriction)
+      sourceRestrictionNode = new FirstNameNode(
+        this._idNext++,
+        sourceRestriction.token,
+        undefined,
+        sourceRestriction
+      )
 
       if (this._curs.tidCur != TokKind.CurlyOpen) {
         this.errorTid(this._curs.tokCur, TokKind.CurlyOpen)
@@ -1109,14 +1343,16 @@ export class TexlParser {
           sourceRestriction.token,
           new SourceList([
             new SpreadSource(...sourceList),
-            curlyClose != null ? new TokenSource(curlyClose) : new SpreadSource(),
+            curlyClose != null
+              ? new TokenSource(curlyClose)
+              : new SpreadSource(),
           ]),
           ids,
           exprs,
           null,
           null,
           curlyClose,
-          sourceRestrictionNode,
+          sourceRestrictionNode
         )
       }
 
@@ -1137,7 +1373,10 @@ export class TexlParser {
       if (this._curs.tidCur != TokKind.Colon) {
         this.errorTid(this._curs.tokCur, TokKind.Colon)
         const errorToken = this._curs.tokMove()
-        let errorExp: TexlNode = this.createError(errorToken, TexlStrings.ErrColonExpected)
+        let errorExp: TexlNode = this.createError(
+          errorToken,
+          TexlStrings.ErrColonExpected
+        )
         sourceList.push(new TokenSource(errorToken))
         sourceList.push(this.parseTrivia())
         ids.push(ident)
@@ -1170,7 +1409,10 @@ export class TexlParser {
       sourceList.push(this.parseTrivia())
 
       if ((this._curs.tidCur as TokKind) == TokKind.CurlyClose) {
-        let errorExp: TexlNode = this.createError(comma, TexlStrings.ErrColonExpected)
+        let errorExp: TexlNode = this.createError(
+          comma,
+          TexlStrings.ErrColonExpected
+        )
         exprs.push(errorExp)
         ids.push(this.parseIdentifier())
       }
@@ -1178,7 +1420,7 @@ export class TexlParser {
 
     // Contracts.Assert(ids.Count == exprs.Count);
 
-    // TODO: var commaArray = commas?.ToArray();
+    // TODO: let commaArray = commas?.ToArray();
     const commaArray = commas
     const colonArray = colons
 
@@ -1197,7 +1439,7 @@ export class TexlParser {
       commaArray,
       colonArray,
       curlyClose,
-      sourceRestrictionNode,
+      sourceRestrictionNode
     )
   }
 
@@ -1232,10 +1474,10 @@ export class TexlParser {
       sourceList.push(this.parseTrivia())
     }
 
-    // var commaArray = commas?.ToArray();
+    // let commaArray = commas?.ToArray();
     const commaArray = commas
 
-    var bracketClose = this.tokEat(TokKind.BracketClose)
+    let bracketClose = this.tokEat(TokKind.BracketClose)
     if (bracketClose != null) {
       sourceList.push(new TokenSource(bracketClose))
     }
@@ -1247,7 +1489,7 @@ export class TexlParser {
       new SourceList(sourceList),
       expressions,
       commaArray,
-      bracketClose,
+      bracketClose
     )
   }
 
@@ -1293,7 +1535,11 @@ export class TexlParser {
     return this.createError(tok, TexlStrings.ErrBadToken)
   }
 
-  private createError(tok: Token, errKey: ErrorResourceKey, ...args: any[]): ErrorNode {
+  private createError(
+    tok: Token,
+    errKey: ErrorResourceKey,
+    ...args: any[]
+  ): ErrorNode {
     // Contracts.AssertValue(tok);
     // Contracts.AssertValue(args);
     const err = this.postError(tok, errKey, ...args)
@@ -1304,7 +1550,7 @@ export class TexlParser {
   // {
   //     Contracts.AssertValue(tok);
 
-  //     var err = PostError(tok, errKey);
+  //     let err = PostError(tok, errKey);
   //     return new ErrorNode(ref _idNext, tok, err.ShortMessage);
   // }
 
@@ -1318,11 +1564,21 @@ export class TexlParser {
   //     return err;
   // }
 
-  private postError(tok: Token, errKey: ErrorResourceKey, ...args: any[]): TexlError {
+  private postError(
+    tok: Token,
+    errKey: ErrorResourceKey,
+    ...args: any[]
+  ): TexlError {
     // Contracts.AssertValue(tok);
     // Contracts.AssertValue(errKey.Key);
     // Contracts.AssertValueOrNull(args);
-    const err = new TexlError(null, tok, DocumentErrorSeverity.Critical, errKey, args)
+    const err = new TexlError(
+      null,
+      tok,
+      DocumentErrorSeverity.Critical,
+      errKey,
+      args
+    )
     if (this._errors == null) {
       this._errors = []
     }
@@ -1416,7 +1672,11 @@ export class TexlParser {
   }
 
   public static Format(text: string): string {
-    const result = TexlParser.ParseScript(text, undefined, TexlParserFlags.EnableExpressionChaining)
+    const result = TexlParser.ParseScript(
+      text,
+      undefined,
+      TexlParserFlags.EnableExpressionChaining
+    )
 
     // Can't pretty print a script with errors.
     if (result.hasError) {

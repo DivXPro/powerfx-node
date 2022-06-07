@@ -4,7 +4,10 @@ import { ExpandPath } from '../../types/ExpandPath'
 import { IExpandInfo } from '../../types/IExpandInfo'
 import { isNullOrEmpty } from '../../utils/CharacterUtils'
 import { Dictionary } from '../../utils/Dictionary'
-import { IExternalCdsDataSource, IsIExternalCdsDataSource } from '../external/IExternalCdsDataSource'
+import {
+  IExternalCdsDataSource,
+  IsIExternalCdsDataSource,
+} from '../external/IExternalCdsDataSource'
 import { IExternalTabularDataSource } from '../external/IExternalTabularDataSource'
 import { ExpandQueryOptions } from './ExpandQueryOptions'
 
@@ -48,7 +51,10 @@ export class TabularDataQueryOptions {
   public addSelect(selectColumnName: string): boolean {
     if (isNullOrEmpty(selectColumnName)) return false
 
-    if (this._selects.has(selectColumnName) || !this.tabularDataSourceInfo.canIncludeSelect(selectColumnName)) {
+    if (
+      this._selects.has(selectColumnName) ||
+      !this.tabularDataSourceInfo.canIncludeSelect(selectColumnName)
+    ) {
       return false
     }
 
@@ -103,14 +109,23 @@ export class TabularDataQueryOptions {
     // Contracts.AssertValue(expand);
     this.removeExpand(expand.expandInfo)
     const selectColumnName = expand.expandInfo.expandPath.entityName
-    if (isNullOrEmpty(selectColumnName) || !IsIExternalCdsDataSource(this.tabularDataSourceInfo)) return false
-    const CdsDataSourceInfo = this.tabularDataSourceInfo as IExternalCdsDataSource
+    if (
+      isNullOrEmpty(selectColumnName) ||
+      !IsIExternalCdsDataSource(this.tabularDataSourceInfo)
+    )
+      return false
+    const CdsDataSourceInfo = this
+      .tabularDataSourceInfo as IExternalCdsDataSource
     if (this._selects.has(selectColumnName)) {
       return false
     }
     const result = CdsDataSourceInfo.tryGetRelatedColumn(selectColumnName)
     const additionalColumnName = result[1]
-    if (!result[0] || additionalColumnName == null || this._selects.has(additionalColumnName)) {
+    if (
+      !result[0] ||
+      additionalColumnName == null ||
+      this._selects.has(additionalColumnName)
+    ) {
       return false
     }
     this._selects.add(additionalColumnName)
@@ -119,7 +134,10 @@ export class TabularDataQueryOptions {
 
   addExpand(expandInfo: IExpandInfo): [boolean, ExpandQueryOptions] {
     let expandQueryOptions: ExpandQueryOptions
-    if (expandInfo == null || !this.tabularDataSourceInfo.canIncludeExpand(expandInfo)) {
+    if (
+      expandInfo == null ||
+      !this.tabularDataSourceInfo.canIncludeExpand(expandInfo)
+    ) {
       expandQueryOptions = null
       return [false, expandQueryOptions]
     }
@@ -130,10 +148,16 @@ export class TabularDataQueryOptions {
     }
 
     expandQueryOptions = ExpandQueryOptions.CreateExpandQueryOptions(expandInfo)
-    return [this.addExpandWithOptions(expandInfo.expandPath, expandQueryOptions), expandQueryOptions]
+    return [
+      this.addExpandWithOptions(expandInfo.expandPath, expandQueryOptions),
+      expandQueryOptions,
+    ]
   }
 
-  private addExpandWithOptions(expandPath: ExpandPath, expandQueryOptions: ExpandQueryOptions) {
+  private addExpandWithOptions(
+    expandPath: ExpandPath,
+    expandQueryOptions: ExpandQueryOptions
+  ) {
     this._expandQueryOptions.set(expandPath, expandQueryOptions)
     return true
   }
@@ -143,7 +167,9 @@ export class TabularDataQueryOptions {
     return this._expandQueryOptions.delete(expandInfo.expandPath)
   }
 
-  tryGetExpandQueryOptions(expandInfo: IExpandInfo): [boolean, ExpandQueryOptions] {
+  tryGetExpandQueryOptions(
+    expandInfo: IExpandInfo
+  ): [boolean, ExpandQueryOptions] {
     let expandQueryOptions: ExpandQueryOptions
     this.expands.forEach((value, key) => {
       if (value.expandInfo.expandPath === expandInfo.expandPath) {
@@ -163,7 +189,8 @@ export class TabularDataQueryOptions {
     for (const entry of qo.expands) {
       const key = entry[0]
       const value = entry[1]
-      if (this.expands.has(key)) TabularDataQueryOptions.MergeQueryOptions(this.expands.get(key), value)
+      if (this.expands.has(key))
+        TabularDataQueryOptions.MergeQueryOptions(this.expands.get(key), value)
       else this.addExpandWithOptions(key, value)
     }
   }
@@ -171,7 +198,10 @@ export class TabularDataQueryOptions {
   /// <summary>
   /// Helper method used to merge two different entity query options.
   /// </summary>
-  static MergeQueryOptions(original: ExpandQueryOptions, added: ExpandQueryOptions): boolean {
+  static MergeQueryOptions(
+    original: ExpandQueryOptions,
+    added: ExpandQueryOptions
+  ): boolean {
     // Contracts.AssertValue(original);
     // Contracts.AssertValue(added);
 
@@ -195,7 +225,10 @@ export class TabularDataQueryOptions {
     }
 
     // Go through reachable entity list and update each of it same way.
-    const entityPathToQueryOptionsMap = new Map<ExpandPath, ExpandQueryOptions>()
+    const entityPathToQueryOptionsMap = new Map<
+      ExpandPath,
+      ExpandQueryOptions
+    >()
     for (const expand of original.expands) {
       if (!entityPathToQueryOptionsMap.has(expand.expandInfo.expandPath))
         entityPathToQueryOptionsMap.set(expand.expandInfo.expandPath, expand)
@@ -209,7 +242,7 @@ export class TabularDataQueryOptions {
           isOriginalModified ||
           TabularDataQueryOptions.MergeQueryOptions(
             entityPathToQueryOptionsMap.get(expand.expandInfo.expandPath),
-            expand,
+            expand
           )
       }
     }
@@ -219,36 +252,60 @@ export class TabularDataQueryOptions {
 
   appendExpandQueryOptions(mergeExpandValue: ExpandQueryOptions) {
     for (const expand of this.expands) {
-      var srcExpandInfo = expand[1].expandInfo
-      var mergedExpandInfo = mergeExpandValue.expandInfo
+      let srcExpandInfo = expand[1].expandInfo
+      let mergedExpandInfo = mergeExpandValue.expandInfo
       if (
         srcExpandInfo.identity == mergedExpandInfo.identity &&
         srcExpandInfo.name == mergedExpandInfo.name &&
         srcExpandInfo.isTable == mergedExpandInfo.isTable
       ) {
-        return TabularDataQueryOptions.MergeQueryOptions(expand[1], mergeExpandValue)
+        return TabularDataQueryOptions.MergeQueryOptions(
+          expand[1],
+          mergeExpandValue
+        )
       }
 
       if (
-        !isNullOrEmpty(mergeExpandValue.expandInfo.expandPath.relatedEntityPath) &&
-        mergeExpandValue.expandInfo.expandPath.relatedEntityPath.includes(expand[1].expandInfo.expandPath.entityName)
+        !isNullOrEmpty(
+          mergeExpandValue.expandInfo.expandPath.relatedEntityPath
+        ) &&
+        mergeExpandValue.expandInfo.expandPath.relatedEntityPath.includes(
+          expand[1].expandInfo.expandPath.entityName
+        )
       ) {
         return this.appendExpandQueryOptionsWith(expand[1], mergeExpandValue)
       }
     }
 
-    this._expandQueryOptions.set(mergeExpandValue.expandInfo.expandPath, mergeExpandValue?.clone())
+    this._expandQueryOptions.set(
+      mergeExpandValue.expandInfo.expandPath,
+      mergeExpandValue?.clone()
+    )
     return true
   }
 
-  private appendExpandQueryOptionsWith(options: ExpandQueryOptions, mergeExpandValue: ExpandQueryOptions) {
+  private appendExpandQueryOptionsWith(
+    options: ExpandQueryOptions,
+    mergeExpandValue: ExpandQueryOptions
+  ) {
     for (const expand of options.expands) {
-      if (expand.expandInfo.expandPath == mergeExpandValue.expandInfo.expandPath) {
-        return TabularDataQueryOptions.MergeQueryOptions(expand, mergeExpandValue)
+      if (
+        expand.expandInfo.expandPath == mergeExpandValue.expandInfo.expandPath
+      ) {
+        return TabularDataQueryOptions.MergeQueryOptions(
+          expand,
+          mergeExpandValue
+        )
       }
-      if (mergeExpandValue.expandInfo.expandPath.relatedEntityPath.includes(expand.expandInfo.expandPath.entityName)) {
+      if (
+        mergeExpandValue.expandInfo.expandPath.relatedEntityPath.includes(
+          expand.expandInfo.expandPath.entityName
+        )
+      ) {
         for (const childExpand of expand.expands) {
-          if (this.appendExpandQueryOptionsWith(childExpand, mergeExpandValue)) {
+          if (
+            this.appendExpandQueryOptionsWith(childExpand, mergeExpandValue)
+          ) {
             return true
           }
         }

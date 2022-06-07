@@ -1,7 +1,10 @@
 import { ExpandPath } from '../../types/ExpandPath'
 import { IExpandInfo } from '../../types/IExpandInfo'
 import { isNullOrEmpty } from '../../utils/CharacterUtils'
-import { IExternalCdsDataSource, IsIExternalCdsDataSource } from '../external/IExternalCdsDataSource'
+import {
+  IExternalCdsDataSource,
+  IsIExternalCdsDataSource,
+} from '../external/IExternalCdsDataSource'
 import { IExternalTabularDataSource } from '../external/IExternalTabularDataSource'
 
 export class ExpandQueryOptions {
@@ -15,7 +18,12 @@ export class ExpandQueryOptions {
   private _expands: Set<ExpandQueryOptions>
 
   clone(): ExpandQueryOptions {
-    const clone = new ExpandQueryOptions(this.expandInfo?.clone(), this._selects, this.isRoot, this.parent)
+    const clone = new ExpandQueryOptions(
+      this.expandInfo?.clone(),
+      this._selects,
+      this.isRoot,
+      this.parent
+    )
     for (const expand of this._expands) {
       clone.addExpand(expand.clone())
     }
@@ -27,7 +35,7 @@ export class ExpandQueryOptions {
     expandInfo: IExpandInfo,
     selects: Array<string> | Set<string>,
     isRoot: boolean,
-    parent: ExpandQueryOptions,
+    parent: ExpandQueryOptions
   ) {
     // Contracts.AssertValue(expandInfo);
     // Contracts.AssertValue(selects);
@@ -40,8 +48,9 @@ export class ExpandQueryOptions {
 
     for (const select of selects) this._selects.add(select)
 
-    const parentDataSource = this.expandInfo.parentDataSource as IExternalTabularDataSource
-    var keyColumns = parentDataSource?.getKeyColumns(this.expandInfo) || []
+    const parentDataSource = this.expandInfo
+      .parentDataSource as IExternalTabularDataSource
+    let keyColumns = parentDataSource?.getKeyColumns(this.expandInfo) || []
     for (const keyColumn in keyColumns) this._selects.add(keyColumn)
 
     this._expands = new Set<ExpandQueryOptions>()
@@ -65,8 +74,10 @@ export class ExpandQueryOptions {
   public addSelect(selectColumnName: string) {
     if (isNullOrEmpty(selectColumnName)) return false
 
-    const parentDataSource = this.expandInfo.parentDataSource as IExternalTabularDataSource
-    if (!parentDataSource.canIncludeSelect(selectColumnName, this.expandInfo)) return false
+    const parentDataSource = this.expandInfo
+      .parentDataSource as IExternalTabularDataSource
+    if (!parentDataSource.canIncludeSelect(selectColumnName, this.expandInfo))
+      return false
 
     this._selects.add(selectColumnName)
     return true
@@ -76,7 +87,8 @@ export class ExpandQueryOptions {
     if (!IsIExternalCdsDataSource(this.expandInfo.parentDataSource)) {
       return
     }
-    const CdsDataSourceInfo = this.expandInfo.parentDataSource as IExternalCdsDataSource
+    const CdsDataSourceInfo = this.expandInfo
+      .parentDataSource as IExternalCdsDataSource
     const selectColumnNames = new Set<string>([...this._selects])
     for (const select in selectColumnNames) {
       const rst = CdsDataSourceInfo.tryGetRelatedColumn(select)
@@ -93,38 +105,52 @@ export class ExpandQueryOptions {
   /// </summary>
   replaceExpandsWithAnnotation(expand: ExpandQueryOptions): boolean {
     this.removeExpand(expand)
-    var selectColumnName = expand.expandInfo.expandPath.entityName
+    let selectColumnName = expand.expandInfo.expandPath.entityName
     if (isNullOrEmpty(selectColumnName)) return false
 
-    if (this.expandInfo.parentDataSource == null || !IsIExternalCdsDataSource(this.expandInfo.parentDataSource)) {
+    if (
+      this.expandInfo.parentDataSource == null ||
+      !IsIExternalCdsDataSource(this.expandInfo.parentDataSource)
+    ) {
       return false
     }
-    const parentDataSource = this.expandInfo.parentDataSource as IExternalCdsDataSource
-    const result1 = parentDataSource.document.globalScope.tryGetCdsDataSourceWithLogicalName(
-      parentDataSource.datasetName,
-      this.expandInfo.identity,
-    )
+    const parentDataSource = this.expandInfo
+      .parentDataSource as IExternalCdsDataSource
+    const result1 =
+      parentDataSource.document.globalScope.tryGetCdsDataSourceWithLogicalName(
+        parentDataSource.datasetName,
+        this.expandInfo.identity
+      )
     const expandDataSourceInfo = result1[1]
     if (!result1[0] || expandDataSourceInfo == null) {
       return false
     }
-    const result2 = parentDataSource.tryGetRelatedColumn(selectColumnName, expandDataSourceInfo.tableDefinition)
+    const result2 = parentDataSource.tryGetRelatedColumn(
+      selectColumnName,
+      expandDataSourceInfo.tableDefinition
+    )
     const additionalColumnName = result2[1]
-    if (additionalColumnName == null || this._selects.has(additionalColumnName)) {
+    if (
+      additionalColumnName == null ||
+      this._selects.has(additionalColumnName)
+    ) {
       return false
     }
     this._selects.add(additionalColumnName)
     return true
   }
 
-  addExpandWithOut(expandInfoToAdd: IExpandInfo): [boolean, ExpandQueryOptions] {
+  addExpandWithOut(
+    expandInfoToAdd: IExpandInfo
+  ): [boolean, ExpandQueryOptions] {
     let expand: ExpandQueryOptions
     if (expandInfoToAdd == null) {
       expand = undefined
       return [false, expand]
     }
 
-    var parentDataSource = this.expandInfo.parentDataSource as IExternalTabularDataSource
+    let parentDataSource = this.expandInfo
+      .parentDataSource as IExternalTabularDataSource
     if (!parentDataSource.canIncludeExpand(expandInfoToAdd, this.expandInfo)) {
       expand = undefined
       return [false, expand]
@@ -149,7 +175,9 @@ export class ExpandQueryOptions {
     this._expands = new Set<ExpandQueryOptions>(expands)
   }
 
-  public static CreateExpandQueryOptions(entityInfo: IExpandInfo): ExpandQueryOptions {
+  public static CreateExpandQueryOptions(
+    entityInfo: IExpandInfo
+  ): ExpandQueryOptions {
     // Contracts.AssertValue(entityInfo);
 
     return new ExpandQueryOptions(entityInfo, [], true, null)
@@ -157,7 +185,7 @@ export class ExpandQueryOptions {
 
   public static MergeQueryOptionsMap(
     left: Map<ExpandPath, ExpandQueryOptions>,
-    right: Map<ExpandPath, ExpandQueryOptions>,
+    right: Map<ExpandPath, ExpandQueryOptions>
   ): Map<ExpandPath, ExpandQueryOptions> {
     const merged = new Map<ExpandPath, ExpandQueryOptions>(left)
     right.forEach((val, key) => {
@@ -174,7 +202,10 @@ export class ExpandQueryOptions {
   /// <summary>
   /// Helper method used to merge two different entity query options.
   /// </summary>
-  public static MergeQueryOptions(original: ExpandQueryOptions, added: ExpandQueryOptions): boolean {
+  public static MergeQueryOptions(
+    original: ExpandQueryOptions,
+    added: ExpandQueryOptions
+  ): boolean {
     // Contracts.AssertValue(original);
     // Contracts.AssertValue(added);
 
@@ -196,10 +227,16 @@ export class ExpandQueryOptions {
     }
 
     // Go through reachable entity list and update each of it same way.
-    const entityPathToQueryOptionsMap = new Map<ExpandPath, ExpandQueryOptions>()
+    const entityPathToQueryOptionsMap = new Map<
+      ExpandPath,
+      ExpandQueryOptions
+    >()
     for (const expand of original.expands) {
       if (!entityPathToQueryOptionsMap.has(expand.expandInfo.expandPath))
-        entityPathToQueryOptionsMap.set(expand.expandInfo.expandPath, expand?.clone())
+        entityPathToQueryOptionsMap.set(
+          expand.expandInfo.expandPath,
+          expand?.clone()
+        )
     }
 
     for (const expand of added.expands) {
@@ -209,7 +246,10 @@ export class ExpandQueryOptions {
       } else {
         isOriginalModified =
           isOriginalModified ||
-          ExpandQueryOptions.MergeQueryOptions(entityPathToQueryOptionsMap.get(expand.expandInfo.expandPath), expand)
+          ExpandQueryOptions.MergeQueryOptions(
+            entityPathToQueryOptionsMap.get(expand.expandInfo.expandPath),
+            expand
+          )
       }
     }
 
@@ -221,12 +261,18 @@ export class ExpandQueryOptions {
     for (const currentExpand of this.expands) {
       if (!currentExpand.expandInfo.equals(queryOptions.expandInfo)) continue
 
-      for (const qoSelect of queryOptions.selects) currentExpand.addSelect(qoSelect)
+      for (const qoSelect of queryOptions.selects)
+        currentExpand.addSelect(qoSelect)
 
       return currentExpand
     }
 
-    const expand = new ExpandQueryOptions(queryOptions.expandInfo, queryOptions.selects, false, this)
+    const expand = new ExpandQueryOptions(
+      queryOptions.expandInfo,
+      queryOptions.selects,
+      false,
+      this
+    )
     this.addExpand(expand)
     return expand
   }

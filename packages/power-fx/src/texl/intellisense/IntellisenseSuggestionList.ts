@@ -11,7 +11,9 @@ import { IntellisenseSuggestion } from './IntellisenseSuggestion'
 import { UIString } from './UIString'
 
 // O(1) for this class instead of an O(N) search.
-export class IntellisenseSuggestionList implements IList<IntellisenseSuggestion> {
+export class IntellisenseSuggestionList
+  implements IList<IntellisenseSuggestion>
+{
   private _displayNameToCount: Map<string, number>
   private _textToSuggestions: Map<string, IntellisenseSuggestion[]>
   private _backingList: IntellisenseSuggestion[]
@@ -28,7 +30,10 @@ export class IntellisenseSuggestionList implements IList<IntellisenseSuggestion>
   isReadOnly: boolean
   isEndless: false
 
-  copyTo<TTarget extends ArrayLikeWritable<any>>(target: TTarget, index?: number): TTarget {
+  copyTo<TTarget extends ArrayLikeWritable<any>>(
+    target: TTarget,
+    index?: number
+  ): TTarget {
     throw new Error('Method not implemented.')
   }
   getEnumerator(): FiniteIEnumerator<IntellisenseSuggestion> {
@@ -43,7 +48,7 @@ export class IntellisenseSuggestionList implements IList<IntellisenseSuggestion>
     entries:
       | FiniteIEnumerable<IntellisenseSuggestion>
       | ArrayLike<IntellisenseSuggestion>
-      | FiniteIEnumerator<IntellisenseSuggestion>,
+      | FiniteIEnumerator<IntellisenseSuggestion>
   ): number {
     throw new Error('Method not implemented.')
   }
@@ -104,7 +109,7 @@ export class IntellisenseSuggestionList implements IList<IntellisenseSuggestion>
   // }
 
   public remove(item: IntellisenseSuggestion, max?: number): number {
-    // var result = _backingList.Remove(item);
+    // let result = _backingList.Remove(item);
     const idx = this._backingList.indexOf(item)
     if (idx > -1) {
       this._backingList.splice(idx, 1) //.Remove(a);
@@ -166,7 +171,10 @@ export class IntellisenseSuggestionList implements IList<IntellisenseSuggestion>
     this._backingList.splice(index, 0, item)
   }
 
-  public insertRange(index: number, collection: IntellisenseSuggestion[]): void {
+  public insertRange(
+    index: number,
+    collection: IntellisenseSuggestion[]
+  ): void {
     for (let item of collection) {
       this.IncrementDictionaries(item)
     }
@@ -266,7 +274,9 @@ export class IntellisenseSuggestionList implements IList<IntellisenseSuggestion>
   //   return _backingList.FindIndex(pred);
   // }
 
-  public FindIndex(predicate: (value: IntellisenseSuggestion) => boolean): number {
+  public FindIndex(
+    predicate: (value: IntellisenseSuggestion) => boolean
+  ): number {
     return this._backingList.findIndex(predicate)
   }
 }

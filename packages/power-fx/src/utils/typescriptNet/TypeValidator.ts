@@ -6,7 +6,7 @@
 /**
  * A descriptor is simply a JSON tree that either has an actual value or a type that identifies what the expect type should be at that leaf in the tree.
  *
- * var descriptor = {
+ * let descriptor = {
  *      a : Object,
  *      b : String,
  *      c : {
@@ -48,7 +48,11 @@ export class TypeInfoHelper extends TypeInfo {
         return this.isBoolean
     }
 
-    if (this.type != typeof descriptor || (this.isPrimitive && !areEqual(value, descriptor))) return false
+    if (
+      this.type != typeof descriptor ||
+      (this.isPrimitive && !areEqual(value, descriptor))
+    )
+      return false
 
     // Check array contents and confirm intersections.
     if (this.isArray && Type.isArrayLike(descriptor)) {

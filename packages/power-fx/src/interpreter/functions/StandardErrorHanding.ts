@@ -11,6 +11,7 @@ import {
   DValue,
   ErrorValue,
   FormulaValue,
+  FormulaValueStatic,
   InMemoryRecordValue,
   InMemoryTableValue,
   NamedValue,
@@ -47,16 +48,20 @@ export declare type TargetFunctionSimpleProps<T> = {
 declare type MayBePromise<T> = T | Promise<T>
 
 export declare type TargetFunctionSimple<T extends FormulaValue> = (
-  props: TargetFunctionSimpleProps<T>,
+  props: TargetFunctionSimpleProps<T>
 ) => MayBePromise<FormulaValue>
 
 export declare type TargetFunctionFull<T extends FormulaValue> = (
-  props: TargetFunctionFullProps<T>,
+  props: TargetFunctionFullProps<T>
 ) => MayBePromise<FormulaValue>
 
-export declare type TargetFunctionProp<T extends FormulaValue> = TargetFunctionSimple<T> | TargetFunctionFull<T>
+export declare type TargetFunctionProp<T extends FormulaValue> =
+  | TargetFunctionSimple<T>
+  | TargetFunctionFull<T>
 
-export declare type TargetFunction<T extends FormulaValue> = TargetFunctionSimple<T> | TargetFunctionFull<T>
+export declare type TargetFunction<T extends FormulaValue> =
+  | TargetFunctionSimple<T>
+  | TargetFunctionFull<T>
 
 export class LibStandardErrorHanding {
   public static IsInvalidDouble(number: number): boolean {
@@ -78,12 +83,23 @@ export class LibStandardErrorHanding {
   /// <param name="targetFunction">The implementation of the builtin function.</param>
   /// <returns></returns>
   public static StandardErrorHandling<T extends FormulaValue>(
-    expandArguments: (irContext: IRContext, values: Array<FormulaValue>) => Array<FormulaValue>,
+    expandArguments: (
+      irContext: IRContext,
+      values: Array<FormulaValue>
+    ) => Array<FormulaValue>,
     replaceBlankValues: (irContext: IRContext, num: number) => FormulaValue,
-    checkRuntimeTypes: (irContext: IRContext, num: number, value: FormulaValue) => FormulaValue,
-    checkRuntimeValues: (irContext: IRContext, num: number, value: FormulaValue) => FormulaValue,
+    checkRuntimeTypes: (
+      irContext: IRContext,
+      num: number,
+      value: FormulaValue
+    ) => FormulaValue,
+    checkRuntimeValues: (
+      irContext: IRContext,
+      num: number,
+      value: FormulaValue
+    ) => FormulaValue,
     returnBehavior: ReturnBehavior,
-    targetFunction: TargetFunction<T>,
+    targetFunction: TargetFunction<T>
   ): FunctionPtr {
     return (props: TargetFunctionFullProps<FormulaValue>) => {
       const { visitor, symbolContext, irContext, values: args } = props
@@ -95,7 +111,9 @@ export class LibStandardErrorHanding {
           return arg
         }
       })
-      const runtimeTypesChecked = blankValuesReplaced.map((arg, i) => checkRuntimeTypes(irContext, i, arg))
+      const runtimeTypesChecked = blankValuesReplaced.map((arg, i) =>
+        checkRuntimeTypes(irContext, i, arg)
+      )
 
       const runtimeValuesChecked = runtimeTypesChecked.map((arg, i) => {
         if (arg instanceof FormulaValue) {
@@ -105,7 +123,9 @@ export class LibStandardErrorHanding {
         }
       })
 
-      const errors = runtimeValuesChecked.filter((v) => v instanceof ErrorValue) as ErrorValue[]
+      const errors = runtimeValuesChecked.filter(
+        (v) => v instanceof ErrorValue
+      ) as ErrorValue[]
       if (errors.length != 0) {
         return ErrorValue.Combine(irContext, errors)
       }
@@ -119,13 +139,19 @@ export class LibStandardErrorHanding {
           break
         case ReturnBehavior.ReturnEmptyStringIfAnyArgIsBlank:
           if (runtimeValuesChecked.some((arg) => arg instanceof BlankValue)) {
-            return new StringValue(IRContext.NotInSource(FormulaType.String), '')
+            return new StringValue(
+              IRContext.NotInSource(FormulaType.String),
+              ''
+            )
           }
 
           break
         case ReturnBehavior.ReturnFalseIfAnyArgIsBlank:
           if (runtimeValuesChecked.some((arg) => arg instanceof BlankValue)) {
-            return new BooleanValue(IRContext.NotInSource(FormulaType.Boolean), false)
+            return new BooleanValue(
+              IRContext.NotInSource(FormulaType.Boolean),
+              false
+            )
           }
 
           break
@@ -167,22 +193,30 @@ export class LibStandardErrorHanding {
 
   // #region Single Column Table Functions
   public static StandardSingleColumnTable<T extends FormulaValue>(
-    targetFunction: TargetFunction<T>,
+    targetFunction: TargetFunction<T>
   ): TargetFunctionFull<TableValue> {
     return async (props: TargetFunctionFullProps<TableValue>) => {
       const { visitor: runner, symbolContext, irContext, values: args } = props
       const tableType = irContext.resultType as TableType
       const resultType = tableType.toRecord()
-      const itemType = resultType.getFieldType(BuiltinFunction.OneColumnTableResultNameStr)
+      const itemType = resultType.getFieldType(
+        BuiltinFunction.OneColumnTableResultNameStr
+      )
 
       const arg0 = args[0]
       const resultRows: Array<DValue<RecordValue>> = []
       for (const row of arg0.rows) {
         if (row.isValue) {
-          const value = row.value.getField(undefined, BuiltinFunction.ColumnName_ValueStr)
+          const value = row.value.getField(
+            undefined,
+            BuiltinFunction.ColumnName_ValueStr
+          )
           let namedValue: NamedValue
           if (value instanceof BlankValue || value instanceof ErrorValue) {
-            namedValue = new NamedValue(BuiltinFunction.OneColumnTableResultNameStr, value)
+            namedValue = new NamedValue(
+              BuiltinFunction.OneColumnTableResultNameStr,
+              value
+            )
           }
           if (value instanceof FormulaValue) {
             namedValue = new NamedValue(
@@ -192,15 +226,18 @@ export class LibStandardErrorHanding {
                 symbolContext,
                 irContext: IRContext.NotInSource(itemType),
                 values: [value] as unknown as T[],
-              }),
+              })
             )
           } else {
             namedValue = new NamedValue(
               BuiltinFunction.OneColumnTableResultNameStr,
-              CommonErrors.RuntimeTypeMismatch(IRContext.NotInSource(itemType)),
+              CommonErrors.RuntimeTypeMismatch(IRContext.NotInSource(itemType))
             )
           }
-          const record = new InMemoryRecordValue(IRContext.NotInSource(resultType), [namedValue])
+          const record = new InMemoryRecordValue(
+            IRContext.NotInSource(resultType),
+            [namedValue]
+          )
           resultRows.push(DValue.Of(record))
         } else if (row.isBlank) {
           // resultRows.Add(DValue<RecordValue>.Of(row.Blank));
@@ -232,7 +269,10 @@ export class LibStandardErrorHanding {
     return max
   }
 
-  public static ExpandToSize(arg: FormulaValue, size: number): ExpandToSizeResult {
+  public static ExpandToSize(
+    arg: FormulaValue,
+    size: number
+  ): ExpandToSizeResult {
     let name = BuiltinFunction.ColumnName_ValueStr
     if (arg instanceof TableValue) {
       const tvType = arg.type as TableType
@@ -243,12 +283,15 @@ export class LibStandardErrorHanding {
         const inputRecordType = tvType.toRecord()
         const inputRecordNamedValue = new NamedValue(
           name,
-          new BlankValue(IRContext.NotInSource(FormulaType.Blank)),
+          new BlankValue(IRContext.NotInSource(FormulaType.Blank))
         )
-        const inputRecord = new InMemoryRecordValue(IRContext.NotInSource(inputRecordType), [inputRecordNamedValue])
+        const inputRecord = new InMemoryRecordValue(
+          IRContext.NotInSource(inputRecordType),
+          [inputRecordNamedValue]
+        )
         const inputDValue = DValue.Of(inputRecord)
 
-        const repeated = new Array().fill(inputDValue, 0, size - count)
+        const repeated = [].fill(inputDValue, 0, size - count)
         const rows = arg.rows.concat(...repeated)
         return new ExpandToSizeResult(name, rows)
       } else {
@@ -257,16 +300,22 @@ export class LibStandardErrorHanding {
     } else {
       const inputRecordType = new RecordType(null)
       const inputRecordNamedValue = new NamedValue(name, arg)
-      const inputRecord = new InMemoryRecordValue(IRContext.NotInSource(inputRecordType), [inputRecordNamedValue])
+      const inputRecord = new InMemoryRecordValue(
+        IRContext.NotInSource(inputRecordType),
+        [inputRecordNamedValue]
+      )
       const inputDValue = DValue.Of(inputRecord)
-      const rows = new Array().fill(inputDValue, 0, size)
+      const rows = [].fill(inputDValue, 0, size)
       return new ExpandToSizeResult(name, rows)
     }
   }
 
   // Transpose a matrix (list of lists) so that the rows become columns and the columns become rows
   // The column length is uniform and known
-  public static Transpose<T>(columns: Array<T[]>, columnSize: number): Array<T[]> {
+  public static Transpose<T>(
+    columns: Array<T[]>,
+    columnSize: number
+  ): Array<T[]> {
     const rows: Array<T[]> = []
 
     for (let i = 0; i < columnSize; i++) {
@@ -286,7 +335,9 @@ export class LibStandardErrorHanding {
    * F([a, b], [c, d]) => [F'([a, c]), F'([b, d])]
    * As a concrete example, Concatenate(["a", "b"], ["1", "2"]) => ["a1", "b2"]
    */
-  public static MultiSingleColumnTable(targetFunction: FunctionPtr): TargetFunctionFull<FormulaValue> {
+  public static MultiSingleColumnTable(
+    targetFunction: FunctionPtr
+  ): TargetFunctionFull<FormulaValue> {
     return async (props: TargetFunctionFullProps<FormulaValue>) => {
       const { visitor: runner, symbolContext, irContext, values: args } = props
       const resultRows: Array<DValue<RecordValue>> = []
@@ -298,15 +349,19 @@ export class LibStandardErrorHanding {
         return new InMemoryTableValue(irContext, resultRows)
       }
 
-      const allResults = args.map((arg) => LibStandardErrorHanding.ExpandToSize(arg, maxSize))
+      const allResults = args.map((arg) =>
+        LibStandardErrorHanding.ExpandToSize(arg, maxSize)
+      )
 
       const tableType = irContext.resultType as TableType
       const resultType = tableType.toRecord()
-      const itemType = resultType.getFieldType(BuiltinFunction.OneColumnTableResultNameStr)
+      const itemType = resultType.getFieldType(
+        BuiltinFunction.OneColumnTableResultNameStr
+      )
 
       const transposed = LibStandardErrorHanding.Transpose(
         allResults.map((result) => result.rows),
-        maxSize,
+        maxSize
       )
       const names = allResults.map((result) => result.name)
       for (const list of transposed) {
@@ -316,7 +371,9 @@ export class LibStandardErrorHanding {
           continue
         }
 
-        const targetArgs = list.map((dv, i) => (dv.isValue ? dv.value.getField(names[i]) : dv.toFormulaValue()))
+        const targetArgs = list.map((dv, i) =>
+          dv.isValue ? dv.value.getField(names[i]) : dv.toFormulaValue()
+        )
 
         const namedValue = new NamedValue(
           BuiltinFunction.OneColumnTableResultNameStr,
@@ -325,9 +382,12 @@ export class LibStandardErrorHanding {
             symbolContext,
             irContext: IRContext.NotInSource(itemType),
             values: targetArgs,
-          }),
+          })
         )
-        const record = new InMemoryRecordValue(IRContext.NotInSource(resultType), [namedValue])
+        const record = new InMemoryRecordValue(
+          IRContext.NotInSource(resultType),
+          [namedValue]
+        )
         resultRows.push(DValue.Of(record))
       }
 
@@ -339,8 +399,11 @@ export class LibStandardErrorHanding {
   // #region Common Arg Expansion Pipeline Stages
   public static InsertDefaultValues(
     outputArgsCount: number,
-    fillWith: FormulaValue,
-  ): (irContext: IRContext, values: Array<FormulaValue>) => Array<FormulaValue> {
+    fillWith: FormulaValue
+  ): (
+    irContext: IRContext,
+    values: Array<FormulaValue>
+  ) => Array<FormulaValue> {
     return (irContext, args) => {
       const res: Array<FormulaValue> = args
       while (res.length < outputArgsCount) {
@@ -350,12 +413,18 @@ export class LibStandardErrorHanding {
     }
   }
 
-  public static MidFunctionExpandArgs(irContext: IRContext, args: Array<FormulaValue>): Array<FormulaValue> {
+  public static MidFunctionExpandArgs(
+    irContext: IRContext,
+    args: Array<FormulaValue>
+  ): Array<FormulaValue> {
     const res = [...args]
     while (res.length < 3) {
       // The third argument to Mid can only ever be used if the first argument is a string
       if (args[0] instanceof StringValue) {
-        const count = new NumberValue(IRContext.NotInSource(FormulaType.Number), args[0].value.length)
+        const count = new NumberValue(
+          IRContext.NotInSource(FormulaType.Number),
+          args[0].value.length
+        )
         res.push(count)
       } else {
         break
@@ -367,15 +436,23 @@ export class LibStandardErrorHanding {
   // #endregion
 
   // #region Common Blank Replacement Pipeline Stages
-  public static ReplaceBlankWithZero(irContext: IRContext, index: number): FormulaValue {
+  public static ReplaceBlankWithZero(
+    irContext: IRContext,
+    index: number
+  ): FormulaValue {
     return new NumberValue(IRContext.NotInSource(FormulaType.Number), 0.0)
   }
 
-  public static ReplaceBlankWithEmptyString(irContext: IRContext, index: number): FormulaValue {
+  public static ReplaceBlankWithEmptyString(
+    irContext: IRContext,
+    index: number
+  ): FormulaValue {
     return new StringValue(IRContext.NotInSource(FormulaType.String), '')
   }
 
-  public static ReplaceBlankWith(...values: FormulaValue[]): (irContext: IRContext, num: number) => FormulaValue {
+  public static ReplaceBlankWith(
+    ...values: FormulaValue[]
+  ): (irContext: IRContext, num: number) => FormulaValue {
     return (irContext, index) => {
       return values[index]
     }
@@ -401,9 +478,17 @@ export class LibStandardErrorHanding {
   }
 
   // #region Common Type Checking Pipeline Stages
-  public static ExactValueType(irContext: IRContext, index: number, arg: FormulaValue, type: string): FormulaValue {
+  public static ExactValueType(
+    irContext: IRContext,
+    index: number,
+    arg: FormulaValue,
+    type: string
+  ): FormulaValue {
     // TODO: 确认 valueType的方式需要调整
-    if (arg instanceof ErrorValue || FormulaValue.CheckFormulaValueType(arg, type)) {
+    if (
+      arg instanceof ErrorValue ||
+      FormulaValueStatic.CheckFormulaValueType(arg, type)
+    ) {
       return arg
     } else {
       return CommonErrors.RuntimeTypeMismatch(irContext)
@@ -419,7 +504,7 @@ export class LibStandardErrorHanding {
     irContext: IRContext,
     index: number,
     arg: FormulaValue,
-    type: string,
+    type: string
   ): FormulaValue {
     if (arg instanceof BlankValue) {
       return arg
@@ -430,41 +515,76 @@ export class LibStandardErrorHanding {
 
   public static ExactValueTypeOrTableOrBlankProvider(type: string) {
     return (irContext: IRContext, index: number, arg: FormulaValue) =>
-      LibStandardErrorHanding.ExactValueTypeOrTableOrBlank(irContext, index, arg, type)
+      LibStandardErrorHanding.ExactValueTypeOrTableOrBlank(
+        irContext,
+        index,
+        arg,
+        type
+      )
   }
 
   public static ExactValueTypeOrTableOrBlank(
     irContext: IRContext,
     index: number,
     arg: FormulaValue,
-    type: string,
+    type: string
   ): FormulaValue {
     if (arg instanceof TableValue) {
       return arg
     } else {
-      return LibStandardErrorHanding.ExactValueTypeOrBlank(irContext, index, arg, type)
+      return LibStandardErrorHanding.ExactValueTypeOrBlank(
+        irContext,
+        index,
+        arg,
+        type
+      )
     }
   }
 
   public static ExactSequence(
-    ...runtimeChecks: Array<(irContext: IRContext, index: number, arg: FormulaValue) => FormulaValue>
+    ...runtimeChecks: Array<
+      (irContext: IRContext, index: number, arg: FormulaValue) => FormulaValue
+    >
   ) {
     return (irContext: IRContext, index: number, arg: FormulaValue) => {
       return runtimeChecks[index](irContext, index, arg)
     }
   }
 
-  public static AddColumnsTypeChecker(irContext: IRContext, index: number, arg: FormulaValue): FormulaValue {
+  public static AddColumnsTypeChecker(
+    irContext: IRContext,
+    index: number,
+    arg: FormulaValue
+  ): FormulaValue {
     if (index == 0) {
-      return LibStandardErrorHanding.ExactValueTypeOrBlank(irContext, index, arg, 'TableValue')
+      return LibStandardErrorHanding.ExactValueTypeOrBlank(
+        irContext,
+        index,
+        arg,
+        'TableValue'
+      )
     } else if (index % 2 == 1) {
-      return LibStandardErrorHanding.ExactValueTypeOrBlank(irContext, index, arg, 'StringValue')
+      return LibStandardErrorHanding.ExactValueTypeOrBlank(
+        irContext,
+        index,
+        arg,
+        'StringValue'
+      )
     } else {
-      return LibStandardErrorHanding.ExactValueTypeOrBlank(irContext, index, arg, 'LambdaFormulaValue')
+      return LibStandardErrorHanding.ExactValueTypeOrBlank(
+        irContext,
+        index,
+        arg,
+        'LambdaFormulaValue'
+      )
     }
   }
 
-  public static DateOrDateTime(irContext: IRContext, index: number, arg: FormulaValue): FormulaValue {
+  public static DateOrDateTime(
+    irContext: IRContext,
+    index: number,
+    arg: FormulaValue
+  ): FormulaValue {
     if (
       arg instanceof DateValue ||
       arg instanceof DateTimeValue ||
@@ -477,7 +597,11 @@ export class LibStandardErrorHanding {
     return CommonErrors.RuntimeTypeMismatch(irContext)
   }
 
-  public static TimeOrDateTime(irContext: IRContext, index: number, arg: FormulaValue): FormulaValue {
+  public static TimeOrDateTime(
+    irContext: IRContext,
+    index: number,
+    arg: FormulaValue
+  ): FormulaValue {
     if (
       arg instanceof TimeValue ||
       arg instanceof DateTimeValue ||
@@ -492,7 +616,11 @@ export class LibStandardErrorHanding {
   // #endregion
 
   // #region Common Runtime Value Checking Pipeline Stages
-  public static FiniteChecker(irContext: IRContext, index: number, arg: FormulaValue): FormulaValue {
+  public static FiniteChecker(
+    irContext: IRContext,
+    index: number,
+    arg: FormulaValue
+  ): FormulaValue {
     if (arg instanceof NumberValue) {
       const number = arg.value
       if (isNaN(number)) {
@@ -503,8 +631,16 @@ export class LibStandardErrorHanding {
     return arg
   }
 
-  public static PositiveNumberChecker(irContext: IRContext, index: number, arg: FormulaValue): FormulaValue {
-    const finiteCheckResult = LibStandardErrorHanding.FiniteChecker(irContext, index, arg)
+  public static PositiveNumberChecker(
+    irContext: IRContext,
+    index: number,
+    arg: FormulaValue
+  ): FormulaValue {
+    const finiteCheckResult = LibStandardErrorHanding.FiniteChecker(
+      irContext,
+      index,
+      arg
+    )
     if (finiteCheckResult instanceof NumberValue) {
       const number = finiteCheckResult.value
       if (number < 0) {
@@ -515,8 +651,16 @@ export class LibStandardErrorHanding {
     return arg
   }
 
-  public static StrictPositiveNumberChecker(irContext: IRContext, index: number, arg: FormulaValue): FormulaValue {
-    const finiteCheckResult = LibStandardErrorHanding.FiniteChecker(irContext, index, arg)
+  public static StrictPositiveNumberChecker(
+    irContext: IRContext,
+    index: number,
+    arg: FormulaValue
+  ): FormulaValue {
+    const finiteCheckResult = LibStandardErrorHanding.FiniteChecker(
+      irContext,
+      index,
+      arg
+    )
     if (finiteCheckResult instanceof NumberValue) {
       const number = finiteCheckResult.value
       if (number <= 0) {
@@ -527,8 +671,16 @@ export class LibStandardErrorHanding {
     return arg
   }
 
-  public static DivideByZeroChecker(irContext: IRContext, index: number, arg: FormulaValue): FormulaValue {
-    const finiteCheckResult = LibStandardErrorHanding.FiniteChecker(irContext, index, arg)
+  public static DivideByZeroChecker(
+    irContext: IRContext,
+    index: number,
+    arg: FormulaValue
+  ): FormulaValue {
+    const finiteCheckResult = LibStandardErrorHanding.FiniteChecker(
+      irContext,
+      index,
+      arg
+    )
     if (index == 1 && finiteCheckResult instanceof NumberValue) {
       const number = finiteCheckResult.value
       if (number == 0) {
@@ -539,7 +691,11 @@ export class LibStandardErrorHanding {
     return arg
   }
 
-  public static ReplaceChecker(irContext: IRContext, index: number, arg: FormulaValue): FormulaValue {
+  public static ReplaceChecker(
+    irContext: IRContext,
+    index: number,
+    arg: FormulaValue
+  ): FormulaValue {
     if (index == 1) {
       if (arg instanceof BlankValue) {
         return new ErrorValue(
@@ -547,14 +703,18 @@ export class LibStandardErrorHanding {
           new ExpressionError(
             'The second parameter to the Replace function cannot be Blank()',
             irContext.sourceContext,
-            ErrorKind.InvalidFunctionUsage,
-          ),
+            ErrorKind.InvalidFunctionUsage
+          )
         )
       }
 
-      const finiteCheckResult = LibStandardErrorHanding.FiniteChecker(irContext, index, arg)
+      const finiteCheckResult = LibStandardErrorHanding.FiniteChecker(
+        irContext,
+        index,
+        arg
+      )
       if (finiteCheckResult instanceof NumberValue) {
-        var number = finiteCheckResult.value
+        let number = finiteCheckResult.value
         if (number <= 0) {
           return CommonErrors.ArgumentOutOfRange(irContext)
         }
@@ -564,7 +724,11 @@ export class LibStandardErrorHanding {
     }
 
     if (index == 2) {
-      return LibStandardErrorHanding.PositiveNumberChecker(irContext, index, arg)
+      return LibStandardErrorHanding.PositiveNumberChecker(
+        irContext,
+        index,
+        arg
+      )
     }
 
     return arg
@@ -572,7 +736,10 @@ export class LibStandardErrorHanding {
   // #endregion
 
   // #region No Op Pipeline Stages
-  public static NoArgExpansion(irContext: IRContext, args: Array<FormulaValue>) {
+  public static NoArgExpansion(
+    irContext: IRContext,
+    args: Array<FormulaValue>
+  ) {
     return args
   }
 
@@ -582,14 +749,18 @@ export class LibStandardErrorHanding {
 
   // // This function should be used when type checking is too unique and needs to be located
   // // within the body of the builtin function itself
-  public static DeferRuntimeTypeChecking(irContext: IRContext, index: number, arg: FormulaValue): FormulaValue {
+  public static DeferRuntimeTypeChecking(
+    irContext: IRContext,
+    index: number,
+    arg: FormulaValue
+  ): FormulaValue {
     return arg
   }
 
   public static DeferRuntimeValueChecking<T extends FormulaValue>(
     irContext: IRContext,
     index: number,
-    arg: T,
+    arg: T
   ): FormulaValue {
     return arg
   }

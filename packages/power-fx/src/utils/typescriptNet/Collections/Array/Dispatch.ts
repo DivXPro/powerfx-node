@@ -2,7 +2,7 @@ import Type from '../../Types'
 import copy from './copy'
 import { Selector } from '../../FunctionTypes'
 
-const VOID0: undefined = void 0
+const VOID0 = void 0
 
 export interface DispatchErrorHandler {
   (ex: any, index: number): void
@@ -19,12 +19,12 @@ export interface DispatchErrorHandler {
 export function dispatch<T>(
   listeners: ArrayLike<Selector<T, any>>,
   payload: T,
-  trap?: boolean | DispatchErrorHandler,
+  trap?: boolean | DispatchErrorHandler
 ): void {
   dispatch.unsafe(copy(listeners), payload, trap)
 }
 
-export module dispatch {
+export namespace dispatch {
   /**
    * Simply takes a payload and passes it to all the listeners.
    *
@@ -49,7 +49,7 @@ export module dispatch {
   export function unsafe<T>(
     listeners: ArrayLike<Selector<T, any>>,
     payload: T,
-    trap?: boolean | DispatchErrorHandler,
+    trap?: boolean | DispatchErrorHandler
   ): void {
     if (listeners && listeners.length) {
       for (let i = 0, len = listeners.length; i < len; i++) {
@@ -77,7 +77,7 @@ export module dispatch {
   export function mapped<T, TResult>(
     listeners: ArrayLike<Selector<T, TResult>>,
     payload: T,
-    trap?: boolean | DispatchErrorHandler,
+    trap?: boolean | DispatchErrorHandler
   ): TResult[] {
     if (!listeners) return <any>listeners
     // Reuse the arrayCopy as the array result.

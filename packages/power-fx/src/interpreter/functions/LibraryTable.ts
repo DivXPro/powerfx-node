@@ -24,19 +24,31 @@ import { EvalVisitor } from '../EvalVisitor'
 import { SymbolContext } from '../SymbolContext'
 import { LambdaFormulaValue } from '../values/LambdaFormulaValue'
 import { CommonErrors } from './CommonErrors'
-import { TargetFunctionFullProps, TargetFunctionSimpleProps } from './StandardErrorHanding'
+import {
+  TargetFunctionFullProps,
+  TargetFunctionSimpleProps,
+} from './StandardErrorHanding'
 
-export function First(props: TargetFunctionSimpleProps<TableValue>): FormulaValue {
+export function First(
+  props: TargetFunctionSimpleProps<TableValue>
+): FormulaValue {
   const { irContext, values: args } = props
   return args[0].rows[0]?.toFormulaValue() ?? new BlankValue(irContext)
 }
 
-export function Last(props: TargetFunctionSimpleProps<TableValue>): FormulaValue {
+export function Last(
+  props: TargetFunctionSimpleProps<TableValue>
+): FormulaValue {
   const { irContext, values: args } = props
-  return args[0].rows[args[0].rows.length]?.toFormulaValue() ?? new BlankValue(irContext)
+  return (
+    args[0].rows[args[0].rows.length]?.toFormulaValue() ??
+    new BlankValue(irContext)
+  )
 }
 
-export function FirstN(props: TargetFunctionSimpleProps<FormulaValue>): FormulaValue {
+export function FirstN(
+  props: TargetFunctionSimpleProps<FormulaValue>
+): FormulaValue {
   const { irContext, values: args } = props
   const arg0 = args[0] as TableValue
   const arg1 = args[1] as NumberValue
@@ -45,7 +57,9 @@ export function FirstN(props: TargetFunctionSimpleProps<FormulaValue>): FormulaV
   return new InMemoryTableValue(irContext, rows)
 }
 
-export function LastN(props: TargetFunctionSimpleProps<FormulaValue>): FormulaValue {
+export function LastN(
+  props: TargetFunctionSimpleProps<FormulaValue>
+): FormulaValue {
   const { irContext, values: args } = props
   const arg0 = args[0] as TableValue
   const arg1 = args[1] as NumberValue
@@ -55,22 +69,33 @@ export function LastN(props: TargetFunctionSimpleProps<FormulaValue>): FormulaVa
   const len = allRows.length
   const take = arg1.value // $$$ rounding?
 
-  //   var rows = allRows.Skip(len - take).Take(take)
+  //   let rows = allRows.Skip(len - take).Take(take)
   const rows = allRows.filter((row, idx) => len - take <= idx)
 
   return new InMemoryTableValue(irContext, rows)
 }
 
 // Create new table
-export async function AddColumns(props: TargetFunctionFullProps<FormulaValue>): Promise<FormulaValue> {
+export async function AddColumns(
+  props: TargetFunctionFullProps<FormulaValue>
+): Promise<FormulaValue> {
   const { visitor: runner, symbolContext, irContext, values: args } = props
   const sourceArg = args[0] as TableValue
 
   const newColumns = NamedLambda.Parse(args)
 
   const tableType = irContext.resultType as TableType
-  const recordIRContext = new IRContext(irContext.sourceContext, tableType.toRecord())
-  const rows = await LazyAddColumns(runner, symbolContext, sourceArg.rows, recordIRContext, newColumns)
+  const recordIRContext = new IRContext(
+    irContext.sourceContext,
+    tableType.toRecord()
+  )
+  const rows = await LazyAddColumns(
+    runner,
+    symbolContext,
+    sourceArg.rows,
+    recordIRContext,
+    newColumns
+  )
 
   return new InMemoryTableValue(irContext, rows)
 }
@@ -80,7 +105,7 @@ export async function LazyAddColumns(
   context: SymbolContext,
   sources: Array<DValue<RecordValue>>,
   recordIRContext: IRContext,
-  newColumns: NamedLambda[],
+  newColumns: NamedLambda[]
 ): Promise<Array<DValue<RecordValue>>> {
   const arr: Array<DValue<RecordValue>> = []
   for (const row of sources) {
@@ -104,7 +129,9 @@ export async function LazyAddColumns(
 }
 
 // CountRows
-export function CountRows(props: TargetFunctionFullProps<TableValue>): FormulaValue {
+export function CountRows(
+  props: TargetFunctionFullProps<TableValue>
+): FormulaValue {
   const { visitor: runner, symbolContext, irContext, values: args } = props
   const arg0 = args[0]
 
@@ -113,7 +140,9 @@ export function CountRows(props: TargetFunctionFullProps<TableValue>): FormulaVa
   return new NumberValue(irContext, count)
 }
 
-export async function CountIf(props: TargetFunctionFullProps<FormulaValue>): Promise<FormulaValue> {
+export async function CountIf(
+  props: TargetFunctionFullProps<FormulaValue>
+): Promise<FormulaValue> {
   const { visitor: runner, symbolContext, irContext, values: args } = props
   // Streaming
   const sources = args[0] as TableValue
@@ -153,7 +182,9 @@ export async function CountIf(props: TargetFunctionFullProps<FormulaValue>): Pro
 }
 
 // Filter ([1,2,3,4,5], Value > 5)
-export function FilterTable(props: TargetFunctionFullProps<FormulaValue>): FormulaValue {
+export function FilterTable(
+  props: TargetFunctionFullProps<FormulaValue>
+): FormulaValue {
   const { visitor: runner, symbolContext, irContext, values: args } = props
 
   // Streaming
@@ -163,7 +194,11 @@ export function FilterTable(props: TargetFunctionFullProps<FormulaValue>): Formu
   if (args.length > 2) {
     return new ErrorValue(
       irContext,
-      new ExpressionError('Filter() only supports one predicate', irContext.sourceContext, ErrorKind.Validation),
+      new ExpressionError(
+        'Filter() only supports one predicate',
+        irContext.sourceContext,
+        ErrorKind.Validation
+      )
     )
   }
   const rows = LazyFilter(runner, symbolContext, arg0.rows, arg1)
@@ -171,7 +206,9 @@ export function FilterTable(props: TargetFunctionFullProps<FormulaValue>): Formu
   return new InMemoryTableValue(irContext, rows)
 }
 
-export async function SortTable(props: TargetFunctionFullProps<FormulaValue>): Promise<FormulaValue> {
+export async function SortTable(
+  props: TargetFunctionFullProps<FormulaValue>
+): Promise<FormulaValue> {
   const { visitor: runner, symbolContext, irContext, values: args } = props
   const arg0 = args[0] as TableValue
   const arg1 = args[1] as LambdaFormulaValue
@@ -180,7 +217,10 @@ export async function SortTable(props: TargetFunctionFullProps<FormulaValue>): P
   for (const row of arg0.rows) {
     if (row.isValue) {
       const childContext = symbolContext.withScopeValues(row.value)
-      pairs.push({ key: row, value: await arg1.evalAsync(runner, childContext) })
+      pairs.push({
+        key: row,
+        value: await arg1.evalAsync(runner, childContext),
+      })
     } else {
       pairs.push({ key: row, value: row.toFormulaValue() })
     }
@@ -195,11 +235,19 @@ export async function SortTable(props: TargetFunctionFullProps<FormulaValue>): P
   //   // return new KeyValuePair<DValue<RecordValue>, FormulaValue>(row, row.ToFormulaValue())
   // })
 
-  const errors = pairs.map((pair) => pair.value).filter((value) => value instanceof ErrorValue) as Array<ErrorValue>
+  const errors = pairs
+    .map((pair) => pair.value)
+    .filter((value) => value instanceof ErrorValue) as Array<ErrorValue>
 
-  const allNumbers = pairs.every((pair) => IsValueTypeErrorOrBlank(pair.value, 'NumberValue'))
-  const allStrings = pairs.every((pair) => IsValueTypeErrorOrBlank(pair.value, 'StringValue'))
-  const allBooleans = pairs.every((pair) => IsValueTypeErrorOrBlank(pair.value, 'BooleanValue'))
+  const allNumbers = pairs.every((pair) =>
+    IsValueTypeErrorOrBlank(pair.value, 'NumberValue')
+  )
+  const allStrings = pairs.every((pair) =>
+    IsValueTypeErrorOrBlank(pair.value, 'StringValue')
+  )
+  const allBooleans = pairs.every((pair) =>
+    IsValueTypeErrorOrBlank(pair.value, 'BooleanValue')
+  )
 
   if (!(allNumbers || allStrings || allBooleans)) {
     errors.push(CommonErrors.RuntimeTypeMismatch(irContext))
@@ -216,25 +264,44 @@ export async function SortTable(props: TargetFunctionFullProps<FormulaValue>): P
   }
 
   if (allNumbers) {
-    return SortValueType<NumberValue, number>(pairs, irContext, compareToResultModifier)
+    return SortValueType<NumberValue, number>(
+      pairs,
+      irContext,
+      compareToResultModifier
+    )
   } else if (allStrings) {
-    return SortValueType<StringValue, string>(pairs, irContext, compareToResultModifier)
+    return SortValueType<StringValue, string>(
+      pairs,
+      irContext,
+      compareToResultModifier
+    )
   } else {
-    return SortValueType<BooleanValue, boolean>(pairs, irContext, compareToResultModifier)
+    return SortValueType<BooleanValue, boolean>(
+      pairs,
+      irContext,
+      compareToResultModifier
+    )
   }
 }
 
-export function IsValueTypeErrorOrBlank(val: FormulaValue, type: string): boolean {
-  return val.typeName === type || val instanceof BlankValue || val instanceof ErrorValue
+export function IsValueTypeErrorOrBlank(
+  val: FormulaValue,
+  type: string
+): boolean {
+  return (
+    val.typeName === type ||
+    val instanceof BlankValue ||
+    val instanceof ErrorValue
+  )
 }
 
 export function SortValueType<
   TPFxPrimitive extends PrimitiveValue<TDotNetPrimitive>,
-  TDotNetPrimitive = number | DateTime | TimeSpan | boolean | string,
+  TDotNetPrimitive = number | DateTime | TimeSpan | boolean | string
 >(
   pairs: Array<KeyValuePair<DValue<RecordValue>, FormulaValue>>,
   irContext: IRContext,
-  compareToResultModifier: number,
+  compareToResultModifier: number
 ): FormulaValue {
   // where TPFxPrimitive : PrimitiveValue<TDotNetPrimitive>
   // where TDotNetPrimitive : IComparable<TDotNetPrimitive>
@@ -265,7 +332,7 @@ export function SortValueType<
 
   return new InMemoryTableValue(
     irContext,
-    pairs.map((pair) => pair.key),
+    pairs.map((pair) => pair.key)
   )
 }
 
@@ -273,7 +340,7 @@ export function LazyFilter(
   runner: EvalVisitor,
   context: SymbolContext,
   sources: Array<DValue<RecordValue>>,
-  filter: LambdaFormulaValue,
+  filter: LambdaFormulaValue
 ): Array<DValue<RecordValue>> {
   const arr: DValue<RecordValue>[] = []
   for (const row of sources) {

@@ -37,7 +37,7 @@ export class ReplaceFunction extends BuiltinFunction {
       DType.String,
       DType.Number,
       DType.Number,
-      DType.String,
+      DType.String
     )
   }
 
@@ -77,7 +77,7 @@ export class ReplaceTFunction extends BuiltinFunction {
       DType.EmptyTable,
       0,
       4,
-      4,
+      4
     )
   }
 
@@ -103,8 +103,11 @@ export class ReplaceTFunction extends BuiltinFunction {
     args: TexlNode[],
     argTypes: DType[],
     errors: IErrorContainer,
-    binding?: TexlBinding,
-  ): [boolean, { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }] {
+    binding?: TexlBinding
+  ): [
+    boolean,
+    { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }
+  ] {
     // Contracts.AssertValue(args);
     // Contracts.AssertAllValues(args);
     // Contracts.AssertValue(argTypes);
@@ -112,23 +115,28 @@ export class ReplaceTFunction extends BuiltinFunction {
     // Contracts.AssertValue(errors);
     // Contracts.Assert(MinArity <= args.Length && args.Length <= MaxArity);
 
-    // var fValid = CheckInvocation(args, argTypes, errors, out returnType, out nodeToCoercedTypeMap);
+    // let fValid = CheckInvocation(args, argTypes, errors, out returnType, out nodeToCoercedTypeMap);
 
     let baseResult = super.checkInvocation(args, argTypes, errors, binding)
     let fValid = baseResult[0]
     let returnType = baseResult[1].returnType
     let nodeToCoercedTypeMap = baseResult[1].nodeToCoercedTypeMap
 
-    var type0 = argTypes[0]
-    var type1 = argTypes[1]
-    var type2 = argTypes[2]
-    var type3 = argTypes[3]
+    let type0 = argTypes[0]
+    let type1 = argTypes[1]
+    let type2 = argTypes[2]
+    let type3 = argTypes[3]
 
     // Arg0 should be either a string or a column of strings.
     // Its type dictates the function return type.
     if (type0.isTable) {
       // Ensure we have a one-column table of strings
-      let checkStringColumnType = super.checkStringColumnType(type0, args[0], errors, nodeToCoercedTypeMap)
+      let checkStringColumnType = super.checkStringColumnType(
+        type0,
+        args[0],
+        errors,
+        nodeToCoercedTypeMap
+      )
       nodeToCoercedTypeMap = checkStringColumnType[1]
       fValid = fValid && checkStringColumnType[0]
 
@@ -137,13 +145,23 @@ export class ReplaceTFunction extends BuiltinFunction {
       // Borrow the return type from the 1st arg
       returnType = type0
     } else {
-      returnType = DType.CreateTable(new TypedName(DType.String, ReplaceTFunction.OneColumnTableResultName))
+      returnType = DType.CreateTable(
+        new TypedName(DType.String, ReplaceTFunction.OneColumnTableResultName)
+      )
       if (!DType.String.accepts(type0)) {
         if (type0.coercesTo(DType.String)) {
-          nodeToCoercedTypeMap = CollectionUtils.AddDictionary(nodeToCoercedTypeMap, args[0], DType.String)
+          nodeToCoercedTypeMap = CollectionUtils.AddDictionary(
+            nodeToCoercedTypeMap,
+            args[0],
+            DType.String
+          )
         } else {
           fValid = false
-          errors.ensureErrorWithSeverity(DocumentErrorSeverity.Severe, args[0], TexlStrings.ErrStringExpected)
+          errors.ensureErrorWithSeverity(
+            DocumentErrorSeverity.Severe,
+            args[0],
+            TexlStrings.ErrStringExpected
+          )
         }
       }
     }
@@ -151,55 +169,110 @@ export class ReplaceTFunction extends BuiltinFunction {
     // Arg1 should be either a number or a column of numbers.
     if (type1.isTable) {
       // fValid &= CheckNumericColumnType(type1, args[1], errors, ref nodeToCoercedTypeMap);
-      let CheckNumericColumnType = super.checkNumericColumnType(type1, args[1], errors, nodeToCoercedTypeMap)
+      let CheckNumericColumnType = super.checkNumericColumnType(
+        type1,
+        args[1],
+        errors,
+        nodeToCoercedTypeMap
+      )
       nodeToCoercedTypeMap = CheckNumericColumnType[1]
       fValid = fValid && CheckNumericColumnType[0]
     } else if (!DType.Number.accepts(type1)) {
       if (type1.coercesTo(DType.Number)) {
-        nodeToCoercedTypeMap = CollectionUtils.AddDictionary(nodeToCoercedTypeMap, args[1], DType.Number)
+        nodeToCoercedTypeMap = CollectionUtils.AddDictionary(
+          nodeToCoercedTypeMap,
+          args[1],
+          DType.Number
+        )
       } else {
         fValid = false
-        errors.ensureErrorWithSeverity(DocumentErrorSeverity.Severe, args[1], TexlStrings.ErrNumberExpected)
+        errors.ensureErrorWithSeverity(
+          DocumentErrorSeverity.Severe,
+          args[1],
+          TexlStrings.ErrNumberExpected
+        )
       }
     }
 
     // Arg2 should be either a number or a column of numbers.
     if (type2.isTable) {
       // fValid &= CheckNumericColumnType(type2, args[2], errors, ref nodeToCoercedTypeMap);
-      let CheckNumericColumnType = super.checkNumericColumnType(type2, args[2], errors, nodeToCoercedTypeMap)
+      let CheckNumericColumnType = super.checkNumericColumnType(
+        type2,
+        args[2],
+        errors,
+        nodeToCoercedTypeMap
+      )
       nodeToCoercedTypeMap = CheckNumericColumnType[1]
       fValid = fValid && CheckNumericColumnType[0]
     } else if (!DType.Number.accepts(type2)) {
       if (type2.coercesTo(DType.Number)) {
-        nodeToCoercedTypeMap = CollectionUtils.AddDictionary(nodeToCoercedTypeMap, args[2], DType.Number)
+        nodeToCoercedTypeMap = CollectionUtils.AddDictionary(
+          nodeToCoercedTypeMap,
+          args[2],
+          DType.Number
+        )
       } else {
         fValid = false
-        errors.ensureErrorWithSeverity(DocumentErrorSeverity.Severe, args[2], TexlStrings.ErrNumberExpected)
+        errors.ensureErrorWithSeverity(
+          DocumentErrorSeverity.Severe,
+          args[2],
+          TexlStrings.ErrNumberExpected
+        )
       }
     }
 
     // Arg3 should be either a string or a column of strings.
     if (type3.isTable) {
       // fValid &= CheckStringColumnType(type3, args[3], errors, ref nodeToCoercedTypeMap);
-      let checkStringColumnType = super.checkStringColumnType(type3, args[3], errors, nodeToCoercedTypeMap)
+      let checkStringColumnType = super.checkStringColumnType(
+        type3,
+        args[3],
+        errors,
+        nodeToCoercedTypeMap
+      )
       nodeToCoercedTypeMap = checkStringColumnType[1]
       fValid = fValid && checkStringColumnType[0]
     } else if (!DType.String.accepts(type3)) {
       if (type3.coercesTo(DType.String)) {
-        nodeToCoercedTypeMap = CollectionUtils.AddDictionary(nodeToCoercedTypeMap, args[3], DType.String)
+        nodeToCoercedTypeMap = CollectionUtils.AddDictionary(
+          nodeToCoercedTypeMap,
+          args[3],
+          DType.String
+        )
       } else {
         fValid = false
-        errors.ensureErrorWithSeverity(DocumentErrorSeverity.Severe, args[3], TexlStrings.ErrStringExpected)
+        errors.ensureErrorWithSeverity(
+          DocumentErrorSeverity.Severe,
+          args[3],
+          TexlStrings.ErrStringExpected
+        )
       }
     }
 
     // At least one arg has to be a table.
     if (!type0.isTable && !type1.isTable && !type2.isTable && !type3.isTable) {
       fValid = false
-      errors.ensureErrorWithSeverity(DocumentErrorSeverity.Severe, args[0], TexlStrings.ErrTypeError)
-      errors.ensureErrorWithSeverity(DocumentErrorSeverity.Severe, args[1], TexlStrings.ErrTypeError)
-      errors.ensureErrorWithSeverity(DocumentErrorSeverity.Severe, args[2], TexlStrings.ErrTypeError)
-      errors.ensureErrorWithSeverity(DocumentErrorSeverity.Severe, args[3], TexlStrings.ErrTypeError)
+      errors.ensureErrorWithSeverity(
+        DocumentErrorSeverity.Severe,
+        args[0],
+        TexlStrings.ErrTypeError
+      )
+      errors.ensureErrorWithSeverity(
+        DocumentErrorSeverity.Severe,
+        args[1],
+        TexlStrings.ErrTypeError
+      )
+      errors.ensureErrorWithSeverity(
+        DocumentErrorSeverity.Severe,
+        args[2],
+        TexlStrings.ErrTypeError
+      )
+      errors.ensureErrorWithSeverity(
+        DocumentErrorSeverity.Severe,
+        args[3],
+        TexlStrings.ErrTypeError
+      )
     }
 
     return [fValid, { returnType, nodeToCoercedTypeMap }]

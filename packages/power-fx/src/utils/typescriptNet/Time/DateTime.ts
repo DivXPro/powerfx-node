@@ -18,9 +18,15 @@ import ArgumentNullException from '../Exceptions/ArgumentNullException'
 import TimeUnit from './TimeUnit'
 import dayjs from 'dayjs'
 
-const VOID0: undefined = void 0
+const VOID0 = void 0
 
-export class DateTime implements ICalendarDate, IDateTime, IEquatable<IDateTime>, IComparable<IDateTime> {
+export class DateTime
+  implements
+    ICalendarDate,
+    IDateTime,
+    IEquatable<IDateTime>,
+    IComparable<IDateTime>
+{
   private readonly _value: Date
 
   public get value() {
@@ -36,7 +42,10 @@ export class DateTime implements ICalendarDate, IDateTime, IEquatable<IDateTime>
   constructor(milliseconds: number, kind?: DateTime.Kind)
   constructor(source: Date, kind?: DateTime.Kind)
   constructor(source: DateTime, kind?: DateTime.Kind)
-  constructor(value: any = new Date(), kind: DateTime.Kind = DateTime.Kind.Local) {
+  constructor(
+    value: any = new Date(),
+    kind: DateTime.Kind = DateTime.Kind.Local
+  ) {
     this._kind = kind
     if (value instanceof DateTime) {
       this._value = value.toJsDate()
@@ -199,7 +208,12 @@ export class DateTime implements ICalendarDate, IDateTime, IEquatable<IDateTime>
     let t = _._time
     if (!t) {
       const d = this._value
-      _._time = t = new ClockTime(d.getHours(), d.getMinutes(), d.getSeconds(), d.getMilliseconds())
+      _._time = t = new ClockTime(
+        d.getHours(),
+        d.getMinutes(),
+        d.getSeconds(),
+        d.getMilliseconds()
+      )
     }
     return new TimeSpan(t.getTotalMilliseconds(), TimeUnit.Milliseconds)
   }
@@ -241,9 +255,9 @@ export class DateTime implements ICalendarDate, IDateTime, IEquatable<IDateTime>
         d.getUTCHours(),
         d.getUTCMinutes(),
         d.getUTCSeconds(),
-        d.getUTCMilliseconds(),
+        d.getUTCMilliseconds()
       ),
-      DateTime.Kind.Utc,
+      DateTime.Kind.Utc
     )
   }
 
@@ -262,7 +276,7 @@ export class DateTime implements ICalendarDate, IDateTime, IEquatable<IDateTime>
    */
   equals(other: IDateTime, strict?: boolean): boolean
 
-  equals(other: IDateTime | Date, strict: boolean = false): boolean {
+  equals(other: IDateTime | Date, strict = false): boolean {
     if (!other) return false
     if (other == this) return true
 
@@ -370,7 +384,11 @@ export class DateTime implements ICalendarDate, IDateTime, IEquatable<IDateTime>
 
   static from(calendarDate: ICalendarDate): DateTime
   static from(year: number, month: Gregorian.Month, day: number): DateTime
-  static from(yearOrDate: number | ICalendarDate, month: number = 0, day: number = 1): DateTime {
+  static from(
+    yearOrDate: number | ICalendarDate,
+    month = 0,
+    day = 1
+  ): DateTime {
     let year: number
     if (typeof yearOrDate == 'object') {
       day = (<ICalendarDate>yearOrDate).day
@@ -385,7 +403,11 @@ export class DateTime implements ICalendarDate, IDateTime, IEquatable<IDateTime>
 
   static fromCalendarDate(calendarDate: ICalendarDate): DateTime
   static fromCalendarDate(year: number, month: number, day: number): DateTime
-  static fromCalendarDate(yearOrDate: number | ICalendarDate, month: number = 1, day: number = 1): DateTime {
+  static fromCalendarDate(
+    yearOrDate: number | ICalendarDate,
+    month = 1,
+    day = 1
+  ): DateTime {
     let year: number
     if (typeof yearOrDate == 'object') {
       day = (<ICalendarDate>yearOrDate).day
@@ -404,7 +426,7 @@ export class DateTime implements ICalendarDate, IDateTime, IEquatable<IDateTime>
 }
 
 // Extend DateTime's usefulness.
-export module DateTime {
+export namespace DateTime {
   export enum Kind {
     Unspecified,
     Local,

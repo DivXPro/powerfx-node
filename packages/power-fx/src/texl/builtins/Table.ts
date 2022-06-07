@@ -30,7 +30,7 @@ export class TableFunction extends BuiltinFunction {
       DType.EmptyTable,
       0,
       0,
-      Number.MAX_SAFE_INTEGER,
+      Number.MAX_SAFE_INTEGER
     )
   }
 
@@ -55,8 +55,11 @@ export class TableFunction extends BuiltinFunction {
     args: TexlNode[],
     argTypes: DType[],
     errors: IErrorContainer,
-    binding: TexlBinding,
-  ): [boolean, { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }] {
+    binding: TexlBinding
+  ): [
+    boolean,
+    { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }
+  ] {
     // Contracts.AssertValue(args);
     // Contracts.AssertAllValues(args);
     // Contracts.AssertValue(argTypes);
@@ -73,12 +76,20 @@ export class TableFunction extends BuiltinFunction {
     // Ensure that all args (if any) are records with compatible schemas.
     let rowType = DType.EmptyRecord
     for (let i = 0; i < argTypes.length; i++) {
-      var argType = argTypes[i]
+      let argType = argTypes[i]
       if (!argType.isRecord) {
-        errors.ensureErrorWithSeverity(DocumentErrorSeverity.Severe, args[i], TexlStrings.ErrNeedRecord)
+        errors.ensureErrorWithSeverity(
+          DocumentErrorSeverity.Severe,
+          args[i],
+          TexlStrings.ErrNeedRecord
+        )
         isValid = false
       } else if (!rowType.canUnionWith(argType)) {
-        errors.ensureErrorWithSeverity(DocumentErrorSeverity.Severe, args[i], TexlStrings.ErrIncompatibleRecord)
+        errors.ensureErrorWithSeverity(
+          DocumentErrorSeverity.Severe,
+          args[i],
+          TexlStrings.ErrIncompatibleRecord
+        )
         isValid = false
       } else {
         let isUnionError = false
@@ -122,7 +133,7 @@ export class TableFunction_UO extends BuiltinFunction {
       0,
       1,
       1,
-      DType.UntypedObject,
+      DType.UntypedObject
     )
   }
 
@@ -135,13 +146,18 @@ export class TableFunction_UO extends BuiltinFunction {
     args: TexlNode[],
     argTypes: DType[],
     errors: IErrorContainer,
-    binding: TexlBinding,
-  ): [boolean, { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }] {
+    binding: TexlBinding
+  ): [
+    boolean,
+    { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }
+  ] {
     const result = super.checkInvocation(args, argTypes, errors)
     const isValid = result[0]
     let returnType = result[1].returnType
     let nodeToCoercedTypeMap = result[1].nodeToCoercedTypeMap
-    const rowType = DType.EmptyRecord.add(new TypedName(DType.UntypedObject, BuiltinFunction.ColumnName_Value))
+    const rowType = DType.EmptyRecord.add(
+      new TypedName(DType.UntypedObject, BuiltinFunction.ColumnName_Value)
+    )
     returnType = rowType.toTable()
 
     return [isValid, { returnType, nodeToCoercedTypeMap }]

@@ -15,7 +15,7 @@ import assert = Integer.assert
  * Highly recommended: https://github.com/ckknight/random-js which has typings under @types/random-js.
  */
 namespace Random {
-  function r(maxExclusive: number = 1): number {
+  function r(maxExclusive = 1): number {
     return Math.floor(Math.random() * maxExclusive)
   }
 
@@ -52,11 +52,11 @@ namespace Random {
    * @param maxExclusive
    * @returns {()=>number}
    */
-  export function generate(maxExclusive: number = 1): () => number {
+  export function generate(maxExclusive = 1): () => number {
     return () => r(maxExclusive)
   }
 
-  export module generate {
+  export namespace generate {
     /**
      * Returns a function that generates random integers up to the boundary.
      * Useful for generating a random and memoizable set for use with other enumerables.
@@ -64,7 +64,10 @@ namespace Random {
      * @param inclusive
      * @returns {()=>number}
      */
-    export function integers(boundary: number, inclusive?: boolean): () => number {
+    export function integers(
+      boundary: number,
+      inclusive?: boolean
+    ): () => number {
       return () => nr(boundary, inclusive)
     }
   }
@@ -83,7 +86,7 @@ namespace Random {
     return nr(boundary, inclusive)
   }
 
-  export module next {
+  export namespace next {
     export function integer(boundary: number, inclusive?: boolean): number {
       return Random.next(boundary, inclusive)
     }
@@ -93,7 +96,11 @@ namespace Random {
       return Math.random() * boundary
     }
 
-    export function inRange(min: number, max: number, inclusive?: boolean): number {
+    export function inRange(
+      min: number,
+      max: number,
+      inclusive?: boolean
+    ): number {
       assert(min, 'min')
       assert(max, 'max')
       let range = max - min
@@ -110,7 +117,11 @@ namespace Random {
    * @param inclusive
    * @returns {number[]}
    */
-  export function integers(count: number, boundary: number, inclusive?: boolean): number[] {
+  export function integers(
+    count: number,
+    boundary: number,
+    inclusive?: boolean
+  ): number[] {
     assert(count)
     const s: number[] = []
     s.length = count
@@ -158,15 +169,21 @@ namespace Random {
     }
   }
 
-  export module select {
+  export namespace select {
     /**
      * Returns random value from an array.
      * @param source
      * @param throwIfEmpty
      */
     export function one<T>(source: ArrayLike<T>, throwIfEmpty: true): T
-    export function one<T>(source: ArrayLike<T>, throwIfEmpty?: boolean): T | undefined
-    export function one<T>(source: ArrayLike<T>, throwIfEmpty?: boolean): T | undefined {
+    export function one<T>(
+      source: ArrayLike<T>,
+      throwIfEmpty?: boolean
+    ): T | undefined
+    export function one<T>(
+      source: ArrayLike<T>,
+      throwIfEmpty?: boolean
+    ): T | undefined {
       if (source && source.length) return source[r(source.length)]
 
       if (throwIfEmpty) throw 'Cannot select from an empty set.'

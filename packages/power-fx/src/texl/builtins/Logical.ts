@@ -5,7 +5,10 @@
 import { IErrorContainer } from '../../app/errorContainers'
 import { TexlBinding } from '../../binding'
 import { BuiltinFunction } from '../../functions/BuiltinFunction'
-import { DelegationCapability, OperationCapabilityMetadata } from '../../functions/delegation'
+import {
+  DelegationCapability,
+  OperationCapabilityMetadata,
+} from '../../functions/delegation'
 import { TexlStrings } from '../../localization'
 import { CallNode, TexlNode } from '../../syntax'
 import { NodeKind } from '../../syntax/NodeKind'
@@ -45,7 +48,7 @@ export class VariadicLogicalFunction extends BuiltinFunction {
       0,
       0,
       Number.MAX_SAFE_INTEGER,
-      DType.Boolean,
+      DType.Boolean
     )
     this._isAnd = isAnd
   }
@@ -58,7 +61,11 @@ export class VariadicLogicalFunction extends BuiltinFunction {
     return [
       [TexlStrings.LogicalFuncParam],
       [TexlStrings.LogicalFuncParam, TexlStrings.LogicalFuncParam],
-      [TexlStrings.LogicalFuncParam, TexlStrings.LogicalFuncParam, TexlStrings.LogicalFuncParam],
+      [
+        TexlStrings.LogicalFuncParam,
+        TexlStrings.LogicalFuncParam,
+        TexlStrings.LogicalFuncParam,
+      ],
     ]
     // Enumerate just the base overloads (the first 3 possibilities).
     // yield return new[] { TexlStrings.LogicalFuncParam };
@@ -82,8 +89,11 @@ export class VariadicLogicalFunction extends BuiltinFunction {
   public checkInvocation(
     args: TexlNode[],
     argTypes: DType[],
-    errors: IErrorContainer,
-  ): [boolean, { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }] {
+    errors: IErrorContainer
+  ): [
+    boolean,
+    { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }
+  ] {
     // Contracts.AssertValue(args);
     // Contracts.AssertAllValues(args);
     // Contracts.AssertValue(argTypes);
@@ -101,7 +111,11 @@ export class VariadicLogicalFunction extends BuiltinFunction {
       const matchedWithCoercion = rst[1]
       fArgsValid &&= rst[0]
       if (matchedWithCoercion) {
-        nodeToCoercedTypeMap = CollectionUtils.AddDictionary(nodeToCoercedTypeMap, args[i], DType.Boolean)
+        nodeToCoercedTypeMap = CollectionUtils.AddDictionary(
+          nodeToCoercedTypeMap,
+          args[i],
+          DType.Boolean
+        )
       }
     }
 
@@ -110,7 +124,11 @@ export class VariadicLogicalFunction extends BuiltinFunction {
     return [fArgsValid, { returnType, nodeToCoercedTypeMap }]
   }
 
-  public isRowScopedServerDelegatable(callNode: CallNode, binding: TexlBinding, metadata: OperationCapabilityMetadata) {
+  public isRowScopedServerDelegatable(
+    callNode: CallNode,
+    binding: TexlBinding,
+    metadata: OperationCapabilityMetadata
+  ) {
     // Contracts.AssertValue(callNode);
     // Contracts.AssertValue(binding);
     // Contracts.AssertValue(metadata);
@@ -128,18 +146,24 @@ export class VariadicLogicalFunction extends BuiltinFunction {
 
     const funcDelegationCapability = new DelegationCapability(
       this.functionDelegationCapability.capabilities |
-        (this._isAnd ? DelegationCapability.And : DelegationCapability.Or),
+        (this._isAnd ? DelegationCapability.And : DelegationCapability.Or)
     )
     if (!metadata.isDelegationSupportedByTable(funcDelegationCapability)) {
       return false
     }
 
     for (const arg of args) {
-      var argKind = arg.kind
+      let argKind = arg.kind
       switch (argKind) {
         case NodeKind.FirstName: {
           const firstNameStrategy = this.getFirstNameNodeDelegationStrategy()
-          if (!firstNameStrategy.isValidFirstNameNode(arg.asFirstName(), binding, null)) {
+          if (
+            !firstNameStrategy.isValidFirstNameNode(
+              arg.asFirstName(),
+              binding,
+              null
+            )
+          ) {
             return false
           }
 
@@ -158,7 +182,14 @@ export class VariadicLogicalFunction extends BuiltinFunction {
 
         case NodeKind.DottedName: {
           const dottedStrategy = this.getDottedNameNodeDelegationStrategy()
-          if (!dottedStrategy.isValidDottedNameNode(arg.asDottedName(), binding, metadata, null)) {
+          if (
+            !dottedStrategy.isValidDottedNameNode(
+              arg.asDottedName(),
+              binding,
+              metadata,
+              null
+            )
+          ) {
             this.suggestDelegationHint(arg, binding)
             return false
           }
@@ -168,8 +199,17 @@ export class VariadicLogicalFunction extends BuiltinFunction {
 
         case NodeKind.BinaryOp: {
           const opNode = arg.asBinaryOp()
-          const binaryOpNodeValidationStrategy = this.getOpDelegationStrategy(opNode.op, opNode)
-          if (!binaryOpNodeValidationStrategy.isSupportedOpNode(opNode, metadata, binding)) {
+          const binaryOpNodeValidationStrategy = this.getOpDelegationStrategy(
+            opNode.op,
+            opNode
+          )
+          if (
+            !binaryOpNodeValidationStrategy.isSupportedOpNode(
+              opNode,
+              metadata,
+              binding
+            )
+          ) {
             this.suggestDelegationHint(arg, binding)
             return false
           }
@@ -179,8 +219,15 @@ export class VariadicLogicalFunction extends BuiltinFunction {
 
         case NodeKind.UnaryOp: {
           const opNode = arg.asUnaryOpLit()
-          const unaryOpNodeValidationStrategy = this.getOpDelegationStrategyOfUnaryOp(opNode.op)
-          if (!unaryOpNodeValidationStrategy.isSupportedOpNode(opNode, metadata, binding)) {
+          const unaryOpNodeValidationStrategy =
+            this.getOpDelegationStrategyOfUnaryOp(opNode.op)
+          if (
+            !unaryOpNodeValidationStrategy.isSupportedOpNode(
+              opNode,
+              metadata,
+              binding
+            )
+          ) {
             this.suggestDelegationHint(arg, binding)
             return false
           }

@@ -18,13 +18,16 @@ export function dispose(...disposables: DisposableItem[]): void {
   disposeTheseInternal(disposables, false)
 }
 
-export module dispose {
+export namespace dispose {
   /**
    * Use this when only disposing one object to avoid creation of arrays.
    * @param disposable
    * @param trapExceptions
    */
-  export function single(disposable: DisposableItem, trapExceptions: boolean = false): void {
+  export function single(
+    disposable: DisposableItem,
+    trapExceptions = false
+  ): void {
     if (disposable) disposeSingle(disposable, trapExceptions)
   }
 
@@ -38,7 +41,9 @@ export module dispose {
    * @param disposables
    * @returns {any[]} Returns an array of exceptions that occurred, if there are any.
    */
-  export function withoutException(...disposables: DisposableItem[]): any[] | undefined {
+  export function withoutException(
+    ...disposables: DisposableItem[]
+  ): any[] | undefined {
     // The disposables arguments array is effectively localized so it's safe.
     return disposeTheseInternal(disposables, true)
   }
@@ -49,12 +54,20 @@ export module dispose {
    * @param trapExceptions If true, prevents exceptions from being thrown when disposing.
    * @returns {any[]} If 'trapExceptions' is true, returns an array of exceptions that occurred, if there are any.
    */
-  export function these(disposables: DisposableItemArray, trapExceptions?: boolean): any[] | undefined {
-    return disposables && disposables.length ? disposeTheseInternal(disposables.slice(), trapExceptions) : void 0
+  export function these(
+    disposables: DisposableItemArray,
+    trapExceptions?: boolean
+  ): any[] | undefined {
+    return disposables && disposables.length
+      ? disposeTheseInternal(disposables.slice(), trapExceptions)
+      : void 0
   }
 
-  export module these {
-    export function deferred(disposables: DisposableItemArray, delay: number = 0): void {
+  export namespace these {
+    export function deferred(
+      disposables: DisposableItemArray,
+      delay = 0
+    ): void {
       if (disposables && disposables.length) {
         if (!(delay >= 0)) delay = 0
         setTimeout(disposeTheseInternal, delay, disposables.slice(), true)
@@ -67,8 +80,13 @@ export module dispose {
      * @param trapExceptions
      * @returns {any[]}
      */
-    export function noCopy(disposables: DisposableItemArray, trapExceptions?: boolean): any[] | undefined {
-      return disposables && disposables.length ? disposeTheseInternal(disposables, trapExceptions) : void 0
+    export function noCopy(
+      disposables: DisposableItemArray,
+      trapExceptions?: boolean
+    ): any[] | undefined {
+      return disposables && disposables.length
+        ? disposeTheseInternal(disposables, trapExceptions)
+        : void 0
     }
   }
 }
@@ -90,7 +108,7 @@ export module dispose {
  */
 export function using<TDisposable extends IDisposable, TReturn>(
   disposable: TDisposable,
-  closure: (disposable: TDisposable) => TReturn,
+  closure: (disposable: TDisposable) => TReturn
 ): TReturn {
   try {
     return closure(disposable)
@@ -104,7 +122,11 @@ export function using<TDisposable extends IDisposable, TReturn>(
  * If trapExceptions is 'true' it catches and returns any exception instead of throwing.
  */
 function disposeSingle(disposable: IDisposable, trapExceptions: boolean): any {
-  if (disposable && typeof disposable == Type.OBJECT && typeof disposable['dispose'] == 'function') {
+  if (
+    disposable &&
+    typeof disposable == Type.OBJECT &&
+    typeof disposable['dispose'] == 'function'
+  ) {
     if (trapExceptions) {
       try {
         disposable.dispose()
@@ -123,7 +145,7 @@ function disposeSingle(disposable: IDisposable, trapExceptions: boolean): any {
 function disposeTheseInternal(
   disposables: DisposableItemArray,
   trapExceptions?: boolean,
-  index: number = 0,
+  index = 0
 ): any[] | undefined {
   let exceptions: any[] | undefined
   const len = disposables ? disposables.length : 0

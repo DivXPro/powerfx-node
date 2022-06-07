@@ -24,42 +24,57 @@ export class DelegationTelemetryInfo {
     return new DelegationTelemetryInfo('')
   }
 
-  public static CreateBinaryOpNoSupportedInfoTelemetryInfo(op: BinaryOp | UnaryOp): DelegationTelemetryInfo {
+  public static CreateBinaryOpNoSupportedInfoTelemetryInfo(
+    op: BinaryOp | UnaryOp
+  ): DelegationTelemetryInfo {
     return new DelegationTelemetryInfo(op.toString())
   }
 
-  public static CreateUnaryOpNoSupportedInfoTelemetryInfo(op: UnaryOp): DelegationTelemetryInfo {
+  public static CreateUnaryOpNoSupportedInfoTelemetryInfo(
+    op: UnaryOp
+  ): DelegationTelemetryInfo {
     return new DelegationTelemetryInfo(op.toString())
   }
 
-  public static CreateDataSourceNotDelegatableTelemetryInfo(ds: IExternalDataSource): DelegationTelemetryInfo {
+  public static CreateDataSourceNotDelegatableTelemetryInfo(
+    ds: IExternalDataSource
+  ): DelegationTelemetryInfo {
     // Contracts.AssertValue(ds);
 
     return new DelegationTelemetryInfo(ds.name)
   }
 
-  public static CreateUndelegatableFunctionTelemetryInfo(func: TexlFunction): DelegationTelemetryInfo {
+  public static CreateUndelegatableFunctionTelemetryInfo(
+    func: TexlFunction
+  ): DelegationTelemetryInfo {
     // Contracts.AssertValueOrNull(func);
 
-    if (func == null) return DelegationTelemetryInfo.CreateEmptyDelegationTelemetryInfo()
+    if (func == null)
+      return DelegationTelemetryInfo.CreateEmptyDelegationTelemetryInfo()
 
     return new DelegationTelemetryInfo(func.name)
   }
 
-  public static CreateNoDelSupportByColumnTelemetryInfo(info: FirstNameInfo | string): DelegationTelemetryInfo {
+  public static CreateNoDelSupportByColumnTelemetryInfo(
+    info: FirstNameInfo | string
+  ): DelegationTelemetryInfo {
     // Contracts.AssertValue(info);
-    if (info instanceof FirstNameInfo) return new DelegationTelemetryInfo(info.name.toString())
+    if (info instanceof FirstNameInfo)
+      return new DelegationTelemetryInfo(info.name.toString())
     return new DelegationTelemetryInfo(info)
   }
 
-  public static CreateImpureNodeTelemetryInfo(node: TexlNode, binding: TexlBinding = null): DelegationTelemetryInfo {
+  public static CreateImpureNodeTelemetryInfo(
+    node: TexlNode,
+    binding: TexlBinding = null
+  ): DelegationTelemetryInfo {
     // Contracts.AssertValue(node)
     // Contracts.AssertValueOrNull(binding)
 
     switch (node.kind) {
       case NodeKind.Call:
-        var callNode = node.asCall()
-        var funcName = binding?.getInfo(callNode)?.function?.name || ''
+        let callNode = node.asCall()
+        let funcName = binding?.getInfo(callNode)?.function?.name || ''
         return new DelegationTelemetryInfo(funcName)
       default:
         return new DelegationTelemetryInfo(node.toString())

@@ -51,7 +51,9 @@ export class TimeSpan extends TimeQuantity implements ITimeMeasurement {
 
   get seconds() {
     // return this._quantity % Milliseconds.Per.Minute
-    return Math.floor((this._quantity % Milliseconds.Per.Minute) / Milliseconds.Per.Second)
+    return Math.floor(
+      (this._quantity % Milliseconds.Per.Minute) / Milliseconds.Per.Second
+    )
   }
 
   get totalSeconds() {
@@ -62,7 +64,9 @@ export class TimeSpan extends TimeQuantity implements ITimeMeasurement {
    * The total number of ticks that minutes this amount of time.
    */
   get minutes() {
-    return Math.floor((this._quantity % Milliseconds.Per.Hour) / Milliseconds.Per.Minute)
+    return Math.floor(
+      (this._quantity % Milliseconds.Per.Hour) / Milliseconds.Per.Minute
+    )
   }
 
   get totalMinutes() {
@@ -73,7 +77,9 @@ export class TimeSpan extends TimeQuantity implements ITimeMeasurement {
    * The total number of ticks that hours this amount of time.
    */
   get hours() {
-    return Math.floor((this._quantity % Milliseconds.Per.Day) / Milliseconds.Per.Hour)
+    return Math.floor(
+      (this._quantity % Milliseconds.Per.Day) / Milliseconds.Per.Hour
+    )
   }
 
   get totalHours() {
@@ -131,14 +137,16 @@ export class TimeSpan extends TimeQuantity implements ITimeMeasurement {
     if (Type.isNumber(other))
       throw new Error(
         'Use .addUnit(value:number,units:TimeUnit) to add a numerical value amount.  Default units are milliseconds.\n' +
-          '.add only supports quantifiable time values (ITimeTotal).',
+          '.add only supports quantifiable time values (ITimeTotal).'
       )
 
     return new TimeSpan(this.getTotalMilliseconds() + other.total.milliseconds)
   }
 
   addUnit(value: number, units: TimeUnit = TimeUnit.Milliseconds): TimeSpan {
-    return new TimeSpan(this.getTotalMilliseconds() + TimeUnit.toMilliseconds(value, units))
+    return new TimeSpan(
+      this.getTotalMilliseconds() + TimeUnit.toMilliseconds(value, units)
+    )
   }
 
   subtract(ts: TimeSpan) {
@@ -255,7 +263,7 @@ function parseIso(inp: string, sign: 1 | -1) {
   // We'd normally use ~~inp for this, but unfortunately it also
   // converts floats to ints.
   // inp may be undefined, so careful calling replace on it.
-  var res = inp && parseFloat(inp.replace(',', '.'))
+  const res = inp && parseFloat(inp.replace(',', '.'))
   // apply sign while we're at it
   return (isNaN(res) ? 0 : res) * sign
 }

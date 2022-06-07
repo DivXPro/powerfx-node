@@ -6,13 +6,13 @@ export interface SelectorWithIndex<TSource, TResult> {
   (source: TSource, index: number): TResult
 }
 
-export interface Action<T> extends Selector<T, void> {}
+export type Action<T> = Selector<T, void>
 
-export interface ActionWithIndex<T> extends SelectorWithIndex<T, void> {}
+export type ActionWithIndex<T> = SelectorWithIndex<T, void>
 
-export interface Predicate<T> extends Selector<T, boolean> {}
+export type Predicate<T> = Selector<T, boolean>
 
-export interface PredicateWithIndex<T> extends SelectorWithIndex<T, boolean> {}
+export type PredicateWithIndex<T> = SelectorWithIndex<T, boolean>
 
 export interface Comparison<T> {
   (a: T, b: T): number
@@ -26,7 +26,7 @@ export interface EqualityComparison<T> {
   (a: T, b: T, strict?: boolean): boolean
 }
 
-export interface HashSelector<T> extends Selector<T, string | number | symbol> {}
+export type HashSelector<T> = Selector<T, string | number | symbol>
 
 export interface Func<TResult> {
   (): TResult

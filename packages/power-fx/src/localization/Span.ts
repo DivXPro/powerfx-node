@@ -27,13 +27,19 @@ export class Span {
     // Contracts.AssertValue(script);
     // Contracts.Assert(Min <= script.Length);
     // Contracts.AssertValue(match);
-    return this.min + match.length <= script.length && script.substr(this.min, match.length) === match
+    return (
+      this.min + match.length <= script.length &&
+      script.substr(this.min, match.length) === match
+    )
   }
 
   // TODO: 需重构
   // Generic span replacer. Given a set of unordered spans and replacement strings for
   // each, this produces a new string with all the specified spans replaced accordingly.
-  public static ReplaceSpans(script: string, worklist: Array<KeyValuePair<Span, string>>) {
+  public static ReplaceSpans(
+    script: string,
+    worklist: Array<KeyValuePair<Span, string>>
+  ) {
     // Contracts.AssertValue(script);
     // Contracts.AssertValue(worklist);
     return ''
@@ -47,7 +53,7 @@ export class Span {
     //     })
     //     int index = 0;
 
-    //     foreach (var pair in worklist.OrderBy(kvp => kvp.Key.Min))
+    //     foreach (let pair in worklist.OrderBy(kvp => kvp.Key.Min))
     //     {
     //         sb.Append(script, index, pair.Key.Min - index);
     //         sb.Append(pair.Value);

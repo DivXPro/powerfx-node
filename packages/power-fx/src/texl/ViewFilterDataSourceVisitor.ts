@@ -22,7 +22,8 @@ export class ViewFilterDataSourceVisitor extends TexlVisitor {
 
   public visit(leafNode: LeafNodeType) {
     if (leafNode instanceof FirstNameNode) {
-      let TryGetDataSource = this._txb.entityScope.tryGetDataSourceInfo(leafNode)
+      let TryGetDataSource =
+        this._txb.entityScope.tryGetDataSourceInfo(leafNode)
       let info = TryGetDataSource[1]
       if (TryGetDataSource[0] && info.kind == DataSourceKind.CdsNative) {
         this.CdsDataSourceInfo = info as IExternalCdsDataSource
@@ -38,7 +39,7 @@ export class ViewFilterDataSourceVisitor extends TexlVisitor {
 
       if (node?.head?.name.value == this.FilterFunctionName) {
         for (let arg of node.args.children) {
-          var argType = this._txb.getType(arg)
+          let argType = this._txb.getType(arg)
           if (argType.kind == DKind.ViewValue) {
             this.ContainsViewFilter = true
           }
@@ -48,7 +49,7 @@ export class ViewFilterDataSourceVisitor extends TexlVisitor {
   }
 
   // public void Visit(FirstNameNode node) {
-  //   if (_txb.EntityScope.TryGetDataSource(node, out var info) && info.Kind == DataSourceKind.CdsNative)
+  //   if (_txb.EntityScope.TryGetDataSource(node, out let info) && info.Kind == DataSourceKind.CdsNative)
   //   {
   //     CdsDataSourceInfo = info as IExternalCdsDataSource;
   //   }
@@ -57,9 +58,9 @@ export class ViewFilterDataSourceVisitor extends TexlVisitor {
   // public void PostVisit(CallNode node) {
   //   // Check if there is a filter node using view.
   //   if (node?.Head?.Name.Value == FilterFunctionName) {
-  //     foreach(var arg in node.Args.Children)
+  //     foreach(let arg in node.Args.Children)
   //     {
-  //       var argType = _txb.GetType(arg);
+  //       let argType = _txb.GetType(arg);
   //       if (argType.Kind == DKind.ViewValue) {
   //         ContainsViewFilter = true;
   //       }

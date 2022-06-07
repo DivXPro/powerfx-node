@@ -2,12 +2,14 @@ import { TexlBinding } from '../../binding/Binder'
 import { CallInfo } from '../../binding/bindingInfo'
 import { CallNode, DottedNameNode, FirstNameNode, TexlNode } from '../../syntax'
 import { NodeKind } from '../../syntax/NodeKind'
-import { IExpandInfo } from '../../types/IExpandInfo'
 import { IArgValidator } from './IArgValidator'
 import { IFlowInfo } from '../../types/IFlowInfo'
 
 export class FlowArgNodeValidator implements IArgValidator<IFlowInfo> {
-  public tryGetValidValue(argNode: TexlNode, binding: TexlBinding): [boolean, IFlowInfo] {
+  public tryGetValidValue(
+    argNode: TexlNode,
+    binding: TexlBinding
+  ): [boolean, IFlowInfo] {
     // Contracts.AssertValue(argNode);
     // Contracts.AssertValue(binding);
 
@@ -24,7 +26,10 @@ export class FlowArgNodeValidator implements IArgValidator<IFlowInfo> {
     return [false, flowInfo]
   }
 
-  private tryGetFlowInfoForCall(callNode: CallNode, binding: TexlBinding): [boolean, IFlowInfo] {
+  private tryGetFlowInfoForCall(
+    callNode: CallNode,
+    binding: TexlBinding
+  ): [boolean, IFlowInfo] {
     // Contracts.AssertValueOrNull(callNode);
     // Contracts.AssertValue(binding);
 
@@ -46,7 +51,10 @@ export class FlowArgNodeValidator implements IArgValidator<IFlowInfo> {
     return fn.tryGetFlowInfo(callNode, binding)
   }
 
-  private tryGetFlowInfoForFirstName(firstName: FirstNameNode, binding: TexlBinding): [boolean, IFlowInfo] {
+  private tryGetFlowInfoForFirstName(
+    firstName: FirstNameNode,
+    binding: TexlBinding
+  ): [boolean, IFlowInfo] {
     // Contracts.AssertValueOrNull(firstName);
     // Contracts.AssertValue(binding);
 
@@ -58,7 +66,10 @@ export class FlowArgNodeValidator implements IArgValidator<IFlowInfo> {
     return binding.tryGetFlowInfo(firstName)
   }
 
-  private tryGetFlowInfoForDottedName(dottedNameNode: DottedNameNode, binding: TexlBinding): [boolean, IFlowInfo] {
+  private tryGetFlowInfoForDottedName(
+    dottedNameNode: DottedNameNode,
+    binding: TexlBinding
+  ): [boolean, IFlowInfo] {
     // Contracts.AssertValueOrNull(dottedNameNode);
     // Contracts.AssertValue(binding);
 

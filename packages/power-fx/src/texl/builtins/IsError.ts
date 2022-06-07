@@ -1,19 +1,19 @@
-import { IErrorContainer } from '../../app/errorContainers';
-import { TexlBinding } from '../../binding';
-import { BuiltinFunction } from '../../functions/BuiltinFunction';
-import { TexlStrings } from '../../localization';
-import { TexlNode } from '../../syntax';
-import { DType } from '../../types/DType';
-import { FunctionCategories } from '../../types/FunctionCategories';
-import { Dictionary } from '../../utils/Dictionary';
+import { IErrorContainer } from '../../app/errorContainers'
+import { TexlBinding } from '../../binding'
+import { BuiltinFunction } from '../../functions/BuiltinFunction'
+import { TexlStrings } from '../../localization'
+import { TexlNode } from '../../syntax'
+import { DType } from '../../types/DType'
+import { FunctionCategories } from '../../types/FunctionCategories'
+import { Dictionary } from '../../utils/Dictionary'
 
 export class IsErrorFunction extends BuiltinFunction {
   public get isSelfContained() {
-    return true;
+    return true
   }
 
   public get supportsParamCoercion() {
-    return true;
+    return true
   }
 
   constructor() {
@@ -27,11 +27,11 @@ export class IsErrorFunction extends BuiltinFunction {
       0,
       1,
       1
-    );
+    )
   }
 
   public getSignatures() {
-    return [[TexlStrings.IsErrorArg]];
+    return [[TexlStrings.IsErrorArg]]
   }
 
   public checkInvocation(
@@ -39,7 +39,10 @@ export class IsErrorFunction extends BuiltinFunction {
     argTypes: DType[],
     errors: IErrorContainer,
     binding: TexlBinding
-  ): [boolean, { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }] {
+  ): [
+    boolean,
+    { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }
+  ] {
     // Contracts.AssertValue(binding);
     // Contracts.AssertValue(args);
     // Contracts.AssertValue(argTypes);
@@ -47,13 +50,13 @@ export class IsErrorFunction extends BuiltinFunction {
     // Contracts.Assert(args.Length == 1);
     // Contracts.AssertValue(errors);
 
-    let nodeToCoercedTypeMap = null;
+    let nodeToCoercedTypeMap = null
 
-    // var type = super.returnType;
+    // let type = super.returnType;
 
     // Contracts.Assert(ReturnType == DType.Boolean);
 
-    let returnType = this.returnType;
-    return [true, { returnType, nodeToCoercedTypeMap }];
+    let returnType = this.returnType
+    return [true, { returnType, nodeToCoercedTypeMap }]
   }
 }

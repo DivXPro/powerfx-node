@@ -1,7 +1,10 @@
 import { IErrorContainer } from '../../app/errorContainers'
 import { TexlBinding } from '../../binding'
 import { BuiltinFunction } from '../../functions/BuiltinFunction'
-import { DelegationCapability, OperationCapabilityMetadata } from '../../functions/delegation'
+import {
+  DelegationCapability,
+  OperationCapabilityMetadata,
+} from '../../functions/delegation'
 import { BinaryOp } from '../../lexer'
 import { StringGetter, TexlStrings } from '../../localization/Strings'
 import { CallNode, DottedNameNode, FirstNameNode, TexlNode } from '../../syntax'
@@ -21,7 +24,9 @@ export abstract class IsBlankFunctionBase extends BuiltinFunction {
   }
 
   public get functionDelegationCapability(): DelegationCapability {
-    return new DelegationCapability(DelegationCapability.Null | DelegationCapability.Filter)
+    return new DelegationCapability(
+      DelegationCapability.Null | DelegationCapability.Filter
+    )
   }
 
   constructor(
@@ -31,17 +36,30 @@ export abstract class IsBlankFunctionBase extends BuiltinFunction {
     returnType: DType,
     maskLambdas: number,
     arityMin: number,
-    arityMax: number,
+    arityMax: number
   ) {
-    super(undefined, name, undefined, description, functionCategories, returnType, maskLambdas, arityMin, arityMax)
+    super(
+      undefined,
+      name,
+      undefined,
+      description,
+      functionCategories,
+      returnType,
+      maskLambdas,
+      arityMin,
+      arityMax
+    )
   }
 
   public checkInvocation(
     args: TexlNode[],
     argTypes: DType[],
     errors: IErrorContainer,
-    binding: TexlBinding,
-  ): [boolean, { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }] {
+    binding: TexlBinding
+  ): [
+    boolean,
+    { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }
+  ] {
     // Contracts.AssertValue(args);
     // Contracts.AssertAllValues(args);
     // Contracts.AssertValue(argTypes);
@@ -66,7 +84,8 @@ export abstract class IsBlankFunctionBase extends BuiltinFunction {
       let controlType = <IExternalControlType>(<unknown>argTypes[0])
       // A control will never be null. It never worked as intended.
       // We coerce the control to control.primaryOutProperty.
-      var primaryOutputProperty = controlType.controlTemplate.primaryOutputProperty //VerifyValue().PrimaryOutputProperty;
+      let primaryOutputProperty =
+        controlType.controlTemplate.primaryOutputProperty //VerifyValue().PrimaryOutputProperty;
       // Contracts.AssertValueOrNull(primaryOutputProperty);
 
       if (primaryOutputProperty != null) {
@@ -93,7 +112,7 @@ export class IsBlankFunction extends IsBlankFunctionBase {
       DType.Boolean,
       0,
       1,
-      1,
+      1
     )
   }
 
@@ -101,7 +120,11 @@ export class IsBlankFunction extends IsBlankFunctionBase {
     return [[TexlStrings.IsBlankArg1]]
   }
 
-  public isRowScopedServerDelegatable(callNode: CallNode, binding: TexlBinding, metadata: OperationCapabilityMetadata) {
+  public isRowScopedServerDelegatable(
+    callNode: CallNode,
+    binding: TexlBinding,
+    metadata: OperationCapabilityMetadata
+  ) {
     // Contracts.AssertValue(callNode);
     // Contracts.AssertValue(binding);
     // Contracts.AssertValue(metadata);
@@ -114,18 +137,23 @@ export class IsBlankFunction extends IsBlankFunctionBase {
       return false
     }
 
-    var args = callNode.args.children //.VerifyValue();
-    var opStrategy = super.getOpDelegationStrategy(BinaryOp.Equal, null)
+    let args = callNode.args.children //.VerifyValue();
+    let opStrategy = super.getOpDelegationStrategy(BinaryOp.Equal, null)
 
     if (binding.isFullRecordRowScopeAccess(args[0])) {
       return super
         .getDottedNameNodeDelegationStrategy()
-        .isValidDottedNameNode(args[0] as DottedNameNode, binding, metadata, opStrategy)
+        .isValidDottedNameNode(
+          args[0] as DottedNameNode,
+          binding,
+          metadata,
+          opStrategy
+        )
     }
 
     let node: FirstNameNode = null
     if (!(args[0] instanceof FirstNameNode)) {
-      var message = `Arg1 is not a firstname node, instead it is ${args[0].kind}`
+      let message = `Arg1 is not a firstname node, instead it is ${args[0].kind}`
       super.addSuggestionMessageToTelemetry(message, args[0], binding)
       return false
     }
@@ -134,8 +162,13 @@ export class IsBlankFunction extends IsBlankFunctionBase {
       return false
     }
 
-    var firstNameNodeValidationStrategy = super.getFirstNameNodeDelegationStrategy()
-    return firstNameNodeValidationStrategy.isValidFirstNameNode(node as FirstNameNode, binding, opStrategy)
+    let firstNameNodeValidationStrategy =
+      super.getFirstNameNodeDelegationStrategy()
+    return firstNameNodeValidationStrategy.isValidFirstNameNode(
+      node as FirstNameNode,
+      binding,
+      opStrategy
+    )
   }
 }
 
@@ -161,7 +194,7 @@ export class IsBlankOptionSetValueFunction extends BuiltinFunction {
       0,
       1,
       1,
-      DType.OptionSetValue,
+      DType.OptionSetValue
     )
   }
 

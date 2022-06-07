@@ -13,7 +13,7 @@ export class FunctionCategoryProvider {
     //   if (category.Equals(FunctionCategories.None))
     //     continue;
 
-    //   var str = StringResources.Get("FunctionCategoryName_" + category.ToString());
+    //   let str = StringResources.Get("FunctionCategoryName_" + category.ToString());
     //   yield return new KeyValuePair<string, string>(category.ToString(), str);
     // }
     let pair: KeyValuePair<string, string>[] = []
@@ -21,7 +21,10 @@ export class FunctionCategoryProvider {
       let keyToAny: any = key
       if (isNaN(keyToAny)) {
         // console.log('key: ' + key + '_' + FunctionCategories[key])
-        if (FunctionCategories[key].valueOf() == FunctionCategories.None.toString()) {
+        if (
+          FunctionCategories[key].valueOf() ==
+          FunctionCategories.None.toString()
+        ) {
           continue
           // console.log('here is->' + FunctionCategories[key].valueOf() + ';' + FunctionCategories.None.toString())
         }

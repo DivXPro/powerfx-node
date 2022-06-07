@@ -4,7 +4,12 @@ import { areEqual } from '../../Compare'
 import ArgumentException from '../../Exceptions/ArgumentException'
 import ArgumentNullException from '../../Exceptions/ArgumentNullException'
 import ArgumentOutOfRangeException from '../../Exceptions/ArgumentOutOfRangeException'
-import { ActionWithIndex, EqualityComparison, PredicateWithIndex, SelectorWithIndex } from '../../FunctionTypes'
+import {
+  ActionWithIndex,
+  EqualityComparison,
+  PredicateWithIndex,
+  SelectorWithIndex,
+} from '../../FunctionTypes'
 import ArrayLikeWritable from './ArrayLikeWritable'
 import initialize from './initialize'
 import { copy, copyTo } from './copy'
@@ -24,11 +29,20 @@ const CBN = 'Cannot be null.',
  * @param {function?} equalityComparer
  * @returns {number}
  */
-export function indexOf<T>(array: ArrayLike<T>, item: T, equalityComparer: EqualityComparison<T> = areEqual): number {
+export function indexOf<T>(
+  array: ArrayLike<T>,
+  item: T,
+  equalityComparer: EqualityComparison<T> = areEqual
+): number {
   const len = array && array.length
   if (len) {
     // NaN NEVER evaluates its equality so be careful.
-    if (equalityComparer == areEqual && array instanceof Array && !Type.isTrueNaN(item)) return array.indexOf(item)
+    if (
+      equalityComparer == areEqual &&
+      array instanceof Array &&
+      !Type.isTrueNaN(item)
+    )
+      return array.indexOf(item)
 
     for (let i = 0; i < len; i++) {
       // 'areEqual' includes NaN==NaN evaluation.
@@ -47,7 +61,11 @@ export function indexOf<T>(array: ArrayLike<T>, item: T, equalityComparer: Equal
  * @param {function?} equalityComparer
  * @returns {boolean}
  */
-export function contains<T>(array: ArrayLike<T>, item: T, equalityComparer: EqualityComparison<T> = areEqual): boolean {
+export function contains<T>(
+  array: ArrayLike<T>,
+  item: T,
+  equalityComparer: EqualityComparison<T> = areEqual
+): boolean {
   return indexOf(array, item, equalityComparer) != -1
 }
 
@@ -59,7 +77,12 @@ export function contains<T>(array: ArrayLike<T>, item: T, equalityComparer: Equa
  * @param max
  * @returns {number}
  */
-export function replace<T>(array: ArrayLikeWritable<T>, old: T, newValue: T, max: number = Infinity): number {
+export function replace<T>(
+  array: ArrayLikeWritable<T>,
+  old: T,
+  newValue: T,
+  max = Infinity
+): number {
   if (!array || !array.length || max === 0) return 0
   if (max < 0) throw new ArgumentOutOfRangeException('max', max, CBL0)
   if (!max) max = Infinity // just in case.
@@ -84,12 +107,18 @@ export function replace<T>(array: ArrayLikeWritable<T>, old: T, newValue: T, max
  * @param start
  * @param stop
  */
-export function updateRange<T>(array: ArrayLike<T>, value: T, start: number = 0, stop?: number): void {
+export function updateRange<T>(
+  array: ArrayLike<T>,
+  value: T,
+  start = 0,
+  stop?: number
+): void {
   if (!array) return
   Integer.assertZeroOrGreater(start, 'start')
   if (!stop && stop !== 0) stop = array.length
   Integer.assert(stop, 'stop')
-  if (stop < start) throw new ArgumentOutOfRangeException('stop', stop, 'is less than start')
+  if (stop < start)
+    throw new ArgumentOutOfRangeException('stop', stop, 'is less than start')
 
   for (let i: number = start; i < stop; i++) {
     ;(<any>array)[i] = value
@@ -102,7 +131,11 @@ export function updateRange<T>(array: ArrayLike<T>, value: T, start: number = 0,
  * @param start
  * @param stop
  */
-export function clear(array: ArrayLikeWritable<any>, start: number = 0, stop?: number): void {
+export function clear(
+  array: ArrayLikeWritable<any>,
+  start = 0,
+  stop?: number
+): void {
   updateRange(array, null, start, stop)
 }
 
@@ -116,7 +149,7 @@ export function clear(array: ArrayLikeWritable<any>, start: number = 0, stop?: n
 export function register<T>(
   array: ArrayLikeWritable<T>,
   item: T,
-  equalityComparer: EqualityComparison<T> = areEqual,
+  equalityComparer: EqualityComparison<T> = areEqual
 ): boolean {
   if (!array) throw new ArgumentNullException('array', CBN)
   let len = array.length // avoid querying .length more than once. *
@@ -132,12 +165,17 @@ export function register<T>(
  * @param predicate
  * @returns {number}
  */
-export function findIndex<T>(array: ArrayLike<T>, predicate: PredicateWithIndex<T>): number {
+export function findIndex<T>(
+  array: ArrayLike<T>,
+  predicate: PredicateWithIndex<T>
+): number {
   if (!array) throw new ArgumentNullException('array', CBN)
-  if (!Type.isFunction(predicate)) throw new ArgumentException('predicate', 'Must be a function.')
+  if (!Type.isFunction(predicate))
+    throw new ArgumentException('predicate', 'Must be a function.')
 
   const len = array.length
-  if (!Type.isNumber(len, true) || len < 0) throw new ArgumentException('array', 'Does not have a valid length.')
+  if (!Type.isNumber(len, true) || len < 0)
+    throw new ArgumentException('array', 'Does not have a valid length.')
 
   if (array instanceof Array) {
     for (let i = 0; i < len; i++) {
@@ -158,9 +196,18 @@ export function findIndex<T>(array: ArrayLike<T>, predicate: PredicateWithIndex<
  * @param source
  * @param action
  */
-export function forEach<T>(source: ArrayLike<T>, action: ActionWithIndex<T>): void
-export function forEach<T>(source: ArrayLike<T>, action: PredicateWithIndex<T>): void
-export function forEach<T>(source: ArrayLike<T>, action: ActionWithIndex<T> | PredicateWithIndex<T>): void {
+export function forEach<T>(
+  source: ArrayLike<T>,
+  action: ActionWithIndex<T>
+): void
+export function forEach<T>(
+  source: ArrayLike<T>,
+  action: PredicateWithIndex<T>
+): void
+export function forEach<T>(
+  source: ArrayLike<T>,
+  action: ActionWithIndex<T> | PredicateWithIndex<T>
+): void {
   if (source && action) {
     // Don't cache the length since it is possible that the underlying array changed.
     for (let i = 0; i < source.length; i++) {
@@ -175,7 +222,10 @@ export function forEach<T>(source: ArrayLike<T>, action: ActionWithIndex<T> | Pr
  * @param target
  * @param fn
  */
-export function applyTo<T>(target: ArrayLikeWritable<T>, fn: SelectorWithIndex<T, T>): void {
+export function applyTo<T>(
+  target: ArrayLikeWritable<T>,
+  fn: SelectorWithIndex<T, T>
+): void {
   if (target && fn) {
     for (let i = 0; i < target.length; i++) {
       ;(<any>target)[i] = fn(target[i], i)
@@ -211,8 +261,8 @@ export function removeIndex<T>(array: T[], index: number): boolean {
 export function remove<T>(
   array: T[],
   value: T,
-  max: number = Infinity,
-  equalityComparer: EqualityComparison<T> = areEqual,
+  max = Infinity,
+  equalityComparer: EqualityComparison<T> = areEqual
 ): number {
   if (!array || !array.length || max === 0) return 0
   if (max < 0) throw new ArgumentOutOfRangeException('max', max, CBL0)
@@ -271,9 +321,11 @@ export function repeat<T>(element: T, count: number): T[] {
  * @returns {number[]}
  */
 
-export function range(first: number, count: number, step: number = 1): number[] {
-  if (isNaN(first) || !isFinite(first)) throw new ArgumentOutOfRangeException('first', first, VFN)
-  if (isNaN(count) || !isFinite(count)) throw new ArgumentOutOfRangeException('count', count, VFN)
+export function range(first: number, count: number, step = 1): number[] {
+  if (isNaN(first) || !isFinite(first))
+    throw new ArgumentOutOfRangeException('first', first, VFN)
+  if (isNaN(count) || !isFinite(count))
+    throw new ArgumentOutOfRangeException('count', count, VFN)
   if (count < 0) throw new ArgumentOutOfRangeException('count', count, CBL0)
 
   const result = initialize<number>(count)
@@ -292,7 +344,7 @@ export function range(first: number, count: number, step: number = 1): number[] 
  * @param step
  * @returns {number[]}
  */
-export function rangeUntil(first: number, until: number, step: number = 1): number[] {
+export function rangeUntil(first: number, until: number, step = 1): number[] {
   if (step == 0) throw new ArgumentOutOfRangeException('step', step, CB0)
   return range(first, (until - first) / step, step)
 }
@@ -316,7 +368,7 @@ export function distinct(source: any[] | null): any[] {
  * @param recurseDepth
  * @returns {any[]}
  */
-export function flatten(a: any[], recurseDepth: number = 0): any[] {
+export function flatten(a: any[], recurseDepth = 0): any[] {
   const result: any[] = []
   for (let i = 0; i < a.length; i++) {
     let x = a[i]

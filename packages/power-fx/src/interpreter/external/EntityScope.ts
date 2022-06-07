@@ -7,7 +7,13 @@ import { TexlNode } from '../../syntax/nodes'
 import { DataSource } from './DataSource'
 import { IExternalEntity } from '../../entities/external/IExternalEntity'
 import { Control } from '../environment'
-import { ExternalType, ExternalTypeKind, FormulaValue, NamedValue, RecordValue } from '../../public'
+import {
+  ExternalType,
+  ExternalTypeKind,
+  FormulaValueStatic,
+  NamedValue,
+  RecordValue,
+} from '../../public'
 import { ControlValue } from '../values'
 import { IRContext } from '../../ir'
 
@@ -23,23 +29,34 @@ export class EntityScope implements IExternalEntityScope {
   }
 
   public get controls(): Control[] {
-    return this.entities.filter((entity) => entity instanceof Control) as Control[]
+    return this.entities.filter(
+      (entity) => entity instanceof Control
+    ) as Control[]
   }
 
   public get controlsValue(): RecordValue {
     const formulaType = new ExternalType(ExternalTypeKind.Object, DKind.Control)
     const controlValueRecords = this.controls
-      .map((control) => new ControlValue(IRContext.NotInSource(formulaType), control))
-      .map((controlValue) => new NamedValue(controlValue.value.entityName.toString(), controlValue))
-    return FormulaValue.RecordFromFields(controlValueRecords)
+      .map(
+        (control) =>
+          new ControlValue(IRContext.NotInSource(formulaType), control)
+      )
+      .map(
+        (controlValue) =>
+          new NamedValue(controlValue.value.entityName.toString(), controlValue)
+      )
+    return FormulaValueStatic.RecordFromFields(controlValueRecords)
   }
 
-  tryGetCdsDataSourceWithLogicalName(datasetName: string, expandInfoIdentity: string): [boolean, CdsDataSource] {
+  tryGetCdsDataSourceWithLogicalName(
+    datasetName: string,
+    expandInfoIdentity: string
+  ): [boolean, CdsDataSource] {
     const dataSource = this._entities.find(
       (entity) =>
         entity instanceof CdsDataSource &&
         entity.datasetName === datasetName &&
-        entity.entityName.value === expandInfoIdentity,
+        entity.entityName.value === expandInfoIdentity
     ) as CdsDataSource
     return [dataSource != null, dataSource]
   }
@@ -50,7 +67,8 @@ export class EntityScope implements IExternalEntityScope {
 
   getTabularDataSource(identName: string): TabularDataSource {
     return this._entities.find(
-      (ds) => ds instanceof TabularDataSource && ds.entityName.value === identName,
+      (ds) =>
+        ds instanceof TabularDataSource && ds.entityName.value === identName
     ) as TabularDataSource
   }
 
@@ -59,12 +77,16 @@ export class EntityScope implements IExternalEntityScope {
   }
 
   tryGetEntity<T>(currentEntityEntityName: DName): [boolean, T] {
-    const entity = this._entities.find((ds) => ds.entityName.equals(currentEntityEntityName))
+    const entity = this._entities.find((ds) =>
+      ds.entityName.equals(currentEntityEntityName)
+    )
     return [entity != null, entity as unknown as T]
   }
 
   tryGetControl(currentEntityEntityName: DName): [boolean, Control] {
-    const control = this.controls.find((ds) => ds.entityName.equals(currentEntityEntityName))
+    const control = this.controls.find((ds) =>
+      ds.entityName.equals(currentEntityEntityName)
+    )
     return [control != null, control]
   }
 }

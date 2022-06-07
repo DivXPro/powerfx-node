@@ -7,7 +7,10 @@ import { ODataMetaParser } from './ODataMetaParser'
 import { SortMetaParser } from './SortMetaParser'
 
 export class DelegationMetadataParser {
-  public parse(delegationMetadataJson: string, tableSchema: DType): CompositeCapabilityMetadata {
+  public parse(
+    delegationMetadataJson: string,
+    tableSchema: DType
+  ): CompositeCapabilityMetadata {
     // Contracts.AssertValid(tableSchema);
 
     const result = JSON.parse(delegationMetadataJson)
@@ -18,8 +21,11 @@ export class DelegationMetadataParser {
     compositeParser.addMetaParser(new GroupMetaParser())
     compositeParser.addMetaParser(new ODataMetaParser())
 
-    var dataServiceCapabilitiesJsonObject = result.RootElement
+    let dataServiceCapabilitiesJsonObject = result.RootElement
 
-    return compositeParser.parse(dataServiceCapabilitiesJsonObject, tableSchema) as CompositeCapabilityMetadata
+    return compositeParser.parse(
+      dataServiceCapabilitiesJsonObject,
+      tableSchema
+    ) as CompositeCapabilityMetadata
   }
 }

@@ -96,14 +96,16 @@ export class LanguageServer {
         return
       }
 
-      var method = jsonPayload.method
-      var paramsJson = jsonPayload.params
+      let method = jsonPayload.method
+      let paramsJson = jsonPayload.params
       switch (method) {
         case TextDocumentNames.DidOpen:
           this.HandleDidOpenNotification(<DidOpenTextDocumentParams>paramsJson)
           break
         case TextDocumentNames.DidChange:
-          this.HandleDidChangeNotification(<DidChangeTextDocumentParams>paramsJson)
+          this.HandleDidChangeNotification(
+            <DidChangeTextDocumentParams>paramsJson
+          )
           break
         case TextDocumentNames.Completion:
           this.HandleCompletionRequest(id, <CompletionParams>paramsJson)
@@ -118,7 +120,9 @@ export class LanguageServer {
           this.HandleCodeActionRequest(id, <CodeActionParams>paramsJson)
           break
         default:
-          this._sendToClient(this.CreateErrorResult(id, ErrorCode.MethodNotFound))
+          this._sendToClient(
+            this.CreateErrorResult(id, ErrorCode.MethodNotFound)
+          )
           break
       }
     } catch (error) {
@@ -128,7 +132,9 @@ export class LanguageServer {
     }
   }
 
-  private HandleDidOpenNotification(paramsJson: DidOpenTextDocumentParams): void {
+  private HandleDidOpenNotification(
+    paramsJson: DidOpenTextDocumentParams
+  ): void {
     // Contracts.AssertValue(paramsJson);
     // if (!TryParseParams(paramsJson, out DidOpenTextDocumentParams didOpenParams)) {
     //   _sendToClient(this.CreateErrorResult(null, ErrorCode.ParseError));
@@ -205,7 +211,7 @@ export class LanguageServer {
     let cursorPosition = this.GetPosition(
       expression,
       completionParams.position.line,
-      completionParams.position.character,
+      completionParams.position.character
     )
 
     let result = scope.Suggest(expression, cursorPosition)
@@ -225,11 +231,14 @@ export class LanguageServer {
       this.CreateSuccessResult(id, {
         items,
         isIncomplete: false,
-      }),
+      })
     )
   }
 
-  private HandleSignatureHelpRequest(id: string, paramsJson: SignatureHelpParams) {
+  private HandleSignatureHelpRequest(
+    id: string,
+    paramsJson: SignatureHelpParams
+  ) {
     if (id == null) {
       this._sendToClient(this.CreateErrorResult(id, ErrorCode.InvalidRequest))
       return
@@ -245,27 +254,30 @@ export class LanguageServer {
 
     let signatureHelpParams = paramsJson // <SignatureHelpParams>paramsJson
 
-    var documentUri = signatureHelpParams.textDocument.uri
-    var scope = this._scopeFactory.GetOrCreateInstance(documentUri)
+    let documentUri = signatureHelpParams.textDocument.uri
+    let scope = this._scopeFactory.GetOrCreateInstance(documentUri)
 
-    // var uri = new Uri(documentUri);
-    var expression = documentUri.expression //  HttpUtility.ParseQueryString(uri.Query).Get("expression");
+    // let uri = new Uri(documentUri);
+    let expression = documentUri.expression //  HttpUtility.ParseQueryString(uri.Query).Get("expression");
     if (expression == null) {
       this._sendToClient(this.CreateErrorResult(id, ErrorCode.InvalidParams))
       return
     }
 
-    var cursorPosition = this.GetPosition(
+    let cursorPosition = this.GetPosition(
       expression,
       signatureHelpParams.position.line,
-      signatureHelpParams.position.character,
+      signatureHelpParams.position.character
     )
-    var result = scope.Suggest(expression, cursorPosition)
+    let result = scope.Suggest(expression, cursorPosition)
 
     this._sendToClient(this.CreateSuccessResult(id, result.SignatureHelp))
   }
 
-  private HandleInitialFixupRequest(id: string, paramsJson: InitialFixupParams) {
+  private HandleInitialFixupRequest(
+    id: string,
+    paramsJson: InitialFixupParams
+  ) {
     if (id == null) {
       this._sendToClient(this.CreateErrorResult(id, ErrorCode.InvalidRequest))
       return
@@ -281,11 +293,11 @@ export class LanguageServer {
 
     let initialFixupParams = paramsJson // <InitialFixupParams>paramsJson
 
-    var documentUri = initialFixupParams.textDocument.uri
-    var scope = this._scopeFactory.GetOrCreateInstance(documentUri)
+    let documentUri = initialFixupParams.textDocument.uri
+    let scope = this._scopeFactory.GetOrCreateInstance(documentUri)
 
-    var expression = initialFixupParams.textDocument.text
-    var scopeDisplayName = scope as unknown as IPowerFxScopeDisplayName
+    let expression = initialFixupParams.textDocument.text
+    let scopeDisplayName = scope as unknown as IPowerFxScopeDisplayName
     if (scopeDisplayName != null) {
       expression = scopeDisplayName.TranslateToDisplayName(expression)
     }
@@ -294,7 +306,7 @@ export class LanguageServer {
       this.CreateSuccessResult(id, {
         Uri: documentUri,
         Text: expression,
-      }),
+      })
     )
   }
 
@@ -336,8 +348,13 @@ export class LanguageServer {
 
             for (let item of result) {
               let range = item.Range ?? codeActionParams.range
-              let changesDic: Dictionary<string, TextEdit[]> = new Dictionary<string, TextEdit[]>()
-              changesDic.addByKeyValue(JSON.stringify(documentUri), [<TextEdit>{ Range: range, NewText: item.Text }])
+              let changesDic: Dictionary<string, TextEdit[]> = new Dictionary<
+                string,
+                TextEdit[]
+              >()
+              changesDic.addByKeyValue(JSON.stringify(documentUri), [
+                <TextEdit>{ Range: range, NewText: item.Text },
+              ])
               // new Dictionary < string, TextEdit[]> { { documentUri, new[] { new TextEdit { Range = range, NewText = item.Text } }
               let edit: WorkspaceEdit = {
                 Changes: changesDic,
@@ -400,7 +417,9 @@ export class LanguageServer {
   /// <returns>
   /// <see cref="DiagnosticSeverity"/> equivalent to <see cref="DocumentErrorSeverity"/>
   /// </returns>
-  private DocumentSeverityToDiagnosticSeverityMap(severity: DocumentErrorSeverity): DiagnosticSeverity {
+  private DocumentSeverityToDiagnosticSeverityMap(
+    severity: DocumentErrorSeverity
+  ): DiagnosticSeverity {
     switch (severity) {
       case DocumentErrorSeverity.Critical:
         return DiagnosticSeverity.Error
@@ -419,7 +438,11 @@ export class LanguageServer {
     }
   }
 
-  private PublishDiagnosticsNotification(uri: TextDocumentUri, expression: string, errors: ExpressionError[]): void {
+  private PublishDiagnosticsNotification(
+    uri: TextDocumentUri,
+    expression: string,
+    errors: ExpressionError[]
+  ): void {
     // Contracts.AssertNonEmpty(uri);
     // Contracts.AssertValue(expression);
 
@@ -473,14 +496,19 @@ export class LanguageServer {
 
     // Send PublishDiagnostics notification
     this._sendToClient(
-      this.CreateNotification(TextDocumentNames.PublishDiagnostics, <PublishDiagnosticsParams>(<unknown>{
+      this.CreateNotification(TextDocumentNames.PublishDiagnostics, <
+        PublishDiagnosticsParams
+      >(<unknown>{
         uri: uri,
         diagnostics: diagnostics,
-      })),
+      }))
     )
   }
 
-  private PublishTokens(documentUri: TextDocumentUri, result: CheckResult): void {
+  private PublishTokens(
+    documentUri: TextDocumentUri,
+    result: CheckResult
+  ): void {
     // let uri = new Uri(documentUri);
     // let nameValueCollection = HttpUtility.ParseQueryString(uri.Query);
     // if (!uint.TryParse(nameValueCollection.Get("getTokensFlags"), out uint flags)) {
@@ -496,17 +524,22 @@ export class LanguageServer {
 
     // Send PublishTokens notification
     this._sendToClient(
-      this.CreateNotification(CustomProtocolNames.PublishTokens, <PublishTokensParams>(<unknown>{
+      this.CreateNotification(CustomProtocolNames.PublishTokens, <
+        PublishTokensParams
+      >(<unknown>{
         uri: documentUri,
         tokens: tokens,
-      })),
+      }))
     )
   }
 
-  private PublishExpressionType(documentUri: TextDocumentUri, result: CheckResult) {
+  private PublishExpressionType(
+    documentUri: TextDocumentUri,
+    result: CheckResult
+  ) {
     // let uri = new Uri(documentUri);
     // let nameValueCollection = HttpUtility.ParseQueryString(uri.Query);
-    // if (!boolean.TryParse(nameValueCollection.Get("getExpressionType"), out var enabled) || !enabled)
+    // if (!boolean.TryParse(nameValueCollection.Get("getExpressionType"), out let enabled) || !enabled)
     // {
     //   return;
     // }
@@ -517,10 +550,12 @@ export class LanguageServer {
     }
 
     this._sendToClient(
-      this.CreateNotification(CustomProtocolNames.PublishExpressionType, <PublishExpressionTypeParams>(<unknown>{
+      this.CreateNotification(CustomProtocolNames.PublishExpressionType, <
+        PublishExpressionTypeParams
+      >(<unknown>{
         uri: documentUri,
         type: result.returnType,
-      })),
+      }))
     )
   }
 
@@ -550,7 +585,8 @@ export class LanguageServer {
     // Contracts.AssertValue(expression);
     // Contracts.Assert(position >= 0);
 
-    let column: number = position < expression.length && expression[position] == this.EOL ? 0 : 1
+    let column: number =
+      position < expression.length && expression[position] == this.EOL ? 0 : 1
     position--
     while (position >= 0 && expression[position] != this.EOL) {
       column++
@@ -564,7 +600,11 @@ export class LanguageServer {
   /// Get the position offset (starts with 0) in Expression from line/character (starts with 0)
   /// e.g. "123", line:0, char:1 => 1
   /// </summary>
-  protected GetPosition(expression: string, line: number, character: number): number {
+  protected GetPosition(
+    expression: string,
+    line: number,
+    character: number
+  ): number {
     // Contracts.AssertValue(expression);
     // Contracts.Assert(line >= 0);
     // Contracts.Assert(character >= 0);
@@ -608,7 +648,10 @@ export class LanguageServer {
 
   private CreateNotification(
     method: string,
-    params: PublishDiagnosticsParams | PublishTokensParams | PublishExpressionTypeParams,
+    params:
+      | PublishDiagnosticsParams
+      | PublishTokensParams
+      | PublishExpressionTypeParams
   ) {
     return JSON.stringify({
       // jsonrpc = "2.0",

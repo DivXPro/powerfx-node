@@ -25,7 +25,7 @@ export class ViewFinderVisitor extends TexlVisitor {
   }
 
   // public void PostVisit(DottedNameNode node) {
-  //   var argType = _txb.GetType(node);
+  //   let argType = _txb.GetType(node);
   //   if (argType.Kind == DKind.ViewValue) {
   //     ContainsView = true;
   //   }

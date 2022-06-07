@@ -8,7 +8,13 @@ import { TexlFunctionalVisitor, TexlVisitor } from '../visitors'
 
 export class ListNode extends VariadicBase {
   readonly delimiters?: Token[]
-  constructor(idNext: number, tok: Token, args: TexlNode[], delimiters: Token[] | undefined, sourceList: SourceList) {
+  constructor(
+    idNext: number,
+    tok: Token,
+    args: TexlNode[],
+    delimiters: Token[] | undefined,
+    sourceList: SourceList
+  ) {
     // Contracts.AssertValue(args)
     // Contracts.AssertValueOrNull(delimiters)
     super(idNext, tok, sourceList, args)
@@ -21,7 +27,7 @@ export class ListNode extends VariadicBase {
 
   clone(idNext: number, ts: Span) {
     const children = this.cloneChildren(idNext++, ts)
-    var newNodes = new Map<TexlNode, TexlNode>()
+    let newNodes = new Map<TexlNode, TexlNode>()
     for (let i = 0; i < this.children.length; ++i) {
       newNodes.set(this.children[i], children[i])
     }
@@ -30,7 +36,7 @@ export class ListNode extends VariadicBase {
       this.token.clone(ts),
       children,
       VariadicBase.Clone(this.delimiters, ts),
-      this.sourceList.clone(ts, newNodes),
+      this.sourceList.clone(ts, newNodes)
     )
   }
 
@@ -42,7 +48,10 @@ export class ListNode extends VariadicBase {
     }
   }
 
-  public acceptResult<Result, Context>(visitor: TexlFunctionalVisitor<Result, Context>, context: Context): Result {
+  public acceptResult<Result, Context>(
+    visitor: TexlFunctionalVisitor<Result, Context>,
+    context: Context
+  ): Result {
     return visitor.visit(this, context)
   }
 

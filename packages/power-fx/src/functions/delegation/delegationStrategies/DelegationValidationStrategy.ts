@@ -2,9 +2,22 @@ import { TexlBinding } from '../../../binding/Binder'
 import { BinderUtils } from '../../../binding/BinderUtils'
 import { CallInfo, FirstNameInfo } from '../../../binding/bindingInfo'
 import { DocumentErrorSeverity } from '../../../errors'
-import { ErrorResourceKey, StringResources, TexlStrings } from '../../../localization'
-import { DelegationStatus, DelegationTelemetryInfo, TrackingProvider } from '../../../logging/trackers'
-import { CallNode, DottedNameNode, FirstNameNode, TexlNode } from '../../../syntax'
+import {
+  ErrorResourceKey,
+  StringResources,
+  TexlStrings,
+} from '../../../localization'
+import {
+  DelegationStatus,
+  DelegationTelemetryInfo,
+  TrackingProvider,
+} from '../../../logging/trackers'
+import {
+  CallNode,
+  DottedNameNode,
+  FirstNameNode,
+  TexlNode,
+} from '../../../syntax'
 import { NodeKind } from '../../../syntax/NodeKind'
 import { DKind } from '../../../types/DKind'
 import { IExpandInfo, IsIExpandInfo } from '../../../types/IExpandInfo'
@@ -23,7 +36,11 @@ import { AsTypeFunction } from '../../../texl/builtins/AsType'
 import { FunctionName } from '../../../texl/builtins/FunctionNames'
 
 export interface ICallNodeDelegatableNodeValidationStrategy {
-  isValidCallNode(node: CallNode, binding: TexlBinding, metadata: OperationCapabilityMetadata): boolean
+  isValidCallNode(
+    node: CallNode,
+    binding: TexlBinding,
+    metadata: OperationCapabilityMetadata
+  ): boolean
 }
 
 export interface IDottedNameNodeDelegatableNodeValidationStrategy {
@@ -31,12 +48,16 @@ export interface IDottedNameNodeDelegatableNodeValidationStrategy {
     node: DottedNameNode,
     binding: TexlBinding,
     metadata: OperationCapabilityMetadata,
-    opDelStrategy: IOpDelegationStrategy,
+    opDelStrategy: IOpDelegationStrategy
   ): boolean
 }
 
 export interface IFirstNameNodeDelegatableNodeValidationStrategy {
-  isValidFirstNameNode(node: FirstNameNode, binding: TexlBinding, opDelStrategy: IOpDelegationStrategy): boolean
+  isValidFirstNameNode(
+    node: FirstNameNode,
+    binding: TexlBinding,
+    opDelStrategy: IOpDelegationStrategy
+  ): boolean
 }
 
 export class DelegationValidationStrategy
@@ -53,12 +74,16 @@ export class DelegationValidationStrategy
 
   protected function: TexlFunction
 
-  protected addSuggestionMessageToTelemetry(telemetryMessage: string, node: TexlNode, binding: TexlBinding) {
+  protected addSuggestionMessageToTelemetry(
+    telemetryMessage: string,
+    node: TexlNode,
+    binding: TexlBinding
+  ) {
     // Contracts.AssertNonEmpty(telemetryMessage);
     // Contracts.AssertValue(node);
     // Contracts.AssertValue(binding);
 
-    var message = `Function:${this.function.name}, Message:${telemetryMessage}`
+    let message = `Function:${this.function.name}, Message:${telemetryMessage}`
     TrackingProvider.Instance.addSuggestionMessage(message, node, binding)
   }
 
@@ -95,10 +120,15 @@ export class DelegationValidationStrategy
         DocumentErrorSeverity.Warning,
         node,
         suggestionKey,
-        this.function.name,
+        this.function.name
       )
     } else {
-      binding.errorContainer.ensureErrorWithSeverity(DocumentErrorSeverity.Warning, node, suggestionKey, args)
+      binding.errorContainer.ensureErrorWithSeverity(
+        DocumentErrorSeverity.Warning,
+        node,
+        suggestionKey,
+        args
+      )
     }
   }
 
@@ -113,7 +143,7 @@ export class DelegationValidationStrategy
   private isValidRowScopedDottedNameNode(
     node: DottedNameNode,
     binding: TexlBinding,
-    metadata: OperationCapabilityMetadata,
+    metadata: OperationCapabilityMetadata
   ): [boolean, boolean] {
     // Contracts.AssertValue(node);
     // Contracts.AssertValue(binding);
@@ -130,25 +160,39 @@ export class DelegationValidationStrategy
     }
 
     if (node.left.kind == NodeKind.DottedName) {
-      return this.isValidRowScopedDottedNameNode(node.left.asDottedName(), binding, metadata)
+      return this.isValidRowScopedDottedNameNode(
+        node.left.asDottedName(),
+        binding,
+        metadata
+      )
     }
 
     // if (node.left.kind == NodeKind.Call && binding.getInfo(node.left as CallNode).function instanceof AsTypeFunction) {
     if (
       node.left.kind == NodeKind.Call &&
-      binding.getInfo(node.left as CallNode).function?.name === FunctionName.AsType
+      binding.getInfo(node.left as CallNode).function?.name ===
+        FunctionName.AsType
     ) {
-      return [this.isValidCallNode(node.left as CallNode, binding, metadata), isRowScopedDelegationExempted]
+      return [
+        this.isValidCallNode(node.left as CallNode, binding, metadata),
+        isRowScopedDelegationExempted,
+      ]
     }
 
     // We only allow dotted or firstname node on LHS for now, with exception of AsType.
     return [node.left.kind == NodeKind.FirstName, isRowScopedDelegationExempted]
   }
 
-  private getScopedOperationCapabilityMetadata(delegationMetadata: IDelegationMetadata): OperationCapabilityMetadata {
+  private getScopedOperationCapabilityMetadata(
+    delegationMetadata: IDelegationMetadata
+  ): OperationCapabilityMetadata {
     if (
-      this.function.functionDelegationCapability.hasCapability(DelegationCapability.Sort) ||
-      this.function.functionDelegationCapability.hasCapability(DelegationCapability.SortAscendingOnly)
+      this.function.functionDelegationCapability.hasCapability(
+        DelegationCapability.Sort
+      ) ||
+      this.function.functionDelegationCapability.hasCapability(
+        DelegationCapability.SortAscendingOnly
+      )
     ) {
       return delegationMetadata.sortDelegationMetadata
     }
@@ -160,7 +204,7 @@ export class DelegationValidationStrategy
     node: DottedNameNode,
     binding: TexlBinding,
     metadata: OperationCapabilityMetadata,
-    opDelStrategy: IOpDelegationStrategy,
+    opDelStrategy: IOpDelegationStrategy
   ) {
     // Contracts.AssertValue(node);
     // Contracts.AssertValue(binding);
@@ -176,7 +220,11 @@ export class DelegationValidationStrategy
     if (!result[0]) {
       const telemetryMessage = `Kind:${node.kind}, isRowScoped:${isRowScoped}`
 
-      this.suggestDelegationHintAndAddTelemetryMessage(node, binding, telemetryMessage)
+      this.suggestDelegationHintAndAddTelemetryMessage(
+        node,
+        binding,
+        telemetryMessage
+      )
       return false
     }
 
@@ -201,52 +249,82 @@ export class DelegationValidationStrategy
     if (!binding.getType(node.left).hasExpandInfo) {
       const rst = BinderUtils.TryConvertNodeToDPath(binding, node)
       const columnPath = rst[1]
-      if (!rst[0] || !metadata.isDelegationSupportedByColumn(columnPath, this.function.functionDelegationCapability)) {
-        var safeColumnName = CharacterUtils.MakeSafeForFormatString(columnPath.toDottedSyntax())
-        var message = StringFormat(
-          StringResources.Get(TexlStrings.OpNotSupportedByColumnSuggestionMessage_OpNotSupportedByColumn),
-          safeColumnName,
+      if (
+        !rst[0] ||
+        !metadata.isDelegationSupportedByColumn(
+          columnPath,
+          this.function.functionDelegationCapability
+        )
+      ) {
+        let safeColumnName = CharacterUtils.MakeSafeForFormatString(
+          columnPath.toDottedSyntax()
+        )
+        let message = StringFormat(
+          StringResources.Get(
+            TexlStrings.OpNotSupportedByColumnSuggestionMessage_OpNotSupportedByColumn
+          ),
+          safeColumnName
         )
         this.suggestDelegationHintAndAddTelemetryMessage(
           node,
           binding,
           message,
           TexlStrings.OpNotSupportedByColumnSuggestionMessage_OpNotSupportedByColumn,
-          safeColumnName,
+          safeColumnName
         )
         TrackingProvider.Instance.setDelegationTrackerStatus(
           DelegationStatus.NoDelSupportByColumn,
           node,
           binding,
           this.function,
-          DelegationTelemetryInfo.CreateNoDelSupportByColumnTelemetryInfo(columnPath.toDottedSyntax()),
+          DelegationTelemetryInfo.CreateNoDelSupportByColumnTelemetryInfo(
+            columnPath.toDottedSyntax()
+          )
         )
         return false
       }
 
       // If there is any operator applied on this node then check if column supports operation.
-      return opDelStrategy?.isOpSupportedByColumn(metadata, node, columnPath, binding) ?? true
+      return (
+        opDelStrategy?.isOpSupportedByColumn(
+          metadata,
+          node,
+          columnPath,
+          binding
+        ) ?? true
+      )
     }
 
     // If there is an entity reference then we need to do additional verification.
     const info = binding.getType(node.left).expandInfo
     const dataSourceInfo = info.parentDataSource
-    const entityMetadataResult = dataSourceInfo.dataEntityMetadataProvider.tryGetEntityMetadata(info.identity)
+    const entityMetadataResult =
+      dataSourceInfo.dataEntityMetadataProvider.tryGetEntityMetadata(
+        info.identity
+      )
     const entityMetadata = entityMetadataResult[1]
     if (!entityMetadataResult[0]) {
       const telemetryMessage = `Kind:${
         node.kind
       }, isRowScoped:${isRowScoped}, no metadata found for entity ${CharacterUtils.MakeSafeForFormatString(
-        info.identity,
+        info.identity
       )}`
 
-      this.suggestDelegationHintAndAddTelemetryMessage(node, binding, telemetryMessage)
+      this.suggestDelegationHintAndAddTelemetryMessage(
+        node,
+        binding,
+        telemetryMessage
+      )
       return false
     }
 
-    const entityCapabilityMetadata = this.getScopedOperationCapabilityMetadata(entityMetadata.delegationMetadata)
+    const entityCapabilityMetadata = this.getScopedOperationCapabilityMetadata(
+      entityMetadata.delegationMetadata
+    )
     let columnName = node.right.name
-    const fromSecondResult = entityMetadata.displayNameMapping.tryGetFromSecond(node.right.name.value)
+    const fromSecondResult = entityMetadata.displayNameMapping.tryGetFromSecond(
+      node.right.name.value
+    )
     const maybeLogicalName = fromSecondResult[1]
     if (fromSecondResult[0]) {
       columnName = new DName(maybeLogicalName)
@@ -257,42 +335,59 @@ export class DelegationValidationStrategy
     if (
       !entityCapabilityMetadata.isDelegationSupportedByColumn(
         entityColumnPath,
-        this.function.functionDelegationCapability,
+        this.function.functionDelegationCapability
       )
     ) {
-      const safeColumnName = CharacterUtils.MakeSafeForFormatString(columnName.value)
+      const safeColumnName = CharacterUtils.MakeSafeForFormatString(
+        columnName.value
+      )
       const message = StringFormat(
-        StringResources.Get(TexlStrings.OpNotSupportedByColumnSuggestionMessage_OpNotSupportedByColumn),
-        safeColumnName,
+        StringResources.Get(
+          TexlStrings.OpNotSupportedByColumnSuggestionMessage_OpNotSupportedByColumn
+        ),
+        safeColumnName
       )
       this.suggestDelegationHintAndAddTelemetryMessage(
         node,
         binding,
         message,
         TexlStrings.OpNotSupportedByColumnSuggestionMessage_OpNotSupportedByColumn,
-        safeColumnName,
+        safeColumnName
       )
       TrackingProvider.Instance.setDelegationTrackerStatus(
         DelegationStatus.NoDelSupportByColumn,
         node,
         binding,
         this.function,
-        DelegationTelemetryInfo.CreateNoDelSupportByColumnTelemetryInfo(columnName.toString()),
+        DelegationTelemetryInfo.CreateNoDelSupportByColumnTelemetryInfo(
+          columnName.toString()
+        )
       )
       return false
     }
 
     // If there is any operator applied on this node then check if column supports operation.
-    return opDelStrategy?.isOpSupportedByColumn(entityCapabilityMetadata, node, entityColumnPath, binding) ?? true
+    return (
+      opDelStrategy?.isOpSupportedByColumn(
+        entityCapabilityMetadata,
+        node,
+        entityColumnPath,
+        binding
+      ) ?? true
+    )
   }
 
-  public isValidFirstNameNode(node: FirstNameNode, binding: TexlBinding, opDelStrategy: IOpDelegationStrategy) {
+  public isValidFirstNameNode(
+    node: FirstNameNode,
+    binding: TexlBinding,
+    opDelStrategy: IOpDelegationStrategy
+  ) {
     // Contracts.AssertValue(node);
     // Contracts.AssertValue(binding);
     // Contracts.AssertValueOrNull(opDelStrategy);
 
-    var isRowScoped = binding.isRowScope(node)
-    var isValid = this.isValidNode(node, binding)
+    let isRowScoped = binding.isRowScope(node)
+    let isValid = this.isValidNode(node, binding)
     if (isValid && !isRowScoped) {
       return true
     }
@@ -302,7 +397,12 @@ export class DelegationValidationStrategy
       return false
     }
 
-    return this.isDelegatableColumnNode(node, binding, opDelStrategy, this.function.functionDelegationCapability)
+    return this.isDelegatableColumnNode(
+      node,
+      binding,
+      opDelStrategy,
+      this.function.functionDelegationCapability
+    )
   }
 
   private getCapabilityMetadata(info: FirstNameInfo): IDelegationMetadata {
@@ -318,7 +418,8 @@ export class DelegationValidationStrategy
       // Contracts.AssertValue(entityInfo.ParentDataSource);
       // Contracts.AssertValue(entityInfo.ParentDataSource.DataEntityMetadataProvider);
 
-      const metadataProvider = entityInfo.parentDataSource.dataEntityMetadataProvider
+      const metadataProvider =
+        entityInfo.parentDataSource.dataEntityMetadataProvider
 
       const result = metadataProvider.tryGetEntityMetadata(entityInfo.identity)
       const entityMetadata = result[1]
@@ -335,7 +436,7 @@ export class DelegationValidationStrategy
     node: FirstNameNode,
     binding: TexlBinding,
     opDelStrategy: IOpDelegationStrategy,
-    capability: DelegationCapability,
+    capability: DelegationCapability
   ): boolean {
     // Contracts.AssertValue(node);
     // Contracts.AssertValue(binding);
@@ -362,25 +463,36 @@ export class DelegationValidationStrategy
 
     const columnPath = DPath.Root.append(columnName)
 
-    if (!metadata.filterDelegationMetadata.isDelegationSupportedByColumn(columnPath, capability)) {
-      const safeColumnName = CharacterUtils.MakeSafeForFormatString(columnName.value)
-      var message = StringFormat(
-        StringResources.Get(TexlStrings.OpNotSupportedByColumnSuggestionMessage_OpNotSupportedByColumn),
-        safeColumnName,
+    if (
+      !metadata.filterDelegationMetadata.isDelegationSupportedByColumn(
+        columnPath,
+        capability
+      )
+    ) {
+      const safeColumnName = CharacterUtils.MakeSafeForFormatString(
+        columnName.value
+      )
+      let message = StringFormat(
+        StringResources.Get(
+          TexlStrings.OpNotSupportedByColumnSuggestionMessage_OpNotSupportedByColumn
+        ),
+        safeColumnName
       )
       this.suggestDelegationHintAndAddTelemetryMessage(
         node,
         binding,
         message,
         TexlStrings.OpNotSupportedByColumnSuggestionMessage_OpNotSupportedByColumn,
-        safeColumnName,
+        safeColumnName
       )
       TrackingProvider.Instance.setDelegationTrackerStatus(
         DelegationStatus.NoDelSupportByColumn,
         node,
         binding,
         this.function,
-        DelegationTelemetryInfo.CreateNoDelSupportByColumnTelemetryInfo(firstNameInfo),
+        DelegationTelemetryInfo.CreateNoDelSupportByColumnTelemetryInfo(
+          firstNameInfo
+        )
       )
       return false
     }
@@ -388,7 +500,12 @@ export class DelegationValidationStrategy
     // If there is any operator applied on this node then check if column supports operation.
     if (
       opDelStrategy != null &&
-      !opDelStrategy.isOpSupportedByColumn(metadata.filterDelegationMetadata, node.asFirstName(), columnPath, binding)
+      !opDelStrategy.isOpSupportedByColumn(
+        metadata.filterDelegationMetadata,
+        node.asFirstName(),
+        columnPath,
+        binding
+      )
     ) {
       return false
     }
@@ -396,7 +513,11 @@ export class DelegationValidationStrategy
     return true
   }
 
-  public isValidCallNode(node: CallNode, binding: TexlBinding, metadata: OperationCapabilityMetadata): boolean {
+  public isValidCallNode(
+    node: CallNode,
+    binding: TexlBinding,
+    metadata: OperationCapabilityMetadata
+  ): boolean {
     // Contracts.AssertValue(node);
     // Contracts.AssertValue(binding);
     // Contracts.AssertValue(metadata);
@@ -407,24 +528,33 @@ export class DelegationValidationStrategy
     }
 
     // If the node is not row scoped and it's valid then it can be delegated.
-    var isRowScoped = binding.isRowScope(node)
+    let isRowScoped = binding.isRowScope(node)
     if (!isRowScoped) {
       return true
     }
 
     const callInfo = binding.getInfo(node) as CallInfo
-    if (callInfo?.function != null && callInfo.function.isRowScopedServerDelegatable(node, binding, metadata)) {
+    if (
+      callInfo?.function != null &&
+      callInfo.function.isRowScopedServerDelegatable(node, binding, metadata)
+    ) {
       return true
     }
 
     const telemetryMessage = `Kind:${node.kind}, isRowScoped:${isRowScoped}`
-    this.suggestDelegationHintAndAddTelemetryMessage(node, binding, telemetryMessage)
+    this.suggestDelegationHintAndAddTelemetryMessage(
+      node,
+      binding,
+      telemetryMessage
+    )
     TrackingProvider.Instance.setDelegationTrackerStatus(
       DelegationStatus.UndelegatableFunction,
       node,
       binding,
       this.function,
-      DelegationTelemetryInfo.CreateUndelegatableFunctionTelemetryInfo(callInfo?.function),
+      DelegationTelemetryInfo.CreateUndelegatableFunctionTelemetryInfo(
+        callInfo?.function
+      )
     )
     return false
   }
@@ -440,7 +570,8 @@ export class DelegationValidationStrategy
       node instanceof DottedNameNode &&
       ((binding.getType(node.asDottedName().left).kind == DKind.OptionSet &&
         binding.getType(node).kind == DKind.OptionSetValue) ||
-        (binding.getType(node.asDottedName().left).kind == DKind.View && binding.getType(node).kind == DKind.ViewValue))
+        (binding.getType(node.asDottedName().left).kind == DKind.View &&
+          binding.getType(node).kind == DKind.ViewValue))
     ) {
       // OptionSet and View Access are delegable despite being async
       return true
@@ -449,7 +580,9 @@ export class DelegationValidationStrategy
     if (
       node instanceof CallNode &&
       // (binding.isBlockScopedConstant(node) || binding.getInfo(node as CallNode).function instanceof AsTypeFunction)
-      (binding.isBlockScopedConstant(node) || binding.getInfo(node as CallNode).function?.name === FunctionName.AsType)
+      (binding.isBlockScopedConstant(node) ||
+        binding.getInfo(node as CallNode).function?.name ===
+          FunctionName.AsType)
     ) {
       // AsType is delegable despite being async
       return true
@@ -460,14 +593,18 @@ export class DelegationValidationStrategy
     // expressions with User() calls to be delegated
     if (!this.isUserCallNodeDelegable(node, binding) && (isAsync || !isPure)) {
       const telemetryMessage = `Kind:${node.kind}, isAsync:${isAsync}, isPure:${isPure}`
-      this.suggestDelegationHintAndAddTelemetryMessage(node, binding, telemetryMessage)
+      this.suggestDelegationHintAndAddTelemetryMessage(
+        node,
+        binding,
+        telemetryMessage
+      )
 
       if (isAsync) {
         TrackingProvider.Instance.setDelegationTrackerStatus(
           DelegationStatus.AsyncPredicate,
           node,
           binding,
-          this.function,
+          this.function
         )
       }
 
@@ -477,7 +614,7 @@ export class DelegationValidationStrategy
           node,
           binding,
           this.function,
-          DelegationTelemetryInfo.CreateImpureNodeTelemetryInfo(node, binding),
+          DelegationTelemetryInfo.CreateImpureNodeTelemetryInfo(node, binding)
         )
       }
 
@@ -487,12 +624,22 @@ export class DelegationValidationStrategy
     return true
   }
 
-  private isUserCallNodeDelegable(node: TexlNode, binding: TexlBinding): boolean {
-    const customDelFunc = binding.getInfo(node.asDottedName().left.asCall()) as CallInfo
-    if (node instanceof DottedNameNode && node.asDottedName().left instanceof CallNode) {
+  private isUserCallNodeDelegable(
+    node: TexlNode,
+    binding: TexlBinding
+  ): boolean {
+    const customDelFunc = binding.getInfo(
+      node.asDottedName().left.asCall()
+    ) as CallInfo
+    if (
+      node instanceof DottedNameNode &&
+      node.asDottedName().left instanceof CallNode
+    ) {
       // && (binding.getInfo(node.asDottedName().left.asCall()).function is ICustomDelegationFunction customDelFunc)
       // && customDelFunc.IsUserCallNodeDelegable())
-      const customDelFunc = binding.getInfo(node.asDottedName().left.asCall()) as CallInfo
+      const customDelFunc = binding.getInfo(
+        node.asDottedName().left.asCall()
+      ) as CallInfo
       if (customDelFunc && IsICustomDelegationFunction(customDelFunc)) {
         return true
       }

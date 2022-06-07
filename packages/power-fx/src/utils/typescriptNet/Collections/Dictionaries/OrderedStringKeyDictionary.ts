@@ -4,7 +4,7 @@ import { IOrderedDictionary } from './IDictionary'
 import { remove } from '../Array/Utility'
 import Integer from '../../Integer'
 
-const VOID0: undefined = void 0
+const VOID0 = void 0
 
 export class OrderedStringKeyDictionary<TValue>
   extends StringKeyDictionary<TValue>
@@ -31,7 +31,11 @@ export class OrderedStringKeyDictionary<TValue>
   }
 
   // adding keepIndex allows for clearing a value while still retaining it's index.
-  setValue(key: string, value: TValue | undefined, keepIndex?: boolean): boolean {
+  setValue(
+    key: string,
+    value: TValue | undefined,
+    keepIndex?: boolean
+  ): boolean {
     // TODO: This may be inefficient and could be improved.
     const _ = this
     let exists = _.indexOfKey(key) != -1
@@ -44,8 +48,18 @@ export class OrderedStringKeyDictionary<TValue>
   setByIndex(index: number, value: TValue | undefined): boolean {
     const _ = this
     const order = _._order
-    if (index < 0) throw new ArgumentOutOfRangeException('index', index, 'Is less than zero.')
-    if (index >= order.length) throw new ArgumentOutOfRangeException('index', index, 'Is greater than the count.')
+    if (index < 0)
+      throw new ArgumentOutOfRangeException(
+        'index',
+        index,
+        'Is less than zero.'
+      )
+    if (index >= order.length)
+      throw new ArgumentOutOfRangeException(
+        'index',
+        index,
+        'Is greater than the count.'
+      )
     return _.setValue(order[index], value)
   }
 

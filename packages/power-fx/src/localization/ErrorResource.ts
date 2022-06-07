@@ -23,7 +23,10 @@ export class ErrorResource {
   public static LinkTagUrlTag = 'url'
 
   public static ReswErrorResourcePrefix = 'ErrorResource_'
-  public static readonly ErrorResourceTagToReswSuffix = new Dictionary<string, string>([
+  public static readonly ErrorResourceTagToReswSuffix = new Dictionary<
+    string,
+    string
+  >([
     [ErrorResource.ShortMessageTag, '_ShortMessage'],
     [ErrorResource.LongMessageTag, '_LongMessage'],
     [ErrorResource.HowToFixTag, '_HowToFix'],
@@ -51,12 +54,12 @@ export class ErrorResource {
   // {
   //     Contracts.AssertValue(errorXml);
 
-  //     var errorResource = new ErrorResource();
+  //     let errorResource = new ErrorResource();
 
   //     // Parse each sub-element into the TagToValues dictionary.
-  //     foreach (var tag in errorXml.Elements())
+  //     foreach (let tag in errorXml.Elements())
   //     {
-  //         var tagName = tag.Name.LocalName;
+  //         let tagName = tag.Name.LocalName;
 
   //         // Links are specialized because they are a two-part resource.
   //         if (tagName == LinkTag)
@@ -77,7 +80,9 @@ export class ErrorResource {
   //     return errorResource;
   // }
 
-  public static Reassemble(members: Record<string, Record<number, string>>): ErrorResource {
+  public static Reassemble(
+    members: Record<string, Record<number, string>>
+  ): ErrorResource {
     // Contracts.AssertAllNonEmpty(members.Keys);
     // Contracts.AssertAllValues(members.Values);
 
@@ -86,14 +91,21 @@ export class ErrorResource {
     // Reassemble link 2-part resources first
     // They need to match up. Because these resources are loaded for almost all tests,
     // The asserts here will fail during unit tests if they're incorrectly defined
-    const { isGet: isGetLinkValues, data: linkValues } = CollectionUtils.TryGetProperty(members, ErrorResource.LinkTag)
+    const { isGet: isGetLinkValues, data: linkValues } =
+      CollectionUtils.TryGetProperty(members, ErrorResource.LinkTag)
     if (isGetLinkValues) {
-      const { isGet: urlsExist, data: urls } = CollectionUtils.TryGetProperty(members, ErrorResource.LinkTagUrlTag)
+      const { isGet: urlsExist, data: urls } = CollectionUtils.TryGetProperty(
+        members,
+        ErrorResource.LinkTagUrlTag
+      )
       // Contracts.Assert(linkValues.Count == urls.Count);
       for (const key in linkValues) {
-        const { isGet: correspondingUrlExist, data: correspondingUrl } = CollectionUtils.TryGetProperty(urls, key)
-        errorResource.helpLinks.push(new ErrorHelpLink(linkValues[key], correspondingUrl))
-        // urls.TryGetValue(kvp.Key, out var correspondingUrl).Verify();
+        const { isGet: correspondingUrlExist, data: correspondingUrl } =
+          CollectionUtils.TryGetProperty(urls, key)
+        errorResource.helpLinks.push(
+          new ErrorHelpLink(linkValues[key], correspondingUrl)
+        )
+        // urls.TryGetValue(kvp.Key, out let correspondingUrl).Verify();
         // errorResource.HelpLinks.Add(new ErrorHelpLink(kvp.Value, correspondingUrl));
       }
       delete members[ErrorResource.LinkTag]

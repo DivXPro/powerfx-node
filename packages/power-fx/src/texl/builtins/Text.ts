@@ -28,14 +28,16 @@ export class TextFunction extends BuiltinFunction {
       'Text',
       undefined,
       TexlStrings.AboutText,
-      FunctionCategories.Table | FunctionCategories.Text | FunctionCategories.DateTime,
+      FunctionCategories.Table |
+        FunctionCategories.Text |
+        FunctionCategories.DateTime,
       DType.String,
       0,
       1,
       3,
       DType.Number,
       DType.String,
-      DType.String,
+      DType.String
     )
   }
 
@@ -49,8 +51,11 @@ export class TextFunction extends BuiltinFunction {
   public checkInvocation(
     args: TexlNode[],
     argTypes: DType[],
-    errors: IErrorContainer,
-  ): [boolean, { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }] {
+    errors: IErrorContainer
+  ): [
+    boolean,
+    { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }
+  ] {
     // Contracts.AssertValue(args);
     // Contracts.AssertAllValues(args);
     // Contracts.AssertValue(argTypes);
@@ -66,7 +71,12 @@ export class TextFunction extends BuiltinFunction {
     const arg0Type = argTypes[0]
 
     let isValidString = true
-    const result = this.checkType(arg0, arg0Type, DType.Number, TexlFunction.DefaultErrorContainer)
+    const result = this.checkType(
+      arg0,
+      arg0Type,
+      DType.Number,
+      TexlFunction.DefaultErrorContainer
+    )
     let isValidNumber = result[0]
     let matchedWithCoercion = result[1]
     let arg0CoercedType = matchedWithCoercion ? DType.Number : DType.Invalid
@@ -76,7 +86,12 @@ export class TextFunction extends BuiltinFunction {
         // No coercion needed for datetimes here.
         arg0CoercedType = DType.Invalid
       } else {
-        const typeResult = this.checkType(arg0, arg0Type, DType.String, TexlFunction.DefaultErrorContainer)
+        const typeResult = this.checkType(
+          arg0,
+          arg0Type,
+          DType.String,
+          TexlFunction.DefaultErrorContainer
+        )
         isValidString = typeResult[0]
         matchedWithCoercion = typeResult[1]
 
@@ -94,13 +109,21 @@ export class TextFunction extends BuiltinFunction {
     }
 
     if (!isValidNumber && !isValidString) {
-      errors.ensureErrorWithSeverity(DocumentErrorSeverity.Severe, args[0], TexlStrings.ErrNumberOrStringExpected)
+      errors.ensureErrorWithSeverity(
+        DocumentErrorSeverity.Severe,
+        args[0],
+        TexlStrings.ErrNumberOrStringExpected
+      )
       isValid = false
     }
 
     if (args.length < 2) {
       if (isValid && arg0CoercedType.isValid) {
-        nodeToCoercedTypeMap = CollectionUtils.AddDictionary(nodeToCoercedTypeMap, arg0, arg0CoercedType)
+        nodeToCoercedTypeMap = CollectionUtils.AddDictionary(
+          nodeToCoercedTypeMap,
+          arg0,
+          arg0CoercedType
+        )
         return [true, { returnType, nodeToCoercedTypeMap }]
       }
 
@@ -109,7 +132,11 @@ export class TextFunction extends BuiltinFunction {
 
     let formatNode: StrLitNode
     if (!DType.String.accepts(argTypes[1])) {
-      errors.ensureErrorWithSeverity(DocumentErrorSeverity.Severe, args[1], TexlStrings.ErrStringExpected)
+      errors.ensureErrorWithSeverity(
+        DocumentErrorSeverity.Severe,
+        args[1],
+        TexlStrings.ErrStringExpected
+      )
       isValid = false
     } else if ((formatNode = args[1].asStrLit()) != null) {
       // Verify statically that the format string doesn't contain BOTH numeric and date/time
@@ -125,14 +152,14 @@ export class TextFunction extends BuiltinFunction {
       }
       const hasDateTimeFmt = /m|d|y|h|H|s|a|A|p|P/g.test(fmt)
       const hasNumericFmt = /0|#/g.test(fmt)
-      // var hasDateTimeFmt = fmt.IndexOfAny(new char[] { 'm', 'd', 'y', 'h', 'H', 's', 'a', 'A', 'p', 'P' }) >= 0;
-      // var hasNumericFmt = fmt.IndexOfAny(new char[] { '0', '#' }) >= 0;
+      // let hasDateTimeFmt = fmt.IndexOfAny(new char[] { 'm', 'd', 'y', 'h', 'H', 's', 'a', 'A', 'p', 'P' }) >= 0;
+      // let hasNumericFmt = fmt.IndexOfAny(new char[] { '0', '#' }) >= 0;
       if (hasDateTimeFmt && hasNumericFmt) {
         errors.ensureErrorWithSeverity(
           DocumentErrorSeverity.Moderate,
           formatNode,
           TexlStrings.ErrIncorrectFormat_Func,
-          this.name,
+          this.name
         )
         isValid = false
       }
@@ -141,14 +168,22 @@ export class TextFunction extends BuiltinFunction {
     if (args.length > 2) {
       const argType = argTypes[2]
       if (!DType.String.accepts(argType)) {
-        errors.ensureErrorWithSeverity(DocumentErrorSeverity.Severe, args[2], TexlStrings.ErrStringExpected)
+        errors.ensureErrorWithSeverity(
+          DocumentErrorSeverity.Severe,
+          args[2],
+          TexlStrings.ErrStringExpected
+        )
         isValid = false
       }
     }
 
     if (isValid) {
       if (arg0CoercedType.isValid) {
-        nodeToCoercedTypeMap = CollectionUtils.AddDictionary(nodeToCoercedTypeMap, arg0, arg0CoercedType)
+        nodeToCoercedTypeMap = CollectionUtils.AddDictionary(
+          nodeToCoercedTypeMap,
+          arg0,
+          arg0CoercedType
+        )
         return [true, { returnType, nodeToCoercedTypeMap }]
       }
     } else {
@@ -189,7 +224,7 @@ export class TextFunction_UO extends BuiltinFunction {
       0,
       1,
       1,
-      DType.UntypedObject,
+      DType.UntypedObject
     )
   }
 

@@ -11,14 +11,14 @@ export {
   createComparer as by, // Alias for Sort.by(...) instead of Sort.createComparer
 }
 
-export module ArraySort {
+export namespace ArraySort {
   export const quick = quickSort
 
   export function using<TSource, TSelect extends Primitive>(
     target: TSource[],
     selector: Selector<TSource, TSelect | TSelect[]>,
     order: Order | Order[] = Order.Ascending,
-    equivalentToNaN: any = NaN,
+    equivalentToNaN: any = NaN
   ): TSource[] {
     return target.sort(createComparer(selector, order, equivalentToNaN))
   }

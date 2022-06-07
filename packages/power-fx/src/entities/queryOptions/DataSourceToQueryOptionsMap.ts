@@ -6,9 +6,14 @@ import { IExternalTabularDataSource } from '../external/IExternalTabularDataSour
 import { TabularDataQueryOptions } from './TabularDataQueryOptions'
 
 export class DataSourceToQueryOptionsMap {
-  private readonly _tabularDataQueryOptionsSet = new Map<DName, TabularDataQueryOptions>()
+  private readonly _tabularDataQueryOptionsSet = new Map<
+    DName,
+    TabularDataQueryOptions
+  >()
 
-  public hasTabualarDataSource(tabularDataSource: DName | IExternalTabularDataSource) {
+  public hasTabualarDataSource(
+    tabularDataSource: DName | IExternalTabularDataSource
+  ) {
     if (tabularDataSource instanceof DName) {
       return this._tabularDataQueryOptionsSet.has(tabularDataSource)
     }
@@ -21,28 +26,40 @@ export class DataSourceToQueryOptionsMap {
   /// <param name="tabularDataSourceInfo"></param>
   /// <returns>true if this operation resulted in change.</returns>
   public addDataSource(tabularDataSourceInfo: IExternalTabularDataSource) {
-    if (tabularDataSourceInfo == null || this._tabularDataQueryOptionsSet.has(tabularDataSourceInfo.entityName))
+    if (
+      tabularDataSourceInfo == null ||
+      this._tabularDataQueryOptionsSet.has(tabularDataSourceInfo.entityName)
+    )
       return false
 
     this._tabularDataQueryOptionsSet.set(
       tabularDataSourceInfo.entityName,
-      new TabularDataQueryOptions(tabularDataSourceInfo),
+      new TabularDataQueryOptions(tabularDataSourceInfo)
     )
     return true
   }
 
-  public getOrCreateQueryOptions(tabularDataSourceInfo: IExternalTabularDataSource): TabularDataQueryOptions {
+  public getOrCreateQueryOptions(
+    tabularDataSourceInfo: IExternalTabularDataSource
+  ): TabularDataQueryOptions {
     if (tabularDataSourceInfo == null) return null
 
     if (this._tabularDataQueryOptionsSet.has(tabularDataSourceInfo.entityName))
-      return this._tabularDataQueryOptionsSet.get(tabularDataSourceInfo.entityName)
+      return this._tabularDataQueryOptionsSet.get(
+        tabularDataSourceInfo.entityName
+      )
 
     const newEntry = new TabularDataQueryOptions(tabularDataSourceInfo)
-    this._tabularDataQueryOptionsSet.set(tabularDataSourceInfo.entityName, newEntry)
+    this._tabularDataQueryOptionsSet.set(
+      tabularDataSourceInfo.entityName,
+      newEntry
+    )
     return newEntry
   }
 
-  public getQueryOptions(tabularDataSourceInfo: IExternalTabularDataSource): TabularDataQueryOptions {
+  public getQueryOptions(
+    tabularDataSourceInfo: IExternalTabularDataSource
+  ): TabularDataQueryOptions {
     if (tabularDataSourceInfo == null) return null
 
     return this.getQueryOptionsByDName(tabularDataSourceInfo.entityName)
@@ -84,14 +101,19 @@ export class DataSourceToQueryOptionsMap {
   /// <param name="tabularDataSourceInfo"></param>
   /// <param name="selectFieldName"></param>
   /// <returns></returns>
-  addSelect(tabularDataSourceInfo: IExternalTabularDataSource, selectFieldName: DName): boolean {
+  addSelect(
+    tabularDataSourceInfo: IExternalTabularDataSource,
+    selectFieldName: DName
+  ): boolean {
     this.addDataSource(tabularDataSourceInfo)
 
     let returnVal = false
     returnVal ||= this._tabularDataQueryOptionsSet
       .get(tabularDataSourceInfo.entityName)
       .addSelect(selectFieldName.toString())
-    returnVal ||= tabularDataSourceInfo.queryOptions.addSelect(selectFieldName.toString())
+    returnVal ||= tabularDataSourceInfo.queryOptions.addSelect(
+      selectFieldName.toString()
+    )
 
     return returnVal
   }
@@ -105,8 +127,10 @@ export class DataSourceToQueryOptionsMap {
     return false
   }
 
-  getExpandDTypes(dsInfo: IExternalTabularDataSource): Dictionary<ExpandPath, DType> {
-    var queryOptions = this.getOrCreateQueryOptions(dsInfo)
+  getExpandDTypes(
+    dsInfo: IExternalTabularDataSource
+  ): Dictionary<ExpandPath, DType> {
+    let queryOptions = this.getOrCreateQueryOptions(dsInfo)
 
     return queryOptions.expandDTypes
   }

@@ -39,7 +39,7 @@ export const _unaryOps = new Dictionary<UnaryOpKind, FunctionPtr>([
       LibStandardErrorHanding.ExactValueTypeProvider('NumberValue'),
       LibStandardErrorHanding.FiniteChecker,
       ReturnBehavior.AlwaysEvaluateAndReturnResult,
-      NumericNegate,
+      NumericNegate
     ),
   ],
   [
@@ -50,7 +50,7 @@ export const _unaryOps = new Dictionary<UnaryOpKind, FunctionPtr>([
       LibStandardErrorHanding.ExactValueTypeProvider('NumberValue'),
       LibStandardErrorHanding.FiniteChecker,
       ReturnBehavior.AlwaysEvaluateAndReturnResult,
-      NumericPercent,
+      NumericPercent
     ),
   ],
   [
@@ -61,7 +61,7 @@ export const _unaryOps = new Dictionary<UnaryOpKind, FunctionPtr>([
       LibStandardErrorHanding.ExactValueTypeOrBlankProvider('NumberValue'),
       LibStandardErrorHanding.FiniteChecker,
       ReturnBehavior.ReturnBlankIfAnyArgIsBlank,
-      NumberToText,
+      NumberToText
     ),
   ],
   [
@@ -72,7 +72,7 @@ export const _unaryOps = new Dictionary<UnaryOpKind, FunctionPtr>([
       LibStandardErrorHanding.ExactValueTypeOrBlankProvider('NumberValue'),
       LibStandardErrorHanding.FiniteChecker,
       ReturnBehavior.ReturnBlankIfAnyArgIsBlank,
-      NumberToBoolean,
+      NumberToBoolean
     ),
   ],
   [
@@ -83,7 +83,7 @@ export const _unaryOps = new Dictionary<UnaryOpKind, FunctionPtr>([
       LibStandardErrorHanding.ExactValueTypeOrBlankProvider('BooleanValue'),
       LibStandardErrorHanding.DeferRuntimeValueChecking,
       ReturnBehavior.ReturnBlankIfAnyArgIsBlank,
-      BooleanToText,
+      BooleanToText
     ),
   ],
   [
@@ -94,7 +94,7 @@ export const _unaryOps = new Dictionary<UnaryOpKind, FunctionPtr>([
       LibStandardErrorHanding.ExactValueTypeOrBlankProvider('BooleanValue'),
       LibStandardErrorHanding.DeferRuntimeValueChecking,
       ReturnBehavior.ReturnBlankIfAnyArgIsBlank,
-      BooleanToNumber,
+      BooleanToNumber
     ),
   ],
   [
@@ -105,7 +105,7 @@ export const _unaryOps = new Dictionary<UnaryOpKind, FunctionPtr>([
       LibStandardErrorHanding.ExactValueTypeOrBlankProvider('StringValue'),
       LibStandardErrorHanding.DeferRuntimeValueChecking,
       ReturnBehavior.ReturnBlankIfAnyArgIsBlank,
-      TextToBoolean,
+      TextToBoolean
     ),
   ],
   [
@@ -116,7 +116,7 @@ export const _unaryOps = new Dictionary<UnaryOpKind, FunctionPtr>([
       LibStandardErrorHanding.DateOrDateTime,
       LibStandardErrorHanding.DeferRuntimeValueChecking,
       ReturnBehavior.ReturnBlankIfAnyArgIsBlank,
-      DateToNumber,
+      DateToNumber
     ),
   ],
   [
@@ -127,7 +127,7 @@ export const _unaryOps = new Dictionary<UnaryOpKind, FunctionPtr>([
       LibStandardErrorHanding.ExactValueTypeOrBlankProvider('NumberValue'),
       LibStandardErrorHanding.FiniteChecker,
       ReturnBehavior.ReturnBlankIfAnyArgIsBlank,
-      NumberToDate,
+      NumberToDate
     ),
   ],
   [
@@ -138,7 +138,7 @@ export const _unaryOps = new Dictionary<UnaryOpKind, FunctionPtr>([
       LibStandardErrorHanding.ExactValueTypeOrBlankProvider('NumberValue'),
       LibStandardErrorHanding.FiniteChecker,
       ReturnBehavior.ReturnBlankIfAnyArgIsBlank,
-      NumberToDateTime,
+      NumberToDateTime
     ),
   ],
   [
@@ -149,7 +149,7 @@ export const _unaryOps = new Dictionary<UnaryOpKind, FunctionPtr>([
       LibStandardErrorHanding.DateOrDateTime,
       LibStandardErrorHanding.DeferRuntimeValueChecking,
       ReturnBehavior.ReturnBlankIfAnyArgIsBlank,
-      DateToDateTime,
+      DateToDateTime
     ),
   ],
   [
@@ -160,7 +160,7 @@ export const _unaryOps = new Dictionary<UnaryOpKind, FunctionPtr>([
       LibStandardErrorHanding.DateOrDateTime,
       LibStandardErrorHanding.DeferRuntimeValueChecking,
       ReturnBehavior.ReturnBlankIfAnyArgIsBlank,
-      DateTimeToDate,
+      DateTimeToDate
     ),
   ],
   [
@@ -171,7 +171,7 @@ export const _unaryOps = new Dictionary<UnaryOpKind, FunctionPtr>([
       LibStandardErrorHanding.ExactValueTypeOrBlankProvider('TimeValue'),
       LibStandardErrorHanding.DeferRuntimeValueChecking,
       ReturnBehavior.ReturnBlankIfAnyArgIsBlank,
-      TimeToNumber,
+      TimeToNumber
     ),
   ],
   [
@@ -182,7 +182,7 @@ export const _unaryOps = new Dictionary<UnaryOpKind, FunctionPtr>([
       LibStandardErrorHanding.ExactValueTypeOrBlankProvider('NumberValue'),
       LibStandardErrorHanding.FiniteChecker,
       ReturnBehavior.ReturnBlankIfAnyArgIsBlank,
-      NumberToTime,
+      NumberToTime
     ),
   ],
   [
@@ -193,7 +193,7 @@ export const _unaryOps = new Dictionary<UnaryOpKind, FunctionPtr>([
       LibStandardErrorHanding.DateOrDateTime,
       LibStandardErrorHanding.DeferRuntimeValueChecking,
       ReturnBehavior.ReturnBlankIfAnyArgIsBlank,
-      DateTimeToTime,
+      DateTimeToTime
     ),
   ],
   [
@@ -204,7 +204,7 @@ export const _unaryOps = new Dictionary<UnaryOpKind, FunctionPtr>([
       LibStandardErrorHanding.DateOrDateTime,
       LibStandardErrorHanding.DeferRuntimeValueChecking,
       ReturnBehavior.ReturnBlankIfAnyArgIsBlank,
-      DateTimeToTime,
+      DateTimeToTime
     ),
   ],
   [
@@ -215,7 +215,7 @@ export const _unaryOps = new Dictionary<UnaryOpKind, FunctionPtr>([
       LibStandardErrorHanding.ExactValueTypeOrBlankProvider('TimeValue'),
       LibStandardErrorHanding.DeferRuntimeValueChecking,
       ReturnBehavior.ReturnBlankIfAnyArgIsBlank,
-      TimeToDate,
+      TimeToDate
     ),
   ],
   [
@@ -226,7 +226,7 @@ export const _unaryOps = new Dictionary<UnaryOpKind, FunctionPtr>([
       LibStandardErrorHanding.ExactValueTypeOrBlankProvider('TimeValue'),
       LibStandardErrorHanding.DeferRuntimeValueChecking,
       ReturnBehavior.ReturnBlankIfAnyArgIsBlank,
-      TimeToDateTime,
+      TimeToDateTime
     ),
   ],
   [
@@ -237,7 +237,7 @@ export const _unaryOps = new Dictionary<UnaryOpKind, FunctionPtr>([
       LibStandardErrorHanding.ExactValueTypeOrBlankProvider('StringValue'),
       LibStandardErrorHanding.DeferRuntimeValueChecking,
       ReturnBehavior.ReturnBlankIfAnyArgIsBlank,
-      DateParse,
+      DateParse
     ),
   ],
   [
@@ -248,7 +248,7 @@ export const _unaryOps = new Dictionary<UnaryOpKind, FunctionPtr>([
       LibStandardErrorHanding.ExactValueTypeOrBlankProvider('StringValue'),
       LibStandardErrorHanding.DeferRuntimeValueChecking,
       ReturnBehavior.ReturnBlankIfAnyArgIsBlank,
-      DateTimeParse,
+      DateTimeParse
     ),
   ],
   [
@@ -259,7 +259,7 @@ export const _unaryOps = new Dictionary<UnaryOpKind, FunctionPtr>([
       LibStandardErrorHanding.ExactValueTypeOrBlankProvider('StringValue'),
       LibStandardErrorHanding.DeferRuntimeValueChecking,
       ReturnBehavior.ReturnBlankIfAnyArgIsBlank,
-      TimeParse,
+      TimeParse
     ),
   ],
   [
@@ -270,7 +270,7 @@ export const _unaryOps = new Dictionary<UnaryOpKind, FunctionPtr>([
       LibStandardErrorHanding.ExactValueTypeOrBlankProvider('OptionSetValue'),
       LibStandardErrorHanding.DeferRuntimeValueChecking,
       ReturnBehavior.ReturnBlankIfAnyArgIsBlank,
-      OptionSetValueToString,
+      OptionSetValueToString
     ),
   ],
 ])
@@ -278,30 +278,40 @@ export const _unaryOps = new Dictionary<UnaryOpKind, FunctionPtr>([
 // #endregion
 
 // #region Unary Operator Implementations
-export function NumericNegate(props: TargetFunctionSimpleProps<NumberValue>): NumberValue {
+export function NumericNegate(
+  props: TargetFunctionSimpleProps<NumberValue>
+): NumberValue {
   const { irContext, values: args } = props
   const result = -args[0].value
   return new NumberValue(irContext, result)
 }
 
-export function NumericPercent(props: TargetFunctionSimpleProps<NumberValue>): NumberValue {
+export function NumericPercent(
+  props: TargetFunctionSimpleProps<NumberValue>
+): NumberValue {
   const { irContext, values: args } = props
   const result = args[0].value / 100.0
   return new NumberValue(irContext, result)
 }
 
-export function NumberToText(props: TargetFunctionFullProps<NumberValue>): FormulaValue {
+export function NumberToText(
+  props: TargetFunctionFullProps<NumberValue>
+): FormulaValue {
   const { visitor: runner, symbolContext, irContext, values: args } = props
   return Text({ visitor: runner, symbolContext, irContext, values: args })
 }
 
-export function NumberToBoolean(props: TargetFunctionSimpleProps<NumberValue>): BooleanValue {
+export function NumberToBoolean(
+  props: TargetFunctionSimpleProps<NumberValue>
+): BooleanValue {
   const { irContext, values: args } = props
   const n = args[0].value
   return new BooleanValue(irContext, n != 0.0)
 }
 
-export function BooleanToText(props: TargetFunctionSimpleProps<BooleanValue>): StringValue {
+export function BooleanToText(
+  props: TargetFunctionSimpleProps<BooleanValue>
+): StringValue {
   const { irContext, values: args } = props
 
   const b = args[0].value
@@ -312,19 +322,25 @@ export function PowerFxBooleanToString(b: boolean): string {
   return b ? 'true' : 'false'
 }
 
-export function BooleanToNumber(props: TargetFunctionSimpleProps<BooleanValue>): NumberValue {
+export function BooleanToNumber(
+  props: TargetFunctionSimpleProps<BooleanValue>
+): NumberValue {
   const { irContext, values: args } = props
   const b = args[0].value
   return new NumberValue(irContext, b ? 1.0 : 0.0)
 }
 
-export function TextToBoolean(props: TargetFunctionSimpleProps<StringValue>): BooleanValue {
+export function TextToBoolean(
+  props: TargetFunctionSimpleProps<StringValue>
+): BooleanValue {
   const { irContext, values: args } = props
   const s = args[0].value
   return new BooleanValue(irContext, s === 'true')
 }
 
-export function DateToNumber(props: TargetFunctionSimpleProps<FormulaValue>): FormulaValue {
+export function DateToNumber(
+  props: TargetFunctionSimpleProps<FormulaValue>
+): FormulaValue {
   const { irContext, values: args } = props
   let arg0: DateTime
   if (args[0] instanceof DateTimeValue) {
@@ -339,28 +355,36 @@ export function DateToNumber(props: TargetFunctionSimpleProps<FormulaValue>): Fo
   return new NumberValue(irContext, diff)
 }
 
-export function DateTimeToNumber(props: TargetFunctionSimpleProps<DateTimeValue>): NumberValue {
+export function DateTimeToNumber(
+  props: TargetFunctionSimpleProps<DateTimeValue>
+): NumberValue {
   const { irContext, values: args } = props
   const d = args[0].value
-  var diff = d.subtract(_epoch).totalDays
+  let diff = d.subtract(_epoch).totalDays
   return new NumberValue(irContext, diff)
 }
 
-export function NumberToDate(props: TargetFunctionSimpleProps<NumberValue>): DateValue {
+export function NumberToDate(
+  props: TargetFunctionSimpleProps<NumberValue>
+): DateValue {
   const { irContext, values: args } = props
   const n = args[0].value
   const date = _epoch.addDays(n)
   return new DateValue(irContext, date)
 }
 
-export function NumberToDateTime(props: TargetFunctionSimpleProps<NumberValue>): DateTimeValue {
+export function NumberToDateTime(
+  props: TargetFunctionSimpleProps<NumberValue>
+): DateTimeValue {
   const { irContext, values: args } = props
   const n = args[0].value
   const date = _epoch.addDays(n)
   return new DateTimeValue(irContext, date)
 }
 
-export function DateToDateTime(props: TargetFunctionSimpleProps<FormulaValue>): FormulaValue {
+export function DateToDateTime(
+  props: TargetFunctionSimpleProps<FormulaValue>
+): FormulaValue {
   const { irContext, values: args } = props
   if (args[0] instanceof DateTimeValue) {
     return args[0]
@@ -371,7 +395,9 @@ export function DateToDateTime(props: TargetFunctionSimpleProps<FormulaValue>): 
   }
 }
 
-export function DateTimeToDate(props: TargetFunctionSimpleProps<FormulaValue>): FormulaValue {
+export function DateTimeToDate(
+  props: TargetFunctionSimpleProps<FormulaValue>
+): FormulaValue {
   const { irContext, values: args } = props
   if (args[0] instanceof DateTimeValue) {
     const startOfDate = args[0].value.date
@@ -383,20 +409,26 @@ export function DateTimeToDate(props: TargetFunctionSimpleProps<FormulaValue>): 
   }
 }
 
-export function TimeToNumber(props: TargetFunctionSimpleProps<TimeValue>): NumberValue {
+export function TimeToNumber(
+  props: TargetFunctionSimpleProps<TimeValue>
+): NumberValue {
   const { irContext, values: args } = props
   const t = args[0].value
   return new NumberValue(irContext, t.totalDays)
 }
 
-export function NumberToTime(props: TargetFunctionSimpleProps<NumberValue>): TimeValue {
+export function NumberToTime(
+  props: TargetFunctionSimpleProps<NumberValue>
+): TimeValue {
   const { irContext, values: args } = props
   const n = args[0].value
   const days = TimeSpan.fromDays(n)
   return new TimeValue(irContext, days)
 }
 
-export function DateTimeToTime(props: TargetFunctionSimpleProps<FormulaValue>): FormulaValue {
+export function DateTimeToTime(
+  props: TargetFunctionSimpleProps<FormulaValue>
+): FormulaValue {
   const { irContext, values: args } = props
   let arg0: DateTime
   if (args[0] instanceof DateTimeValue) {
@@ -411,21 +443,27 @@ export function DateTimeToTime(props: TargetFunctionSimpleProps<FormulaValue>): 
   return new TimeValue(irContext, time)
 }
 
-export function TimeToDate(props: TargetFunctionSimpleProps<TimeValue>): DateValue {
+export function TimeToDate(
+  props: TargetFunctionSimpleProps<TimeValue>
+): DateValue {
   const { irContext, values: args } = props
   const t = args[0].value
   const date = _epoch.add(t)
   return new DateValue(irContext, date.date)
 }
 
-export function TimeToDateTime(props: TargetFunctionSimpleProps<TimeValue>): DateTimeValue {
+export function TimeToDateTime(
+  props: TargetFunctionSimpleProps<TimeValue>
+): DateTimeValue {
   const { irContext, values: args } = props
   const t = args[0].value
   const date = _epoch.add(t)
   return new DateTimeValue(irContext, date)
 }
 
-export function OptionSetValueToString(props: TargetFunctionSimpleProps<OptionSetValue>): FormulaValue {
+export function OptionSetValueToString(
+  props: TargetFunctionSimpleProps<OptionSetValue>
+): FormulaValue {
   const { irContext, values: args } = props
   const os = args[0].type?._type?.optionSetInfo
   if (!(os instanceof OptionSet)) {

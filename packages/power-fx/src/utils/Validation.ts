@@ -22,24 +22,48 @@ export class Contracts {
     if (!f) throw this.ExceptRange(paramName, sid)
   }
 
-  public static CheckIndexRange(index: number, count: number, available: number, paramName: string, sid: string): void {
-    if (!this.IsValid(index, count, available)) throw this.ExceptRange(paramName, sid)
+  public static CheckIndexRange(
+    index: number,
+    count: number,
+    available: number,
+    paramName: string,
+    sid: string
+  ): void {
+    if (!this.IsValid(index, count, available))
+      throw this.ExceptRange(paramName, sid)
   }
 
-  public static CheckIndex(index: number, available: number, paramName: string, sid: string): void {
-    if (!this.IsValidIndex(index, available)) throw this.ExceptRange(paramName, sid)
+  public static CheckIndex(
+    index: number,
+    available: number,
+    paramName: string,
+    sid: string
+  ): void {
+    if (!this.IsValidIndex(index, available))
+      throw this.ExceptRange(paramName, sid)
   }
 
-  public static CheckIndexInclusive(index: number, available: number, paramName: string, sid: string): void {
-    if (!this.IsValidIndexInclusive(index, available)) throw this.ExceptRange(paramName, sid)
+  public static CheckIndexInclusive(
+    index: number,
+    available: number,
+    paramName: string,
+    sid: string
+  ): void {
+    if (!this.IsValidIndexInclusive(index, available))
+      throw this.ExceptRange(paramName, sid)
   }
 
   public static CheckParam(f: boolean, paramName: string, sid: string): void {
     if (!f) throw this.ExceptParam(paramName, sid)
   }
 
-  public static CheckValue<T extends {}>(val: T | undefined, paramName: string, sid: string): void {
-    if (val === null || val === undefined) throw this.ExceptValue(paramName, sid)
+  public static CheckValue<T extends {}>(
+    val: T | undefined,
+    paramName: string,
+    sid: string
+  ): void {
+    if (val === null || val === undefined)
+      throw this.ExceptValue(paramName, sid)
   }
 
   public static CheckNull<T>(val: T, paramName: string, sid: string): void {
@@ -74,19 +98,28 @@ export class Contracts {
     }
   }
 
-  public static CheckAll<T extends ICheckable>(args: T[], paramName: string): any {
+  public static CheckAll<T extends ICheckable>(
+    args: T[],
+    paramName: string
+  ): any {
     for (let i = 0; i < this.Size(args); i++) {
       if (!args[i].isValid) throw this.ExceptValid(paramName)
     }
   }
 
-  public static CheckValid<T extends ICheckable>(val: T, paramName: string): void {
+  public static CheckValid<T extends ICheckable>(
+    val: T,
+    paramName: string
+  ): void {
     if (!val.isValid) throw this.ExceptValid(paramName)
   }
 
   //317
   // [Conditional("INVARIANT_CHECKS")]
-  public static CheckValueOrNull<T extends {}>(val: T, paramName: string): void {}
+  public static CheckValueOrNull<T extends {}>(
+    val: T,
+    paramName: string
+  ): void {}
 
   // #endregion
 
@@ -166,7 +199,10 @@ export class Contracts {
   /// This uses the default equality operator for the type.
   /// </summary>
   // [Conditional("DEBUG")]
-  public static AssertOneOf<T extends {}>(val: T, expectedPossibilities: T[]): void {
+  public static AssertOneOf<T extends {}>(
+    val: T,
+    expectedPossibilities: T[]
+  ): void {
     // #if DEBUG
     this.AssertValue(val)
     this.AssertValue(expectedPossibilities)
@@ -178,7 +214,10 @@ export class Contracts {
   }
 
   // [Conditional("DEBUG")]
-  public static AssertOneOfValueType<T>(val: T, expectedPossibilities: T[]): void {
+  public static AssertOneOfValueType<T>(
+    val: T,
+    expectedPossibilities: T[]
+  ): void {
     // #if DEBUG
     this.AssertValue(expectedPossibilities)
 
@@ -188,7 +227,10 @@ export class Contracts {
   }
 
   // [Conditional("DEBUG")]
-  public static AssertOneOfValueTypeOrNull<T>(val?: T, expectedPossibilities?: T[]): void {
+  public static AssertOneOfValueTypeOrNull<T>(
+    val?: T,
+    expectedPossibilities?: T[]
+  ): void {
     // #if DEBUG
     if (val != null) this.AssertOneOfValueType(val, expectedPossibilities ?? [])
     // #endif
@@ -269,7 +311,7 @@ export class Contracts {
     //               Exception ex = (Exception)_assertFailExCtor.Invoke(new object[] { msg });
     //   throw ex;
     // }
-    console.debug(msg)
+    console.warn(msg)
   }
 
   private static DbgFail(msg?: string): void {
@@ -367,7 +409,10 @@ export class Contracts {
     {
       // Equivalent to
       // return index >= 0 && index <= available && count >= 0 && count <= available - index;
-      return <number>index <= <number>available && <number>count <= <number>(available - index)
+      return (
+        <number>index <= <number>available &&
+        <number>count <= <number>(available - index)
+      )
     }
   }
 
@@ -479,7 +524,11 @@ export class Contracts {
   //     return this.Process(new Error(this.FormatMessage(paramName,sid)));
   // }
 
-  public static ExceptParam<T>(paramName: string, sid?: string, arg?: T): Error {
+  public static ExceptParam<T>(
+    paramName: string,
+    sid?: string,
+    arg?: T
+  ): Error {
     return this.Process(new Error(this.FormatMessage(paramName, sid, arg)))
   }
 

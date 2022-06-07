@@ -26,20 +26,26 @@ export class FirstLastNFunction extends FunctionWithTableInput {
       1,
       2,
       DType.EmptyTable,
-      DType.Number,
+      DType.Number
     )
   }
 
   public getSignatures() {
-    return [[TexlStrings.FirstLastNArg1], [TexlStrings.FirstLastNArg1, TexlStrings.FirstLastNArg2]]
+    return [
+      [TexlStrings.FirstLastNArg1],
+      [TexlStrings.FirstLastNArg1, TexlStrings.FirstLastNArg2],
+    ]
   }
 
   public checkInvocation(
     args: TexlNode[],
     argTypes: DType[],
     errors: IErrorContainer,
-    binding: TexlBinding,
-  ): [boolean, { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }] {
+    binding: TexlBinding
+  ): [
+    boolean,
+    { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }
+  ] {
     // Contracts.AssertValue(args);
     // Contracts.AssertValue(argTypes);
     // Contracts.Assert(args.Length == argTypes.Length);
@@ -51,7 +57,7 @@ export class FirstLastNFunction extends FunctionWithTableInput {
     let returnType = baseResult[1].returnType
     let nodeToCoercedTypeMap = baseResult[1].nodeToCoercedTypeMap
 
-    var arg0Type = argTypes[0]
+    let arg0Type = argTypes[0]
     if (arg0Type.isTable) {
       returnType = arg0Type
     } else {

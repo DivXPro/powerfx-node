@@ -1,7 +1,10 @@
 import { IErrorContainer } from '../../app/errorContainers'
 import { TexlBinding } from '../../binding'
 import { BuiltinFunction } from '../../functions/BuiltinFunction'
-import { DelegationCapability, OperationCapabilityMetadata } from '../../functions/delegation'
+import {
+  DelegationCapability,
+  OperationCapabilityMetadata,
+} from '../../functions/delegation'
 import { StringGetter, TexlStrings } from '../../localization'
 import { CallNode, TexlNode } from '../../syntax'
 import { NodeKind } from '../../syntax/NodeKind'
@@ -22,9 +25,20 @@ export abstract class StringOneArgFunction extends BuiltinFunction {
     name: string,
     description: StringGetter,
     functionCategories: FunctionCategories,
-    returnType: DType = DType.String,
+    returnType: DType = DType.String
   ) {
-    super(undefined, name, undefined, description, functionCategories, returnType, 0, 1, 1, DType.String)
+    super(
+      undefined,
+      name,
+      undefined,
+      description,
+      functionCategories,
+      returnType,
+      0,
+      1,
+      1,
+      DType.String
+    )
   }
 
   public getSignatures(): Array<StringGetter[]> {
@@ -34,14 +48,15 @@ export abstract class StringOneArgFunction extends BuiltinFunction {
   public isRowScopedServerDelegatable(
     callNode: CallNode,
     binding: TexlBinding,
-    metadata: OperationCapabilityMetadata,
+    metadata: OperationCapabilityMetadata
   ): boolean {
     // Contracts.AssertValue(callNode);
     // Contracts.AssertValue(binding);
     // Contracts.AssertValue(metadata);
 
     if (
-      this.functionDelegationCapability.capabilities == DelegationCapability.None ||
+      this.functionDelegationCapability.capabilities ==
+        DelegationCapability.None ||
       binding.errorContainer.hasErrors(callNode) ||
       !this.checkArgsCount(callNode, binding) ||
       !binding.isRowScope(callNode)
@@ -54,22 +69,39 @@ export abstract class StringOneArgFunction extends BuiltinFunction {
 
     switch (argKind) {
       case NodeKind.FirstName: {
-        var firstNameStrategy = this.getFirstNameNodeDelegationStrategy()
-        return firstNameStrategy.isValidFirstNameNode(args[0].asFirstName(), binding, null)
+        let firstNameStrategy = this.getFirstNameNodeDelegationStrategy()
+        return firstNameStrategy.isValidFirstNameNode(
+          args[0].asFirstName(),
+          binding,
+          null
+        )
       }
 
       case NodeKind.Call: {
-        if (!metadata.isDelegationSupportedByTable(this.functionDelegationCapability)) {
+        if (
+          !metadata.isDelegationSupportedByTable(
+            this.functionDelegationCapability
+          )
+        ) {
           return false
         }
 
-        var cNodeStrategy = this.getCallNodeDelegationStrategy()
-        return cNodeStrategy.isValidCallNode(args[0].asCall(), binding, metadata)
+        let cNodeStrategy = this.getCallNodeDelegationStrategy()
+        return cNodeStrategy.isValidCallNode(
+          args[0].asCall(),
+          binding,
+          metadata
+        )
       }
 
       case NodeKind.DottedName: {
-        var dottedStrategy = this.getDottedNameNodeDelegationStrategy()
-        return dottedStrategy.isValidDottedNameNode(args[0].asDottedName(), binding, metadata, null)
+        let dottedStrategy = this.getDottedNameNodeDelegationStrategy()
+        return dottedStrategy.isValidDottedNameNode(
+          args[0].asDottedName(),
+          binding,
+          metadata,
+          null
+        )
       }
 
       default:
@@ -89,8 +121,23 @@ export abstract class StringOneArgTableFunction extends BuiltinFunction {
     return true
   }
 
-  constructor(name: string, description: StringGetter, functionCategories: FunctionCategories) {
-    super(undefined, name, undefined, description, functionCategories, DType.EmptyTable, 0, 1, 1, DType.EmptyTable)
+  constructor(
+    name: string,
+    description: StringGetter,
+    functionCategories: FunctionCategories
+  ) {
+    super(
+      undefined,
+      name,
+      undefined,
+      description,
+      functionCategories,
+      DType.EmptyTable,
+      0,
+      1,
+      1,
+      DType.EmptyTable
+    )
   }
 
   public getSignatures() {
@@ -105,8 +152,11 @@ export abstract class StringOneArgTableFunction extends BuiltinFunction {
     args: TexlNode[],
     argTypes: DType[],
     errors: IErrorContainer,
-    binding: TexlBinding,
-  ): [boolean, { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }] {
+    binding: TexlBinding
+  ): [
+    boolean,
+    { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }
+  ] {
     // Contracts.AssertValue(args);
     // Contracts.AssertAllValues(args);
     // Contracts.AssertValue(argTypes);
@@ -120,7 +170,12 @@ export abstract class StringOneArgTableFunction extends BuiltinFunction {
     // Contracts.Assert(returnType.IsTable);
 
     // Typecheck the input table
-    const checkStringResult = this.checkStringColumnType(argTypes[0], args[0], errors, nodeToCoercedTypeMap)
+    const checkStringResult = this.checkStringColumnType(
+      argTypes[0],
+      args[0],
+      errors,
+      nodeToCoercedTypeMap
+    )
     nodeToCoercedTypeMap = checkStringResult[1]
     fValid &&= checkStringResult[0]
 

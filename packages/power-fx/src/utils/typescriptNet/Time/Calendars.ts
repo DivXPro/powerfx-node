@@ -1,4 +1,4 @@
-export declare module Gregorian {
+export declare namespace Gregorian {
   export enum Month {
     January,
     February,

@@ -21,8 +21,11 @@ export class SplitFunction extends StringTwoArgFunction {
     args: TexlNode[],
     argTypes: DType[],
     errors: IErrorContainer,
-    binding: TexlBinding,
-  ): [boolean, { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }] {
+    binding: TexlBinding
+  ): [
+    boolean,
+    { returnType: DType; nodeToCoercedTypeMap: Dictionary<TexlNode, DType> }
+  ] {
     // Contracts.AssertValue(args);
     // Contracts.AssertAllValues(args);
     // Contracts.AssertValue(argTypes);
@@ -35,10 +38,12 @@ export class SplitFunction extends StringTwoArgFunction {
     let returnType = baseResult[1].returnType
     let nodeToCoercedTypeMap = baseResult[1].nodeToCoercedTypeMap
 
-    // var fValid = CheckInvocation(args, argTypes, errors, out returnType, out nodeToCoercedTypeMap);
+    // let fValid = CheckInvocation(args, argTypes, errors, out returnType, out nodeToCoercedTypeMap);
     // Contracts.Assert(returnType.IsTable);
 
-    returnType = DType.CreateTable(new TypedName(DType.String, BuiltinFunction.OneColumnTableResultName))
+    returnType = DType.CreateTable(
+      new TypedName(DType.String, BuiltinFunction.OneColumnTableResultName)
+    )
     return [fValid, { returnType, nodeToCoercedTypeMap }]
   }
 }

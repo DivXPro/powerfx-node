@@ -24,19 +24,30 @@ export class StringResources {
 
   private static FallbackLocale: string = 'en-US'
 
-  public static GetErrorResource(resourceKey: ErrorResourceKey, locale?: string) {
+  public static GetErrorResource(
+    resourceKey: ErrorResourceKey,
+    locale?: string
+  ) {
     // Contracts.CheckValue(resourceKey.Key, 'action');
     // Contracts.CheckValueOrNull(locale, 'locale');
 
-    let resourceValue = StringResources.TryGetErrorResource(resourceKey, locale)[1]
+    let resourceValue = StringResources.TryGetErrorResource(
+      resourceKey,
+      locale
+    )[1]
     if (resourceValue == null) {
-      resourceValue = StringResources.TryGetErrorResource(resourceKey, StringResources.FallbackLocale)[1]
+      resourceValue = StringResources.TryGetErrorResource(
+        resourceKey,
+        StringResources.FallbackLocale
+      )[1]
     }
     // As foreign languages can lag behind en-US while being localized, if we can't find it then always look in the en-US locale
     if (resourceValue == null) {
       // Debug.WriteLine(string.Format('ERROR error resource {0} not found', resourceKey));
       if (StringResources.ShouldThrowIfMissing) {
-        throw new Error(`FileNotFoundException: resource ${resourceKey.key} not found`)
+        throw new Error(
+          `FileNotFoundException: resource ${resourceKey.key} not found`
+        )
       }
     } else {
       return resourceValue
@@ -57,7 +68,10 @@ export class StringResources {
     const result1 = StringResources.TryGet(resourceKey, locale)
     resourceValue = result1[1]
     if (resourceValue == null) {
-      const result2 = StringResources.TryGet(resourceKey, StringResources.FallbackLocale)
+      const result2 = StringResources.TryGet(
+        resourceKey,
+        StringResources.FallbackLocale
+      )
       resourceValue = result2[1]
     }
     // As foreign languages can lag behind en-US while being localized, if we can't find it then always look in the en-US locale
@@ -68,23 +82,31 @@ export class StringResources {
       // the error message manually (as opposed to going through the DocError class), we check
       // if there is an error resource associated with this key if we did not find it normally.
       let potentialErrorResource: ErrorResource | undefined
-      const result = StringResources.TryGetErrorResource(new ErrorResourceKey(resourceKey), locale)
+      const result = StringResources.TryGetErrorResource(
+        new ErrorResourceKey(resourceKey),
+        locale
+      )
       potentialErrorResource = result[1]
       if (potentialErrorResource == null) {
         const result = StringResources.TryGetErrorResource(
           new ErrorResourceKey(resourceKey),
-          StringResources.FallbackLocale,
+          StringResources.FallbackLocale
         )
         potentialErrorResource = result[1]
       }
       if (potentialErrorResource != null) {
-        return potentialErrorResource.getSingleValue(ErrorResource.ShortMessageTag)
+        return potentialErrorResource.getSingleValue(
+          ErrorResource.ShortMessageTag
+        )
       }
 
       // Debug.WriteLine(string.Format('ERROR resource string {0} not found', resourceKey))
       if (StringResources.ShouldThrowIfMissing) {
         // throw new Error(`FileNotFoundException: resource ${resourceKey} not found`)
-        console.log('获取资源名异常[国际化模块]!', `FileNotFoundException: resource ${resourceKey} not found`)
+        console.error(
+          '获取资源名异常[国际化模块]!',
+          `FileNotFoundException: resource ${resourceKey} not found`
+        )
       }
     }
 
@@ -93,7 +115,8 @@ export class StringResources {
 
   // One resource dictionary per locale
   private static Strings: Record<string, Record<string, string>> = {}
-  private static ErrorResources: Record<string, Record<string, ErrorResource>> = {}
+  private static ErrorResources: Record<string, Record<string, ErrorResource>> =
+    {}
   // private static Object dictionaryLock = new object();
 
   // private class TypeFromThisAssembly{ }
@@ -103,7 +126,7 @@ export class StringResources {
 
   public static TryGetErrorResource(
     resourceKey: ErrorResourceKey,
-    locale?: string,
+    locale?: string
   ): [boolean, ErrorResource | undefined] {
     // Contracts.CheckValue(resourceKey.Key, 'action');
     // Contracts.CheckValueOrNull(locale, 'locale');
@@ -121,7 +144,7 @@ export class StringResources {
     if (errorResources == null) {
       // Dictionary<string, string> strings;
       const result = StringResources.LoadFromResource(
-        locale,
+        locale
         // StringResources.ResourceNamePrefix,
         // StringResources.ResourceFileName,
         // ResourceFormat.Resw,
@@ -135,10 +158,18 @@ export class StringResources {
       return [true, errorResources[resourceKey.key]]
     }
 
-    return StringResources.ExternalStringResources?.tryGetErrorResource(resourceKey, locale) ?? [false, null]
+    return (
+      StringResources.ExternalStringResources?.tryGetErrorResource(
+        resourceKey,
+        locale
+      ) ?? [false, null]
+    )
   }
 
-  public static TryGet(resourceKey: string, locale?: string): [boolean, string] {
+  public static TryGet(
+    resourceKey: string,
+    locale?: string
+  ): [boolean, string] {
     // Contracts.CheckValue(resourceKey, 'action');
     // Contracts.CheckValueOrNull(locale, 'locale');
 
@@ -151,7 +182,7 @@ export class StringResources {
 
     if (strings == null) {
       const result = StringResources.LoadFromResource(
-        locale,
+        locale
         // StringResources.ResourceNamePrefix,
         // StringResources.ResourceFileName,
         // ResourceFormat.Resw,
@@ -164,17 +195,25 @@ export class StringResources {
       return [true, strings[resourceKey]]
     }
 
-    return StringResources.ExternalStringResources?.tryGet(resourceKey, locale) ?? [false, null]
+    return (
+      StringResources.ExternalStringResources?.tryGet(resourceKey, locale) ?? [
+        false,
+        null,
+      ]
+    )
   }
 
   // TODO: 完善
   static LoadFromResource(
-    locale: string,
+    locale: string
     // assemblyPrefix: string,
     // resourceFileName: string,
     // resourceFormat: ResourceFormat,
-  ): { strings: Record<string, string>; errorResources: Record<string, ErrorResource> } {
-    // var assembly = typeFromAssembly.Assembly;
+  ): {
+    strings: Record<string, string>
+    errorResources: Record<string, ErrorResource>
+  } {
+    // let assembly = typeFromAssembly.Assembly;
 
     // This is being done because the filename of the manifest is case sensitive e.g. given zh-CN it was returning English
     if (locale === 'zh-CN') {
@@ -193,7 +232,9 @@ export class StringResources {
         strings[item.name] = item.value
       }
     })
-    const errorResources = StringResources.PostProcessErrorResources(separatedResourceKeys)
+    const errorResources = StringResources.PostProcessErrorResources(
+      separatedResourceKeys
+    )
     return {
       strings,
       errorResources,
@@ -202,7 +243,7 @@ export class StringResources {
 
   private static TryGetMultiValueSuffix(
     resourceKey: string,
-    baseSuffix: string,
+    baseSuffix: string
   ): [boolean, string | undefined, number] {
     // TODO:无法做到忽略大小写
     const pattern = new RegExp(baseSuffix + '_([0-9]*)')
@@ -221,21 +262,17 @@ export class StringResources {
     resourceValue: string,
     tag: string,
     index: number,
-    errorResources: Record<string, Record<string, Record<number, string>>>,
+    errorResources: Record<string, Record<string, Record<number, string>>>
   ) {
     // Contracts.AssertValue(errorResources);
     // Contracts.AssertNonEmpty(resourceName);
     // Contracts.AssertNonEmpty(resourceValue);
 
-    let { isGet: isGetTagToValuesDict, data: tagToValuesDict } = CollectionUtils.TryGetProperty(
-      errorResources,
-      resourceName,
-    )
+    let { isGet: isGetTagToValuesDict, data: tagToValuesDict } =
+      CollectionUtils.TryGetProperty(errorResources, resourceName)
     if (isGetTagToValuesDict) {
-      const { isGet: isGetTagNumberToValuesDict, data: tagNumberToValuesDict } = CollectionUtils.TryGetProperty(
-        tagToValuesDict,
-        tag,
-      )
+      const { isGet: isGetTagNumberToValuesDict, data: tagNumberToValuesDict } =
+        CollectionUtils.TryGetProperty(tagToValuesDict, tag)
       if (isGetTagNumberToValuesDict) {
         tagNumberToValuesDict[index] = resourceValue
       } else {
@@ -251,11 +288,14 @@ export class StringResources {
   }
 
   private static PostProcessErrorResources(
-    separateResourceKeys: Record<string, string>,
+    separateResourceKeys: Record<string, string>
   ): Record<string, ErrorResource> {
     // ErrorResource name -> ErrorResourceTag -> tag number -> value
-    // var errorResources = new Dictionary<string, Dictionary<string, Dictionary<int, string>>>(StringComparer.OrdinalIgnoreCase);
-    const errorResources: Record<string, Record<string, Record<number, string>>> = {}
+    // let errorResources = new Dictionary<string, Dictionary<string, Dictionary<int, string>>>(StringComparer.OrdinalIgnoreCase);
+    const errorResources: Record<
+      string,
+      Record<string, Record<number, string>>
+    > = {}
     for (const resourceKey in separateResourceKeys) {
       if (!resourceKey.startsWith(ErrorResource.ReswErrorResourcePrefix)) {
         continue
@@ -270,18 +310,22 @@ export class StringResources {
           }
           const resourceName = resourceKey.substr(
             ErrorResource.ReswErrorResourcePrefix.length,
-            resourceKey.length - (ErrorResource.ReswErrorResourcePrefix.length + tag[1].length),
+            resourceKey.length -
+              (ErrorResource.ReswErrorResourcePrefix.length + tag[1].length)
           )
           StringResources.UpdateErrorResource(
             resourceName,
             separateResourceKeys[resourceKey],
             tag[0],
             0,
-            errorResources,
+            errorResources
           )
           break
         } else {
-          const rst = StringResources.TryGetMultiValueSuffix(resourceKey, tag[1])
+          const rst = StringResources.TryGetMultiValueSuffix(
+            resourceKey,
+            tag[1]
+          )
           const suffix = rst[1]
           const index = rst[2]
           if (!rst[0]) {
@@ -290,14 +334,15 @@ export class StringResources {
 
           const resourceName = resourceKey.substr(
             ErrorResource.ReswErrorResourcePrefix.length,
-            resourceKey.length - (ErrorResource.ReswErrorResourcePrefix.length + suffix.length),
+            resourceKey.length -
+              (ErrorResource.ReswErrorResourcePrefix.length + suffix.length)
           )
           StringResources.UpdateErrorResource(
             resourceName,
             separateResourceKeys[resourceKey],
             tag[0],
             index,
-            errorResources,
+            errorResources
           )
 
           // Also handle the URL for link resources
@@ -309,7 +354,7 @@ export class StringResources {
               urlValue,
               ErrorResource.LinkTagUrlTag,
               index,
-              errorResources,
+              errorResources
             )
           }
           break

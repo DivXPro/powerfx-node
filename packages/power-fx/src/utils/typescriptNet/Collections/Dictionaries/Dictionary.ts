@@ -17,9 +17,11 @@ import { ILinkedNode } from '../ILinkedListNode'
 import { HashSelector } from '../../FunctionTypes'
 import DictionaryBase from './DictionaryBase'
 
-const VOID0: undefined = void 0
+const VOID0 = void 0
 
-export interface IHashEntry<TKey, TValue> extends ILinkedNode<IHashEntry<TKey, TValue>>, KeyValuePair<TKey, TValue> {}
+export interface IHashEntry<TKey, TValue>
+  extends ILinkedNode<IHashEntry<TKey, TValue>>,
+    KeyValuePair<TKey, TValue> {}
 
 // LinkedList for Dictionary
 class HashEntry<TKey, TValue> implements IHashEntry<TKey, TValue> {
@@ -27,19 +29,27 @@ class HashEntry<TKey, TValue> implements IHashEntry<TKey, TValue> {
     public key: TKey,
     public value: TValue,
     public previous?: IHashEntry<TKey, TValue>,
-    public next?: IHashEntry<TKey, TValue>,
+    public next?: IHashEntry<TKey, TValue>
   ) {}
 }
 
-type HashEntryLinkedList<TKey, TValue> = LinkedNodeList<IHashEntry<TKey, IHashEntry<TKey, TValue>>>
+type HashEntryLinkedList<TKey, TValue> = LinkedNodeList<
+  IHashEntry<TKey, IHashEntry<TKey, TValue>>
+>
 
 let linkedListPool: ObjectPool<LinkedNodeList<any>>
 
 function linkedNodeList(): LinkedNodeList<any>
 function linkedNodeList(recycle?: LinkedNodeList<any>): void
 //noinspection JSUnusedLocalSymbols
-function linkedNodeList(recycle?: LinkedNodeList<any>): LinkedNodeList<any> | void {
-  if (!linkedListPool) linkedListPool = ObjectPool.createAutoRecycled(() => new LinkedNodeList<any>(), 20)
+function linkedNodeList(
+  recycle?: LinkedNodeList<any>
+): LinkedNodeList<any> | void {
+  if (!linkedListPool)
+    linkedListPool = ObjectPool.createAutoRecycled(
+      () => new LinkedNodeList<any>(),
+      20
+    )
   if (!recycle) return linkedListPool.take()
   linkedListPool.give(recycle)
 }
@@ -47,7 +57,9 @@ function linkedNodeList(recycle?: LinkedNodeList<any>): LinkedNodeList<any> | vo
 export class Dictionary<TKey, TValue> extends DictionaryBase<TKey, TValue> {
   // Retains the order...
   private readonly _entries: LinkedNodeList<IHashEntry<TKey, TValue>>
-  private readonly _buckets: IMap<LinkedNodeList<IHashEntry<TKey, IHashEntry<TKey, TValue>>>>
+  private readonly _buckets: IMap<
+    LinkedNodeList<IHashEntry<TKey, IHashEntry<TKey, TValue>>>
+  >
 
   constructor(private readonly _keyGenerator?: HashSelector<TKey>) {
     super()
@@ -69,12 +81,14 @@ export class Dictionary<TKey, TValue> extends DictionaryBase<TKey, TValue> {
 
   private _getBucket(
     hash: string | number | symbol,
-    createIfMissing?: boolean,
+    createIfMissing?: boolean
   ): HashEntryLinkedList<TKey, TValue> | undefined {
     if (hash == null || (!createIfMissing && !this.getCount())) return VOID0
 
     if (!Type.isPrimitiveOrSymbol(hash))
-      console.warn('Key type not indexable and could cause Dictionary to be extremely slow.')
+      console.warn(
+        'Key type not indexable and could cause Dictionary to be extremely slow.'
+      )
 
     const buckets: any = this._buckets
     let bucket = buckets[hash]
@@ -87,7 +101,7 @@ export class Dictionary<TKey, TValue> extends DictionaryBase<TKey, TValue> {
   private _getBucketEntry(
     key: TKey,
     hash?: string | number | symbol,
-    bucket?: HashEntryLinkedList<TKey, TValue>,
+    bucket?: HashEntryLinkedList<TKey, TValue>
   ): IHashEntry<TKey, IHashEntry<TKey, TValue>> | undefined {
     if (key == null || !this.getCount()) return VOID0
 
@@ -99,7 +113,9 @@ export class Dictionary<TKey, TValue> extends DictionaryBase<TKey, TValue> {
 
     return (
       bucket &&
-      (comparer ? bucket.find((e) => comparer!(e.key) === compareKey) : bucket.find((e) => e.key === compareKey))
+      (comparer
+        ? bucket.find((e) => comparer!(e.key) === compareKey)
+        : bucket.find((e) => e.key === compareKey))
     )
   }
 
@@ -145,7 +161,8 @@ export class Dictionary<TKey, TValue> extends DictionaryBase<TKey, TValue> {
       }
     } else if (value !== VOID0) {
       if (!bucket) bucket = _._getBucket(hash, true)
-      if (!bucket) throw new Error(`"${hash.toString()}" cannot be added to lookup table.`)
+      if (!bucket)
+        throw new Error(`"${hash.toString()}" cannot be added to lookup table.`)
       let entry = new HashEntry(key, value)
       entries.addNode(entry)
       bucket.addNode(new HashEntry(key, entry))
@@ -195,7 +212,7 @@ export class Dictionary<TKey, TValue> extends DictionaryBase<TKey, TValue> {
           return yielder.yieldReturn(result)
         }
         return yielder.yieldBreak()
-      },
+      }
     )
   }
 

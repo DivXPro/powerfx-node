@@ -8,7 +8,7 @@ import IMap from '../IMap'
 import Primitive from '../Primitive'
 import { SelectorWithIndex } from '../FunctionTypes'
 
-const EMPTY: string = ''
+const EMPTY = ''
 
 const _I = 'i',
   _G = 'g',
@@ -20,7 +20,7 @@ const _I = 'i',
 /**
  * https://msdn.microsoft.com/en-us/library/system.text.regularexpressions.regexoptions%28v=vs.110%29.aspx
  */
-export module RegexOptions {
+export namespace RegexOptions {
   export type Global = 'g'
   export type IgnoreCase = 'i'
   export type MultiLine = 'm'
@@ -28,7 +28,13 @@ export module RegexOptions {
   export type Sticky = 'y'
   export type IgnorePatternWhitespace = 'w'
 
-  export type Literal = Global | IgnoreCase | MultiLine | Unicode | Sticky | IgnorePatternWhitespace
+  export type Literal =
+    | Global
+    | IgnoreCase
+    | MultiLine
+    | Unicode
+    | Sticky
+    | IgnorePatternWhitespace
 
   /**
    * Specifies case-insensitive matching. For more information, see the "Case-Insensitive Matching " section in the Regular Expression Options topic.
@@ -79,7 +85,11 @@ export class Regex {
     if (!pattern) throw new Error("'pattern' cannot be null or empty.")
 
     let patternString: string,
-      flags: string = ((options && (options instanceof Array ? options : [options]).concat(extra)) || extra)
+      flags: string = (
+        (options &&
+          (options instanceof Array ? options : [options]).concat(extra)) ||
+        extra
+      )
         .join(EMPTY)
         .toLowerCase()
 
@@ -110,7 +120,8 @@ export class Regex {
         this._keys = keys
       }
 
-      if (ignoreWhiteSpace) patternString = patternString.replace(/\s+/g, '\\s*')
+      if (ignoreWhiteSpace)
+        patternString = patternString.replace(/\s+/g, '\\s*')
 
       this._re = new RegExp(patternString, flags)
     }
@@ -118,10 +129,15 @@ export class Regex {
     Object.freeze(this)
   }
 
-  match(input: string, startIndex: number = 0): Match {
+  match(input: string, startIndex = 0): Match {
     const _ = this
     let r: RegExpExecArray | null
-    if (!input || startIndex >= input.length || !(r = this._re.exec(input.substring(startIndex)))) return Match.Empty
+    if (
+      !input ||
+      startIndex >= input.length ||
+      !(r = this._re.exec(input.substring(startIndex)))
+    )
+      return Match.Empty
 
     if (!(startIndex > 0)) startIndex = 0
 
@@ -164,7 +180,11 @@ export class Regex {
 
   replace(input: string, replacement: Primitive, count?: number): string
 
-  replace(input: string, evaluator: SelectorWithIndex<Match, Primitive>, count?: number): string
+  replace(
+    input: string,
+    evaluator: SelectorWithIndex<Match, Primitive>,
+    count?: number
+  ): string
 
   replace(input: string, r: any, count: number = Infinity): string {
     if (!input || r == null || !(count > 0)) return input
@@ -191,21 +211,35 @@ export class Regex {
     return this._re.test(input)
   }
 
-  static isMatch(input: string, pattern: string, options?: RegexOptions.Literal[]): boolean {
+  static isMatch(
+    input: string,
+    pattern: string,
+    options?: RegexOptions.Literal[]
+  ): boolean {
     const r = new Regex(pattern, options)
     return r.isMatch(input)
   }
 
-  static replace(input: string, pattern: string, replacement: string, options?: RegexOptions.Literal[]): string
+  static replace(
+    input: string,
+    pattern: string,
+    replacement: string,
+    options?: RegexOptions.Literal[]
+  ): string
 
   static replace(
     input: string,
     pattern: string,
     evaluator: SelectorWithIndex<Match, Primitive>,
-    options?: RegexOptions.Literal[],
+    options?: RegexOptions.Literal[]
   ): string
 
-  static replace(input: string, pattern: string, e: any, options?: RegexOptions.Literal[]): string {
+  static replace(
+    input: string,
+    pattern: string,
+    e: any,
+    options?: RegexOptions.Literal[]
+  ): string {
     const r = new Regex(pattern, options)
     return r.replace(input, e)
   }
@@ -217,7 +251,10 @@ export class Capture {
     return (v && v.length) || 0
   }
 
-  constructor(public readonly value: string = EMPTY, public readonly index: number = -1) {}
+  constructor(
+    public readonly value: string = EMPTY,
+    public readonly index: number = -1
+  ) {}
 
   freeze(): void {
     Object.freeze(this)
@@ -246,7 +283,7 @@ export class Match extends Group {
     value: string = EMPTY,
     index: number = -1,
     public readonly groups: Group[] = [],
-    public readonly namedGroups: IMap<Group> = {},
+    public readonly namedGroups: IMap<Group> = {}
   ) {
     super(value, index)
   }

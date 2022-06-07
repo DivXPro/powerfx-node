@@ -30,7 +30,10 @@ export function Today(props: {
 }
 
 // https://docs.microsoft.com/en-us/powerapps/maker/canvas-apps/functions/function-now-today-istoday
-export function IsToday(props: { irContext: IRContext; values: FormulaValue[] }): FormulaValue {
+export function IsToday(props: {
+  irContext: IRContext
+  values: FormulaValue[]
+}): FormulaValue {
   const { irContext, values } = props
   let arg0: DateTime
   if (values[0] instanceof DateTimeValue) {
@@ -42,13 +45,17 @@ export function IsToday(props: { irContext: IRContext; values: FormulaValue[] })
   }
 
   const now = DateTime.today
-  const same = arg0.year === now.year && arg0.month === now.month && arg0.day === now.day
+  const same =
+    arg0.year === now.year && arg0.month === now.month && arg0.day === now.day
   return new BooleanValue(irContext, same)
 }
 
 // https://docs.microsoft.com/en-us/powerapps/maker/canvas-apps/show-text-dates-times
 // https://docs.microsoft.com/en-us/powerapps/maker/canvas-apps/functions/function-dateadd-datediff
-export function DateAdd(props: { irContext: IRContext; values: FormulaValue[] }): FormulaValue {
+export function DateAdd(props: {
+  irContext: IRContext
+  values: FormulaValue[]
+}): FormulaValue {
   const { irContext, values } = props
 
   let datetime: DateTime
@@ -92,7 +99,10 @@ export function DateAdd(props: { irContext: IRContext; values: FormulaValue[] })
         break
       default:
         // TODO: Task 10723372: Implement Unit Functionality in DateAdd, DateDiff Functions
-        return CommonErrors.NotYetImplementedError(irContext, 'DateAdd Only supports Days for the unit field')
+        return CommonErrors.NotYetImplementedError(
+          irContext,
+          'DateAdd Only supports Days for the unit field'
+        )
     }
 
     if (values[0] instanceof DateTimeValue) {
@@ -105,7 +115,10 @@ export function DateAdd(props: { irContext: IRContext; values: FormulaValue[] })
   }
 }
 
-export function DateDiff(props: { irContext: IRContext; values: FormulaValue[] }): FormulaValue {
+export function DateDiff(props: {
+  irContext: IRContext
+  values: FormulaValue[]
+}): FormulaValue {
   const { irContext, values } = props
 
   let start: DateTime
@@ -132,37 +145,46 @@ export function DateDiff(props: { irContext: IRContext; values: FormulaValue[] }
   // The function DateDiff only returns a whole number of the units being subtracted, and the precision is given in the unit specified.
   switch (units.value.toLowerCase()) {
     case 'milliseconds':
-      var milliseconds = Math.floor(diff.getTotalMilliseconds())
+      let milliseconds = Math.floor(diff.getTotalMilliseconds())
       return new NumberValue(irContext, milliseconds)
     case 'seconds':
-      var seconds = Math.floor(diff.seconds)
+      let seconds = Math.floor(diff.seconds)
       return new NumberValue(irContext, seconds)
     case 'minutes':
-      var minutes = Math.floor(diff.minutes)
+      let minutes = Math.floor(diff.minutes)
       return new NumberValue(irContext, minutes)
     case 'hours':
-      var hours = Math.floor(diff.hours)
+      let hours = Math.floor(diff.hours)
       return new NumberValue(irContext, hours)
     case 'days':
-      var days = Math.floor(diff.days)
+      let days = Math.floor(diff.days)
       return new NumberValue(irContext, days)
     case 'months':
       const months = (end.year - start.year) * 12 + end.month - start.month
       return new NumberValue(irContext, months)
     case 'quarters':
-      const quarters = (end.year - start.year) * 4 + Math.floor(end.month / 3.0) - Math.floor(start.month / 3.0)
+      const quarters =
+        (end.year - start.year) * 4 +
+        Math.floor(end.month / 3.0) -
+        Math.floor(start.month / 3.0)
       return new NumberValue(irContext, quarters)
     case 'years':
       const years = end.year - start.year
       return new NumberValue(irContext, years)
     default:
       // TODO: Task 10723372: Implement Unit Functionality in DateAdd, DateDiff Functions
-      return CommonErrors.NotYetImplementedError(irContext, 'DateDiff Only supports Days for the unit field')
+      return CommonErrors.NotYetImplementedError(
+        irContext,
+        'DateDiff Only supports Days for the unit field'
+      )
   }
 }
 
 // // https://docs.microsoft.com/en-us/powerapps/maker/canvas-apps/functions/function-datetime-parts
-export function Year(props: { irContext: IRContext; values: FormulaValue[] }): FormulaValue {
+export function Year(props: {
+  irContext: IRContext
+  values: FormulaValue[]
+}): FormulaValue {
   const { irContext, values } = props
   if (values[0] instanceof BlankValue) {
     // TODO: Standardize the number 0 - year 1900 logic
@@ -182,7 +204,10 @@ export function Year(props: { irContext: IRContext; values: FormulaValue[] }): F
   return new NumberValue(irContext, x)
 }
 
-export function Day(props: { irContext: IRContext; values: FormulaValue[] }): FormulaValue {
+export function Day(props: {
+  irContext: IRContext
+  values: FormulaValue[]
+}): FormulaValue {
   const { irContext, values } = props
   if (values[0] instanceof BlankValue) {
     return new NumberValue(irContext, 0)
@@ -201,7 +226,10 @@ export function Day(props: { irContext: IRContext; values: FormulaValue[] }): Fo
   return new NumberValue(irContext, x)
 }
 
-export function Month(props: { irContext: IRContext; values: FormulaValue[] }): FormulaValue {
+export function Month(props: {
+  irContext: IRContext
+  values: FormulaValue[]
+}): FormulaValue {
   const { irContext, values } = props
   if (values[0] instanceof BlankValue) {
     return new NumberValue(irContext, 1)
@@ -219,7 +247,10 @@ export function Month(props: { irContext: IRContext; values: FormulaValue[] }): 
   return new NumberValue(irContext, x)
 }
 
-export function Hour(props: { irContext: IRContext; values: FormulaValue[] }): FormulaValue {
+export function Hour(props: {
+  irContext: IRContext
+  values: FormulaValue[]
+}): FormulaValue {
   const { irContext, values } = props
   if (values[0] instanceof BlankValue) {
     return new NumberValue(irContext, 0)
@@ -237,7 +268,10 @@ export function Hour(props: { irContext: IRContext; values: FormulaValue[] }): F
   return new NumberValue(irContext, x)
 }
 
-export function Minute(props: { irContext: IRContext; values: FormulaValue[] }): FormulaValue {
+export function Minute(props: {
+  irContext: IRContext
+  values: FormulaValue[]
+}): FormulaValue {
   const { irContext, values } = props
   if (values[0] instanceof BlankValue) {
     return new NumberValue(irContext, 0)
@@ -256,7 +290,10 @@ export function Minute(props: { irContext: IRContext; values: FormulaValue[] }):
   return new NumberValue(irContext, x)
 }
 
-export function Second(props: { irContext: IRContext; values: FormulaValue[] }): FormulaValue {
+export function Second(props: {
+  irContext: IRContext
+  values: FormulaValue[]
+}): FormulaValue {
   const { irContext, values } = props
   if (values[0] instanceof BlankValue) {
     return new NumberValue(irContext, 0)
@@ -277,7 +314,10 @@ export function Second(props: { irContext: IRContext; values: FormulaValue[] }):
 
 // // https://docs.microsoft.com/en-us/powerapps/maker/canvas-apps/functions/function-date-time
 // // Date(Year,Month,Day)
-export function Date2(props: { irContext: IRContext; values: NumberValue[] }): FormulaValue {
+export function Date2(props: {
+  irContext: IRContext
+  values: NumberValue[]
+}): FormulaValue {
   const { irContext, values } = props
   // $$$ fix impl
   const year = values[0].value
@@ -286,12 +326,17 @@ export function Date2(props: { irContext: IRContext; values: NumberValue[] }): F
 
   // The final date is built up this way to allow for inputs which overflow,
   // such as: Date(2000, 25, 69) -> 3/10/2002
-  const result = new DateTime(new Date(year, 0, 1)).addMonths(month - 1).addDays(day - 1)
+  const result = new DateTime(new Date(year, 0, 1))
+    .addMonths(month - 1)
+    .addDays(day - 1)
 
   return new DateValue(irContext, result)
 }
 
-export function Time(props: { irContext: IRContext; values: NumberValue[] }): FormulaValue {
+export function Time(props: {
+  irContext: IRContext
+  values: NumberValue[]
+}): FormulaValue {
   const { irContext, values } = props
   const hour = values[0].value
   const minute = values[1].value
@@ -332,7 +377,7 @@ export function DateParse(props: {
     return new DateValue(irContext, result[1])
   }
   return CommonErrors.InvalidDateTimeError(irContext)
-  // if (DateTime.TryParse(str, visitor.CultureInfo, DateTimeStyles.None, out var result))
+  // if (DateTime.TryParse(str, visitor.CultureInfo, DateTimeStyles.None, out let result))
   // {
   //     return new DateValue(irContext, result.Date);
   // }
@@ -355,7 +400,7 @@ export function DateTimeParse(props: {
     return new DateTimeValue(irContext, result[1])
   }
   return CommonErrors.InvalidDateTimeError(irContext)
-  // if (DateTime.TryParse(str, visitor.CultureInfo, DateTimeStyles.None, out var result))
+  // if (DateTime.TryParse(str, visitor.CultureInfo, DateTimeStyles.None, out let result))
   // {
   //     return new DateTimeValue(irContext, result);
   // }
@@ -385,7 +430,7 @@ export function TimeParse(props: {
 //   const tzInfo = TimeZoneInfo.Local;
 //   if (values.Length == 0)
 //   {
-//       var tzOffsetDays = tzInfo.GetUtcOffset(DateTime.Now).TotalDays;
+//       let tzOffsetDays = tzInfo.GetUtcOffset(DateTime.Now).TotalDays;
 //       return new NumberValue(irContext, tzOffsetDays * -1);
 //   }
 //   switch (values[0])
